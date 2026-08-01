@@ -28,6 +28,33 @@
   }
 }
 
+:root[data-theme="dark"] {
+  --bg: #12131a;
+  --surface: #1b1d28;
+  --text: #eef0f8;
+  --text-muted: #9a9db0;
+  --border: #2c2f3d;
+  --primary: #6f93ff;
+  --primary-dark: #7fa0ff;
+  --primary-contrast: #0b0c12;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --text: #1a1d29;
+  --text-muted: #6b7080;
+  --border: #e4e6ec;
+  --primary: #3b6ef6;
+  --primary-dark: #2a53c4;
+  --primary-contrast: #ffffff;
+  --success: #1ea672;
+  --danger: #e0576b;
+  --warn: #d6902a;
+  --shadow: 0 1px 2px rgba(20,20,40,0.04), 0 4px 16px rgba(20,20,40,0.06);
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
