@@ -77,10 +77,16 @@ for (const spec of EXPECTED) {
    Se concatenan al final de los arreglos originales, así que aquí se revisa
    que la forma sea correcta y que los ids existan en el catálogo base. */
 
-const EXTRA_SPECS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
-  file: `extra/area${n}.js`,
-  varName: `AREA${n}_EXTRA`
-}));
+const EXTRA_DIRS = [
+  { dir: "extra", suffix: "EXTRA" },
+  { dir: "extra2", suffix: "EXTRA2" }
+];
+const EXTRA_SPECS = EXTRA_DIRS.flatMap(({ dir, suffix }) =>
+  [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+    file: `${dir}/area${n}.js`,
+    varName: `AREA${n}_${suffix}`
+  }))
+);
 
 let extraFlashcards = 0;
 let extraQuiz = 0;

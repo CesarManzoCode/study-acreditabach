@@ -56,6 +56,7 @@ const INFO_SECTIONS = [
         <li>Sacapuntas</li>
         <li>Calculadora <strong>científica no programable</strong></li>
       </ul>
+      <p>En esta app, los reactivos numéricos de matemáticas, física y química traen una calculadora científica integrada (botón <em>Abrir calculadora</em> o la tecla <strong>C</strong>), para que practiques con la misma herramienta que vas a usar ese día.</p>
       <h4>Documentos que debes llevar el día del examen (originales, no digitales)</h4>
       <p><strong>Mayores de edad:</strong> identificación oficial vigente con fotografía en ORIGINAL + Comprobante de Registro al Examen (CREX) impreso y firmado.</p>
       <p><strong>Menores de edad:</strong> CURP impresa, identificación del padre/madre/tutor en original, carta responsiva impresa en original, documento de representación legal impreso, y el CREX impreso y firmado.</p>

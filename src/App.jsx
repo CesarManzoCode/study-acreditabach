@@ -3,7 +3,7 @@ import Icon from "./ui/Icon.jsx";
 import { ToastProvider } from "./ui/kit.jsx";
 import { useEngine, useRoute, navigate, useAccounts, useSync } from "./lib/hooks.js";
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
-import { computeTodayPlan, overallStats, cardsForTopic, buildDrill, subscribe } from "./lib/engine.js";
+import { computeTodayPlan, overallStats, cardsForTopic, buildDrill, shuffleOptions, subscribe } from "./lib/engine.js";
 import { getActiveUser } from "./lib/accounts.js";
 import { startAutoSync, getSyncStatus } from "./lib/sync.js";
 
@@ -71,7 +71,11 @@ function Shell() {
   }, [plan]);
 
   const startTopicPractice = useCallback((topic) => {
-    const steps = (topic.quiz || []).map((q) => ({ type: "quiz", topic, question: q }));
+    const steps = (topic.quiz || []).map((q, i) => ({
+      type: "quiz",
+      topic,
+      question: shuffleOptions(q, topic.id + "|" + i + "|" + Date.now())
+    }));
     if (!steps.length) return;
     steps.push({ type: "summary" });
     setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });

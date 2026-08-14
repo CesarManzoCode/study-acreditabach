@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import Icon from "../ui/Icon.jsx";
 import { Button, Card, Bar, Badge, Ring, Stat, Modal, Stack } from "../ui/kit.jsx";
+import Calculator from "../ui/Calculator.jsx";
 import { RichText, Inline } from "../lib/text.jsx";
+import { needsCalculator } from "../lib/calcNeed.js";
 import { useKeys, useScrollLock, navigate } from "../lib/hooks.js";
 import { areaStyle, areaVisual } from "../lib/areas.js";
 import {
@@ -226,9 +228,11 @@ function IntroStep({ topic, onNext }) {
 
 function QuizStep({ topic, question, onAnswered, onNext }) {
   const [chosen, setChosen] = useState(null);
+  const [calcOpen, setCalcOpen] = useState(false);
   const answeredRef = useRef(false);
   const v = areaVisual(topic.area);
   const correct = chosen === question.correct;
+  const withCalc = needsCalculator(topic, question);
 
   useEffect(() => { setChosen(null); answeredRef.current = false; }, [question]);
 
@@ -239,11 +243,15 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
     onAnswered(i === question.correct);
   };
 
+  /* Con la calculadora abierta, el teclado escribe números en vez de
+     contestar: los atajos 1/2/3 se apagan mientras tanto. */
   useKeys(
-    chosen === null
-      ? { 1: () => choose(0), 2: () => choose(1), 3: () => choose(2) }
-      : { Enter: onNext, " ": onNext },
-    [chosen, question]
+    calcOpen
+      ? {}
+      : chosen === null
+        ? { 1: () => choose(0), 2: () => choose(1), 3: () => choose(2), c: () => withCalc && setCalcOpen(true) }
+        : { Enter: onNext, " ": onNext },
+    [chosen, question, calcOpen, withCalc]
   );
 
   return (
@@ -255,6 +263,14 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
         </div>
 
         <h2 className="quiz-q"><Inline>{question.q}</Inline></h2>
+
+        {withCalc && !calcOpen && (
+          <button className="calc-open" onClick={() => setCalcOpen(true)}>
+            <Icon name="calc" size={17} />
+            Abrir calculadora
+            <span className="kbd">C</span>
+          </button>
+        )}
 
         <div className="options">
           {question.options.map((opt, i) => {
@@ -296,6 +312,8 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
           Siguiente
         </Button>
       )}
+
+      <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />
     </Stack>
   );
 }
@@ -355,6 +373,7 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
 export function MockRunner({ mock, onExit }) {
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [calcOpen, setCalcOpen] = useState(false);
   const questions = mock.questions;
   const done = idx >= questions.length;
 
@@ -366,12 +385,16 @@ export function MockRunner({ mock, onExit }) {
     setIdx((n) => n + 1);
   };
 
-  useKeys(done ? {} : { 1: () => answer(0), 2: () => answer(1), 3: () => answer(2) }, [idx, done]);
+  useKeys(
+    done || calcOpen ? {} : { 1: () => answer(0), 2: () => answer(1), 3: () => answer(2), c: () => setCalcOpen(true) },
+    [idx, done, calcOpen]
+  );
 
   if (done) return <MockResults mock={mock} answers={answers} onExit={onExit} />;
 
   const { topic, question } = questions[idx];
   const v = areaVisual(topic.area);
+  const withCalc = needsCalculator(topic, question);
 
   return (
     <RunnerShell
@@ -385,6 +408,13 @@ export function MockRunner({ mock, onExit }) {
         <Card style={areaStyle(topic.area)}>
           <Badge tone="area">{v.short}</Badge>
           <h2 className="quiz-q"><Inline>{question.q}</Inline></h2>
+          {withCalc && !calcOpen && (
+            <button className="calc-open" onClick={() => setCalcOpen(true)}>
+              <Icon name="calc" size={17} />
+              Abrir calculadora
+              <span className="kbd">C</span>
+            </button>
+          )}
           <div className="options">
             {question.options.map((opt, i) => (
               <button key={i} className="option" onClick={() => answer(i)}>
@@ -397,6 +427,7 @@ export function MockRunner({ mock, onExit }) {
             Como en el examen real: las respuestas se revisan al final
           </p>
         </Card>
+        <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />
       </div>
     </RunnerShell>
   );
