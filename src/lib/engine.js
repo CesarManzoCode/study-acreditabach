@@ -1,13 +1,30 @@
 /* ============================================================
    ACREDITA-BACH · motor de datos, repetición espaciada y calendario
 
-   IMPORTANTE: el formato guardado (llave `acreditabach_v1`) es exactamente
-   el mismo que en la versión anterior del sitio. El rediseño no migra ni
-   reescribe nada: el progreso que ya existe en el navegador se sigue
-   leyendo igual. Cualquier cambio aquí debe mantener esa compatibilidad.
+   IMPORTANTE — COMPATIBILIDAD DEL PROGRESO
+   ----------------------------------------
+   El formato guardado sigue siendo exactamente el mismo desde la primera
+   versión del sitio, en la llave `acreditabach_v1`. Reglas que no se rompen:
+
+     · Nada se migra, renombra ni reescribe: las llaves que ya existían
+       (cards, topicsIntroduced, quizStats, sessionLog, streak…) se leen igual.
+     · Las tarjetas se identifican por `temaId::fcN`, donde N es la posición
+       de la flashcard. Por eso el contenido nuevo SIEMPRE se agrega al final
+       del arreglo: fc0 y fc1 siguen siendo las mismas tarjetas de antes.
+     · Las llaves nuevas (contentRevision, contentUpdate, lastQuiz) son
+       aditivas; una versión vieja del sitio las ignoraría sin romperse.
+     · Con cuentas creadas, cada una guarda en `acreditabach_v1__<cuenta>`
+       y la llave histórica se queda intacta como respaldo.
    ============================================================ */
 
-const STORAGE_KEY = "acreditabach_v1";
+import { progressKeyFor, getActiveSlug, subscribeAccounts } from "./accounts.js";
+import { hasGenerator, generateQuestion, generateSet } from "./generators/index.js";
+import { makeRng, hashSeed, randomSeed } from "./rng.js";
+
+/* Se incrementa cuando se agrega contenido nuevo al temario. Al detectar un
+   número mayor que el guardado, el motor da de alta las tarjetas nuevas de
+   los temas que ya estaban vistos (ver applyContentUpdate). */
+export const CONTENT_REVISION = 2;
 
 /* Fechas del plan (ajusta aquí si el plan cambia) */
 export const STUDY_START = new Date(2026, 7, 1);      // 1 de agosto de 2026
@@ -40,6 +57,10 @@ export function fmtDateShort(d) {
 
 /* ---------------- Estado persistente ---------------- */
 
+let STORAGE_KEY = progressKeyFor(getActiveSlug());
+
+export function currentStorageKey() { return STORAGE_KEY; }
+
 function defaultState() {
   return {
     version: 1,
@@ -51,7 +72,9 @@ function defaultState() {
     streak: 0,
     lastStudyDate: null,
     dismissedWelcome: false,
-    createdAt: toISO(new Date())
+    createdAt: toISO(new Date()),
+    contentRevision: 0,     // revisión del temario ya incorporada a este progreso
+    contentUpdate: null     // {at, newCards} del último crecimiento del temario
   };
 }
 
@@ -74,6 +97,10 @@ const listeners = new Set();
 export function subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 let revision = 0;
 export function getRevision() { return revision; }
+function emit() {
+  revision++;
+  listeners.forEach((fn) => fn());
+}
 
 export function saveState() {
   try {
@@ -81,13 +108,29 @@ export function saveState() {
   } catch (e) {
     console.warn("No se pudo guardar el progreso.", e);
   }
-  revision++;
-  listeners.forEach((fn) => fn());
+  emit();
 }
+
+/* Al cambiar de cuenta se recarga el progreso de esa cuenta. */
+subscribeAccounts(() => {
+  const key = progressKeyFor(getActiveSlug());
+  if (key === STORAGE_KEY) { emit(); return; }
+  STORAGE_KEY = key;
+  STATE = loadState();
+  applyContentUpdate();
+  emit();
+});
 
 export function resetProgress() {
   STATE = defaultState();
-  TOPIC_INDEX = null;
+  STATE.contentRevision = CONTENT_REVISION;
+  saveState();
+}
+
+/** Reemplaza el progreso completo (lo usan el respaldo manual y la sincronización). */
+export function replaceState(next) {
+  STATE = Object.assign(defaultState(), next);
+  applyContentUpdate();
   saveState();
 }
 
@@ -102,9 +145,7 @@ export function importProgress(json) {
     const parsed = JSON.parse(json);
     const incoming = parsed && parsed.state ? parsed.state : parsed;
     if (!incoming || typeof incoming !== "object" || !incoming.cards) return false;
-    STATE = Object.assign(defaultState(), incoming);
-    TOPIC_INDEX = null;
-    saveState();
+    replaceState(incoming);
     return true;
   } catch (e) {
     return false;
@@ -132,7 +173,37 @@ export {
   _TOTAL_REACTIVOS as TOTAL_REACTIVOS
 };
 
+/* Paquetes de contenido adicional (data/extra/*.js): más flashcards y más
+   reactivos por tema. Se CONCATENAN al final de los arreglos originales para
+   no mover los índices de las tarjetas que ya tienen progreso. */
+function extraPacks() {
+  const packs = [
+    typeof AREA1_EXTRA !== "undefined" ? AREA1_EXTRA : null,
+    typeof AREA2_EXTRA !== "undefined" ? AREA2_EXTRA : null,
+    typeof AREA3_EXTRA !== "undefined" ? AREA3_EXTRA : null,
+    typeof AREA4_EXTRA !== "undefined" ? AREA4_EXTRA : null,
+    typeof AREA5_EXTRA !== "undefined" ? AREA5_EXTRA : null,
+    typeof AREA6_EXTRA !== "undefined" ? AREA6_EXTRA : null,
+    typeof AREA7_EXTRA !== "undefined" ? AREA7_EXTRA : null
+  ];
+  const merged = {};
+  packs.forEach((p) => {
+    if (!p) return;
+    Object.keys(p).forEach((id) => {
+      const cur = merged[id] || { flashcards: [], quiz: [] };
+      merged[id] = {
+        flashcards: cur.flashcards.concat(p[id].flashcards || []),
+        quiz: cur.quiz.concat(p[id].quiz || [])
+      };
+    });
+  });
+  return merged;
+}
+
+let TOPICS_CACHE = null;
+
 export function getAllTopics() {
+  if (TOPICS_CACHE) return TOPICS_CACHE;
   const groups = [
     typeof AREA1_TOPICS !== "undefined" ? AREA1_TOPICS : [],
     typeof AREA2_TOPICS !== "undefined" ? AREA2_TOPICS : [],
@@ -143,7 +214,17 @@ export function getAllTopics() {
     typeof AREA6_EN_TOPICS !== "undefined" ? AREA6_EN_TOPICS : [],
     typeof AREA7_TOPICS !== "undefined" ? AREA7_TOPICS : []
   ];
-  return [].concat(...groups);
+  const base = [].concat(...groups);
+  const extra = extraPacks();
+  TOPICS_CACHE = base.map((t) => {
+    const ex = extra[t.id];
+    if (!ex) return t;
+    return Object.assign({}, t, {
+      flashcards: (t.flashcards || []).concat(ex.flashcards || []),
+      quiz: (t.quiz || []).concat(ex.quiz || [])
+    });
+  });
+  return TOPICS_CACHE;
 }
 
 let TOPIC_INDEX = null;
@@ -155,11 +236,25 @@ export function topicsById() {
 }
 
 export function areaNumbers() {
-  return Object.keys(AREA_META).map(Number).sort((a, b) => a - b);
+  return Object.keys(_AREA_META).map(Number).sort((a, b) => a - b);
 }
 
 export function topicsOfArea(areaNum) {
   return getAllTopics().filter((t) => t.area === areaNum);
+}
+
+/** Cuánto contenido tiene el temario ahora mismo (para la pantalla de progreso). */
+export function contentStats() {
+  const topics = getAllTopics();
+  let flashcards = 0;
+  let quiz = 0;
+  let conGenerador = 0;
+  topics.forEach((t) => {
+    flashcards += (t.flashcards || []).length;
+    quiz += (t.quiz || []).length;
+    if (hasGenerator(t.id)) conGenerador++;
+  });
+  return { topics: topics.length, flashcards, quiz, conGenerador };
 }
 
 /* Interleaving proporcional: reparte los temas de las 7-8 fuentes
@@ -195,6 +290,48 @@ export function getLearningOrder() {
   return STATE.learningOrder;
 }
 
+/* ---------------- Crecimiento del temario ----------------
+
+   Cuando se agrega contenido nuevo, los temas que YA estaban vistos ganan
+   tarjetas que nunca se han repasado. Se dan de alta aquí y se reparten
+   entre los próximos días para no llenar la sesión de un solo golpe.
+   Efecto buscado: el dominio baja y hay que repasar lo nuevo para recuperarlo.
+   ------------------------------------------------------------ */
+
+function applyContentUpdate() {
+  if (STATE.contentRevision === CONTENT_REVISION) return;
+  const primeraVez = Object.keys(STATE.topicsIntroduced).length === 0;
+  const today = todayDate();
+  const nuevas = [];
+
+  Object.keys(STATE.topicsIntroduced).forEach((topicId) => {
+    cardsForTopic(topicId).forEach((cid) => {
+      if (!STATE.cards[cid]) nuevas.push(cid);
+    });
+  });
+
+  const REPARTO = 7; // días entre los que se reparten las tarjetas nuevas
+  nuevas.forEach((cid, i) => {
+    STATE.cards[cid] = {
+      interval: 0,
+      repetitions: 0,
+      ef: 2.5,
+      due: toISO(addDays(today, i % REPARTO)),
+      lastReview: null
+    };
+  });
+
+  STATE.contentRevision = CONTENT_REVISION;
+  STATE.contentUpdate = primeraVez || !nuevas.length ? null : { at: toISO(today), newCards: nuevas.length, dias: REPARTO };
+  saveState();
+}
+
+/** Quita el aviso de "se agregó contenido nuevo" de la pantalla de inicio. */
+export function dismissContentUpdate() {
+  STATE.contentUpdate = null;
+  saveState();
+}
+
 /* ---------------- Repetición espaciada (SM-2 simplificado, 3 botones) ---------------- */
 /* Basado en el algoritmo SM-2 (SuperMemo) usado por Anki, adaptado a 3 niveles
    de respuesta para simplificar la interfaz: 0=otra vez, 1=costó, 2=bien. */
@@ -206,6 +343,11 @@ function newCardState() {
 export function getCard(cardId) {
   if (!STATE.cards[cardId]) STATE.cards[cardId] = newCardState();
   return STATE.cards[cardId];
+}
+
+/** Lectura sin efectos secundarios: no da de alta la tarjeta si no existe. */
+export function peekCard(cardId) {
+  return STATE.cards[cardId] || null;
 }
 
 export function gradeCard(cardId, quality) {
@@ -256,7 +398,17 @@ export function nextIntervalPreview(cardId, quality) {
 export function cardsForTopic(topicId) {
   const t = topicsById()[topicId];
   if (!t) return [];
-  return t.flashcards.map((fc, i) => topicId + "::fc" + i);
+  return (t.flashcards || []).map((fc, i) => topicId + "::fc" + i);
+}
+
+/** Datos de la flashcard a partir de su id (`tema::fcN`). */
+export function flashcardOf(cardId) {
+  const [topicId, tail] = String(cardId).split("::");
+  const t = topicsById()[topicId];
+  if (!t) return null;
+  const idx = Number(String(tail).replace("fc", ""));
+  const fc = (t.flashcards || [])[idx];
+  return fc ? { topic: t, card: fc, index: idx } : null;
 }
 
 /* ---------------- Progreso por tema / área ---------------- */
@@ -283,14 +435,53 @@ export function recordQuizAnswer(topicId, correct) {
   saveState();
 }
 
-export function topicMastery(topicId) {
-  if (!isIntroduced(topicId)) return 0;
+/* Dominio de un tema.
+
+   El cálculo penaliza dos cosas a propósito:
+     · las tarjetas del tema que todavía no se repasan cuentan como 0, así que
+       al crecer el temario el dominio baja y hay que repasar lo nuevo;
+     · las preguntas acertadas solo valen del todo cuando hay suficientes
+       intentos para ese tema (`confianza`): con un banco más grande se piden
+       más respuestas antes de dar el crédito completo.
+   Sin intentos de quiz, la parte de preguntas vale 0.5 (neutra), igual que antes. */
+
+const MASTERY_TARGET_REPS = 5;
+
+export function masteryDetail(topicId) {
+  if (!isIntroduced(topicId)) {
+    return { mastery: 0, repScore: 0, quizScore: 0, confianza: 0, cardsPendientes: 0, totalCards: 0 };
+  }
   const cids = cardsForTopic(topicId);
-  const reps = cids.map((cid) => Math.min(5, getCard(cid).repetitions));
-  const avgRep = reps.length ? reps.reduce((a, b) => a + b, 0) / reps.length / 5 : 0;
+  let suma = 0;
+  let pendientes = 0;
+  cids.forEach((cid) => {
+    const c = STATE.cards[cid];
+    const reps = c ? Math.min(MASTERY_TARGET_REPS, c.repetitions) : 0;
+    if (!c || c.repetitions === 0) pendientes++;
+    suma += reps;
+  });
+  const repScore = cids.length ? suma / cids.length / MASTERY_TARGET_REPS : 0;
+
+  const t = topicsById()[topicId];
+  const banco = (t && t.quiz ? t.quiz.length : 0) + (hasGenerator(topicId) ? 4 : 0);
+  const exigidos = Math.min(Math.max(banco, 2), 5);
   const qs = quizStatsFor(topicId);
-  const acc = qs.seen ? qs.correct / qs.seen : 0.5;
-  return Math.round((0.6 * avgRep + 0.4 * acc) * 100);
+  const confianza = Math.min(1, qs.seen / exigidos);
+  const acierto = qs.seen ? qs.correct / qs.seen : 0.5;
+  const quizScore = acierto * confianza + 0.5 * (1 - confianza);
+
+  return {
+    mastery: Math.round((0.6 * repScore + 0.4 * quizScore) * 100),
+    repScore,
+    quizScore,
+    confianza,
+    cardsPendientes: pendientes,
+    totalCards: cids.length
+  };
+}
+
+export function topicMastery(topicId) {
+  return masteryDetail(topicId).mastery;
 }
 
 export function areaStats(areaNum) {
@@ -309,6 +500,45 @@ export function weakestTopics(n) {
     .map((t) => ({ topic: t, mastery: topicMastery(t.id) }))
     .sort((a, b) => a.mastery - b.mastery)
     .slice(0, n);
+}
+
+/* ---------------- Selección variada de preguntas ----------------
+
+   Antes se mostraba siempre la misma pregunta (`quiz[seen % 2]`). Ahora:
+     · los temas con generador producen un reactivo nuevo cada vez;
+     · los demás rotan por su banco con una semilla que depende del tema, del
+       día y de cuántas veces se ha respondido, así que la pregunta cambia
+       conforme avanzas y no se repite dos días seguidos.
+   ------------------------------------------------------------ */
+
+const PROB_GENERADA = 0.6;
+
+function seedFor(topicId, salt) {
+  return hashSeed(topicId + "|" + salt);
+}
+
+/** Un reactivo del tema. `salt` fija la variante (por día, por intento, aleatorio). */
+export function pickQuestion(topic, salt) {
+  if (!topic) return null;
+  const bank = topic.quiz || [];
+  const key = salt === undefined ? String(randomSeed()) : String(salt);
+  const seed = seedFor(topic.id, key);
+  const rng = makeRng(seed);
+  const puedeGenerar = hasGenerator(topic.id);
+
+  if (puedeGenerar && (bank.length === 0 || rng() < PROB_GENERADA)) {
+    const q = generateQuestion(topic.id, seed);
+    if (q) return q;
+  }
+  if (!bank.length) {
+    return puedeGenerar ? generateQuestion(topic.id, seed) : null;
+  }
+  return bank[Math.floor(rng() * bank.length)];
+}
+
+/** Semilla estable del día: la pregunta no cambia sola, pero sí al responderla. */
+function saltDelDia(topicId) {
+  return toISO(todayDate()) + "|" + quizStatsFor(topicId).seen;
 }
 
 /* ---------------- Plan de hoy / ritmo adaptativo ---------------- */
@@ -365,10 +595,8 @@ export function computeTodayPlan() {
   const quizTopics = eligibleForQuiz.slice(0, 10);
   const quizQuestions = [];
   quizTopics.forEach((t) => {
-    if (t.quiz && t.quiz.length) {
-      const idx = quizStatsFor(t.id).seen % t.quiz.length;
-      quizQuestions.push({ topic: t, question: t.quiz[idx] });
-    }
+    const question = pickQuestion(t, saltDelDia(t.id));
+    if (question) quizQuestions.push({ topic: t, question });
   });
 
   const estMinutes = Math.round(dueCardEntries.length * 0.5 + newTopics.length * 6 + quizQuestions.length * 1.2);
@@ -455,25 +683,65 @@ export function upcomingLoad(days = 14) {
   return buckets;
 }
 
-/* ---------------- Simulacros ---------------- */
+/* ---------------- Simulacros y práctica ---------------- */
 
 export function buildMockExam(areaNums, onlyIntroduced, limit) {
   const topics = getAllTopics().filter(
-    (t) => areaNums.includes(t.area) && (!onlyIntroduced || isIntroduced(t.id)) && t.quiz && t.quiz.length
+    (t) => areaNums.includes(t.area) && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
   );
-  let items = topics.map((t, i) => ({
-    topic: t,
-    question: t.quiz[(i + Math.floor(Math.random() * t.quiz.length)) % t.quiz.length]
-  }));
+  const semilla = randomSeed();
+  let items = topics
+    .map((t, i) => {
+      const question = pickQuestion(t, semilla + "|" + i);
+      return question ? { topic: t, question } : null;
+    })
+    .filter(Boolean);
   if (limit && items.length > limit) items = shuffle(items).slice(0, limit);
   return items;
+}
+
+function puedeExaminar(t) {
+  return (t.quiz && t.quiz.length > 0) || hasGenerator(t.id);
 }
 
 /** Cuántas preguntas tendría un simulacro con esos filtros. */
 export function countMockQuestions(areaNums, onlyIntroduced) {
   return getAllTopics().filter(
-    (t) => areaNums.includes(t.area) && (!onlyIntroduced || isIntroduced(t.id)) && t.quiz && t.quiz.length
+    (t) => areaNums.includes(t.area) && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
   ).length;
+}
+
+/**
+ * Serie de práctica de un solo tema. En los temas con generador sale un
+ * problema distinto cada vez; en los demás rota por todo el banco.
+ */
+export function buildDrill(topicId, n = 10) {
+  const t = topicsById()[topicId];
+  if (!t) return [];
+  const bank = t.quiz || [];
+  const out = [];
+
+  if (hasGenerator(topicId)) {
+    const cuantas = bank.length ? Math.max(1, Math.ceil(n * 0.6)) : n;
+    generateSet(topicId, cuantas).forEach((q) => out.push(q));
+  }
+  shuffle(bank).forEach((q) => { if (out.length < n) out.push(q); });
+  if (out.length < n && hasGenerator(topicId)) {
+    generateSet(topicId, n - out.length, randomSeed()).forEach((q) => out.push(q));
+  }
+  return shuffle(out).slice(0, n).map((question) => ({ topic: t, question }));
+}
+
+/** Cuántas preguntas distintas puede ofrecer un tema (∞ si tiene generador). */
+export function drillSize(topicId) {
+  const t = topicsById()[topicId];
+  if (!t) return 0;
+  if (hasGenerator(topicId)) return Infinity;
+  return (t.quiz || []).length;
+}
+
+export function topicHasGenerator(topicId) {
+  return hasGenerator(topicId);
 }
 
 function shuffle(arr) {
@@ -485,10 +753,112 @@ function shuffle(arr) {
   return a;
 }
 
+/* ---------------- Mezcla de dos progresos (sincronización) ----------------
+
+   Regla de oro: la mezcla NUNCA pierde avance. Ante la duda se conserva el
+   dato más avanzado de cada lado.
+   ------------------------------------------------------------ */
+
+function cardIsNewer(a, b) {
+  if (!b) return true;
+  if (!a) return false;
+  const la = a.lastReview || "";
+  const lb = b.lastReview || "";
+  if (la !== lb) return la > lb;
+  if ((a.repetitions || 0) !== (b.repetitions || 0)) return (a.repetitions || 0) > (b.repetitions || 0);
+  return (a.due || "") > (b.due || "");
+}
+
+function recomputeStreak(sessionLog) {
+  const days = Object.keys(sessionLog).sort();
+  if (!days.length) return { streak: 0, lastStudyDate: null };
+  const set = new Set(days);
+  const last = days[days.length - 1];
+  let streak = 1;
+  let cursor = fromISO(last);
+  for (;;) {
+    const prev = toISO(addDays(cursor, -1));
+    if (!set.has(prev)) break;
+    streak++;
+    cursor = fromISO(prev);
+  }
+  return { streak, lastStudyDate: last };
+}
+
+export function mergeStates(a, b) {
+  if (!a) return b ? Object.assign(defaultState(), b) : defaultState();
+  if (!b) return Object.assign(defaultState(), a);
+  const out = Object.assign(defaultState(), a);
+
+  // Tarjetas: unión, conservando la versión más avanzada de cada una.
+  out.cards = Object.assign({}, a.cards || {});
+  Object.keys(b.cards || {}).forEach((id) => {
+    if (cardIsNewer(b.cards[id], out.cards[id])) out.cards[id] = b.cards[id];
+  });
+
+  // Temas vistos: unión, con la fecha más antigua (fue cuando se estudió).
+  out.topicsIntroduced = Object.assign({}, a.topicsIntroduced || {});
+  Object.keys(b.topicsIntroduced || {}).forEach((id) => {
+    const prev = out.topicsIntroduced[id];
+    const next = b.topicsIntroduced[id];
+    out.topicsIntroduced[id] = !prev || next < prev ? next : prev;
+  });
+
+  // Quiz: se queda el lado con más intentos registrados.
+  out.quizStats = Object.assign({}, a.quizStats || {});
+  Object.keys(b.quizStats || {}).forEach((id) => {
+    const prev = out.quizStats[id];
+    const next = b.quizStats[id];
+    if (!prev || (next.seen || 0) > (prev.seen || 0)) out.quizStats[id] = next;
+  });
+
+  // Bitácora diaria: por día se toma el máximo de cada contador.
+  out.sessionLog = {};
+  const dias = new Set(Object.keys(a.sessionLog || {}).concat(Object.keys(b.sessionLog || {})));
+  dias.forEach((d) => {
+    const ea = (a.sessionLog || {})[d] || {};
+    const eb = (b.sessionLog || {})[d] || {};
+    out.sessionLog[d] = {
+      cardsReviewed: Math.max(ea.cardsReviewed || 0, eb.cardsReviewed || 0),
+      newTopics: Math.max(ea.newTopics || 0, eb.newTopics || 0),
+      quizAnswered: Math.max(ea.quizAnswered || 0, eb.quizAnswered || 0),
+      quizCorrect: Math.max(ea.quizCorrect || 0, eb.quizCorrect || 0)
+    };
+  });
+
+  const racha = recomputeStreak(out.sessionLog);
+  out.streak = racha.streak;
+  out.lastStudyDate = racha.lastStudyDate;
+
+  out.learningOrder = (a.learningOrder && a.learningOrder.length) ? a.learningOrder : (b.learningOrder || null);
+  out.dismissedWelcome = !!(a.dismissedWelcome || b.dismissedWelcome);
+  out.contentRevision = Math.max(a.contentRevision || 0, b.contentRevision || 0);
+  out.contentUpdate = a.contentUpdate || b.contentUpdate || null;
+  const ca = a.createdAt || "";
+  const cb = b.createdAt || "";
+  out.createdAt = ca && cb ? (ca < cb ? ca : cb) : (ca || cb || toISO(new Date()));
+  return out;
+}
+
+/** Copia del estado para mandar a sincronizar. */
+export function stateSnapshot() {
+  return JSON.parse(JSON.stringify(STATE));
+}
+
+/** Aplica un estado remoto mezclándolo con el local. Devuelve cuántas tarjetas cambiaron. */
+export function mergeIntoState(remote) {
+  const antes = Object.keys(STATE.cards).length;
+  const merged = mergeStates(STATE, remote);
+  STATE = merged;
+  applyContentUpdate();
+  saveState();
+  return Object.keys(STATE.cards).length - antes;
+}
+
 /* ---------------- Búsqueda ---------------- */
 
 function normalize(s) {
-  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
 export function searchTopics(query, limit = 40) {
@@ -513,3 +883,6 @@ export function searchTopics(query, limit = 40) {
   results.sort((a, b) => b.score - a.score || a.topic.id.localeCompare(b.topic.id));
   return results.slice(0, limit).map((r) => r.topic);
 }
+
+/* Al arrancar: incorporar contenido nuevo al progreso existente. */
+applyContentUpdate();

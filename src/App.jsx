@@ -1,15 +1,18 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Icon from "./ui/Icon.jsx";
 import { ToastProvider } from "./ui/kit.jsx";
-import { useEngine, useRoute, navigate } from "./lib/hooks.js";
+import { useEngine, useRoute, navigate, useAccounts, useSync } from "./lib/hooks.js";
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
-import { computeTodayPlan, overallStats, cardsForTopic } from "./lib/engine.js";
+import { computeTodayPlan, overallStats, cardsForTopic, buildDrill, subscribe } from "./lib/engine.js";
+import { getActiveUser } from "./lib/accounts.js";
+import { startAutoSync, getSyncStatus } from "./lib/sync.js";
 
 import Today from "./screens/Today.jsx";
 import Browse from "./screens/Browse.jsx";
 import Mock from "./screens/Mock.jsx";
 import Progress from "./screens/Progress.jsx";
 import Info from "./screens/Info.jsx";
+import Account from "./screens/Account.jsx";
 import { SessionRunner, MockRunner } from "./screens/Runner.jsx";
 
 const NAV = [
@@ -19,6 +22,10 @@ const NAV = [
   { id: "progreso", label: "Progreso", icon: "progreso" },
   { id: "info", label: "Guía", icon: "info" }
 ];
+
+/* Cada sesión que se abre recibe un número: sirve de `key` para que el
+   ejecutor se reinicie de cero cuando se encadena otra ronda de práctica. */
+let sesionSeq = 0;
 
 export default function App() {
   return (
@@ -30,6 +37,8 @@ export default function App() {
 
 function Shell() {
   const rev = useEngine();
+  useAccounts();
+  useSync();
   const route = useRoute();
   const [runner, setRunner] = useState(null);
   const [theme, setTheme] = useState(getStoredTheme);
@@ -38,6 +47,10 @@ function Shell() {
   const stats = useMemo(() => overallStats(), [rev]);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
+
+  // La sincronización se engancha una sola vez: baja al abrir y sube poco
+  // después de cada cambio. Si no hay espacio configurado, no hace nada.
+  useEffect(() => { startAutoSync(subscribe); }, []);
 
   // Al cambiar de pantalla, volvemos arriba (sin brincos bruscos).
   useEffect(() => {
@@ -54,32 +67,43 @@ function Shell() {
     plan.quizQuestions.forEach((qq) => steps.push({ type: "quiz", topic: qq.topic, question: qq.question }));
     if (!steps.length) return;
     steps.push({ type: "summary" });
-    setRunner({ kind: "study", title: "Sesión de hoy", steps });
+    setRunner({ seq: ++sesionSeq, kind: "study", title: "Sesión de hoy", steps });
   }, [plan]);
 
   const startTopicPractice = useCallback((topic) => {
-    const steps = topic.quiz.map((q) => ({ type: "quiz", topic, question: q }));
+    const steps = (topic.quiz || []).map((q) => ({ type: "quiz", topic, question: q }));
     if (!steps.length) return;
     steps.push({ type: "summary" });
-    setRunner({ kind: "practice", title: topic.tema, steps });
+    setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });
+  }, []);
+
+  /* Práctica infinita: en los temas con generador, los números cambian en
+     cada problema, así que se puede seguir practicando sin repetir. */
+  const startTopicDrill = useCallback((topic, n = 10) => {
+    const items = buildDrill(topic.id, n);
+    if (!items.length) return;
+    const steps = items.map((it) => ({ type: "quiz", topic: it.topic, question: it.question }));
+    steps.push({ type: "summary" });
+    setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps, drillTopicId: topic.id });
   }, []);
 
   const startTopicCards = useCallback((topic) => {
     const steps = cardsForTopic(topic.id).map((cid) => ({ type: "review", cardId: cid, topicId: topic.id }));
     if (!steps.length) return;
     steps.push({ type: "summary" });
-    setRunner({ kind: "practice", title: topic.tema, steps });
+    setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });
   }, []);
 
-  const startMock = useCallback((mock) => setRunner({ kind: "mock", ...mock }), []);
+  const startMock = useCallback((mock) => setRunner({ seq: ++sesionSeq, kind: "mock", ...mock }), []);
   const closeRunner = useCallback(() => setRunner(null), []);
 
   const screen = (() => {
     switch (route.name) {
-      case "repasar": return <Browse route={route} onPractice={startTopicPractice} onDrill={startTopicCards} />;
+      case "repasar": return <Browse route={route} onPractice={startTopicPractice} onCards={startTopicCards} onDrill={startTopicDrill} />;
       case "simulacro": return <Mock onStart={startMock} />;
       case "progreso": return <Progress plan={plan} stats={stats} />;
       case "info": return <Info />;
+      case "cuenta": return <Account />;
       default: return <Today plan={plan} stats={stats} onStart={startStudy} />;
     }
   })();
@@ -94,6 +118,7 @@ function Shell() {
         <header className="topbar">
           <BrandMark />
           <div className="topbar-spacer" />
+          <AccountButton active={route.name === "cuenta"} />
           <ThemeToggle theme={theme} onChange={setTheme} compact />
         </header>
 
@@ -104,8 +129,15 @@ function Shell() {
 
       <TabBar active={route.name} pending={pending} />
 
-      {runner && runner.kind === "mock" && <MockRunner mock={runner} onExit={closeRunner} />}
-      {runner && runner.kind !== "mock" && <SessionRunner session={runner} onExit={closeRunner} />}
+      {runner && runner.kind === "mock" && <MockRunner key={runner.seq} mock={runner} onExit={closeRunner} />}
+      {runner && runner.kind !== "mock" && (
+        <SessionRunner
+          key={runner.seq}
+          session={runner}
+          onExit={closeRunner}
+          onAgain={runner.drillTopicId ? () => startTopicDrill({ id: runner.drillTopicId, tema: runner.title }) : null}
+        />
+      )}
     </div>
   );
 }
@@ -120,6 +152,35 @@ function BrandMark() {
       </span>
     </div>
   );
+}
+
+/* Botón de cuenta en la barra superior (móvil y escritorio). */
+function AccountButton({ active }) {
+  const user = getActiveUser();
+  return (
+    <button
+      className={`account-btn${active ? " is-active" : ""}`}
+      onClick={() => navigate("cuenta")}
+      title={user ? `Cuenta: ${user.name}` : "Cuenta y sincronización"}
+      aria-label={user ? `Cuenta de ${user.name}` : "Cuenta y sincronización"}
+    >
+      {user ? (
+        <span className="avatar avatar-sm" style={{ "--c": user.color }}>
+          {String(user.name).trim().charAt(0).toUpperCase()}
+        </span>
+      ) : (
+        <Icon name="user" size={19} />
+      )}
+      <SyncDot />
+    </button>
+  );
+}
+
+/* Punto de estado de la sincronización: solo aparece si hay algo que decir. */
+function SyncDot() {
+  const status = getSyncStatus();
+  if (status.state === "off") return null;
+  return <span className={`sync-dot sync-dot-${status.state}`} aria-hidden="true" />;
 }
 
 function Rail({ active, pending, streak, theme, onTheme }) {
@@ -143,6 +204,14 @@ function Rail({ active, pending, streak, theme, onTheme }) {
       </nav>
 
       <div className="rail-foot">
+        <button
+          className={`rail-item${active === "cuenta" ? " is-active" : ""}`}
+          onClick={() => navigate("cuenta")}
+        >
+          <Icon name="user" size={19} />
+          Cuenta
+          <SyncDot />
+        </button>
         <div className="rail-streak">
           <Icon name="flame" size={20} />
           <div>

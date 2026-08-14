@@ -34,6 +34,9 @@ jobs:
       - name: Validar el temario (data/*.js)
         run: npm run validate
 
+      - name: Probar los generadores de reactivos
+        run: npm run test:generadores
+
       - name: Compilar la app
         run: npm run build
 

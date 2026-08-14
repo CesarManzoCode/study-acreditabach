@@ -69,7 +69,7 @@ function RunnerShell({ title, step, total, onExit, children, footer, exitConfirm
    Sesión guiada (repaso + temas nuevos + práctica)
    ============================================================ */
 
-export function SessionRunner({ session, onExit }) {
+export function SessionRunner({ session, onExit, onAgain }) {
   const [idx, setIdx] = useState(0);
   const [stats, setStats] = useState({ cardsReviewed: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
   const steps = session.steps;
@@ -114,7 +114,7 @@ export function SessionRunner({ session, onExit }) {
             onNext={advance}
           />
         )}
-        {isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} />}
+        {isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} />}
       </div>
     </RunnerShell>
   );
@@ -302,7 +302,7 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
 
 /* --- Paso: resumen --- */
 
-function SummaryStep({ stats, kind, onExit }) {
+function SummaryStep({ stats, kind, onExit, onAgain }) {
   const loggedRef = useRef(false);
   useEffect(() => {
     if (loggedRef.current) return;
@@ -336,7 +336,14 @@ function SummaryStep({ stats, kind, onExit }) {
         </div>
       </Card>
 
-      <Button variant="primary" size="lg" block onClick={onExit}>Listo</Button>
+      {onAgain ? (
+        <div className="chips">
+          <Button variant="primary" size="lg" icon="infinity" onClick={onAgain}>Otra ronda</Button>
+          <Button variant="solid" size="lg" onClick={onExit}>Listo</Button>
+        </div>
+      ) : (
+        <Button variant="primary" size="lg" block onClick={onExit}>Listo</Button>
+      )}
     </Stack>
   );
 }

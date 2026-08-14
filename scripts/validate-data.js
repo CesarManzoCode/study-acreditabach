@@ -72,5 +72,80 @@ for (const spec of EXPECTED) {
   }
 }
 
+/* ---------------- Paquetes de contenido adicional ----------------
+   data/extra/areaN.js declara AREAn_EXTRA = { "tema.id": {flashcards, quiz} }.
+   Se concatenan al final de los arreglos originales, así que aquí se revisa
+   que la forma sea correcta y que los ids existan en el catálogo base. */
+
+const EXTRA_SPECS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+  file: `extra/area${n}.js`,
+  varName: `AREA${n}_EXTRA`
+}));
+
+let extraFlashcards = 0;
+let extraQuiz = 0;
+let temasConExtra = 0;
+
+for (const spec of EXTRA_SPECS) {
+  const fp = path.join(__dirname, "..", "data", spec.file);
+  if (!fs.existsSync(fp)) continue;
+  const errors = [];
+  let pack;
+  try {
+    const code = fs.readFileSync(fp, "utf8");
+    const sandbox = {};
+    vm.createContext(sandbox);
+    vm.runInContext(code + `\n;this.__OUT__ = ${spec.varName};`, sandbox);
+    pack = sandbox.__OUT__;
+  } catch (e) {
+    console.log(`[${spec.file}] ERROR DE SINTAXIS: ${e.message}`);
+    totalErrors++;
+    continue;
+  }
+
+  if (!pack || typeof pack !== "object") {
+    console.log(`[${spec.file}] no exporta un objeto llamado ${spec.varName}`);
+    totalErrors++;
+    continue;
+  }
+
+  for (const id of Object.keys(pack)) {
+    const entry = pack[id];
+    const pre = `${id}`;
+    if (!allIds.has(id)) errors.push(`${pre}: el tema no existe en el catálogo base`);
+    temasConExtra++;
+    const fcs = entry.flashcards || [];
+    const qs = entry.quiz || [];
+    if (!Array.isArray(fcs) || !Array.isArray(qs)) { errors.push(`${pre}: flashcards y quiz deben ser arreglos`); continue; }
+    if (!fcs.length && !qs.length) errors.push(`${pre}: el paquete no agrega nada`);
+    fcs.forEach((fc, i) => {
+      if (!fc || !fc.front || !fc.back) errors.push(`${pre}: flashcard[${i}] incompleta`);
+    });
+    qs.forEach((q, i) => {
+      if (!q || !q.q) errors.push(`${pre}: quiz[${i}] sin pregunta`);
+      else if (!Array.isArray(q.options) || q.options.length !== 3) errors.push(`${pre}: quiz[${i}] debe tener exactamente 3 opciones`);
+      else if (new Set(q.options).size !== 3) errors.push(`${pre}: quiz[${i}] tiene opciones repetidas`);
+      if (!q || typeof q.correct !== "number" || q.correct < 0 || q.correct > 2) errors.push(`${pre}: quiz[${i}].correct inválido`);
+      if (!q || !q.explanation) errors.push(`${pre}: quiz[${i}] sin explanation`);
+      if (q && Object.prototype.hasOwnProperty.call(q, "back")) errors.push(`${pre}: quiz[${i}] tiene una propiedad "back" (parece una flashcard mal colocada)`);
+    });
+    extraFlashcards += fcs.length;
+    extraQuiz += qs.length;
+  }
+
+  if (errors.length) {
+    console.log(`\n[${spec.file}] ${errors.length} problema(s):`);
+    errors.slice(0, 40).forEach(e => console.log("  - " + e));
+    if (errors.length > 40) console.log(`  ... y ${errors.length - 40} más`);
+    totalErrors += errors.length;
+  } else {
+    const temas = Object.keys(pack).length;
+    const fc = Object.values(pack).reduce((s, e) => s + (e.flashcards || []).length, 0);
+    const qz = Object.values(pack).reduce((s, e) => s + (e.quiz || []).length, 0);
+    console.log(`[${spec.file}] OK — ${temas} temas · +${fc} tarjetas · +${qz} reactivos`);
+  }
+}
+
+console.log(`\nContenido adicional: ${temasConExtra} temas ampliados · +${extraFlashcards} tarjetas · +${extraQuiz} reactivos`);
 console.log(totalErrors === 0 ? "\nTODO OK" : `\nTOTAL DE PROBLEMAS: ${totalErrors}`);
 process.exit(totalErrors === 0 ? 0 : 1);
