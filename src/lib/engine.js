@@ -24,7 +24,7 @@ import { makeRng, hashSeed, randomSeed } from "./rng.js";
 /* Se incrementa cuando se agrega contenido nuevo al temario. Al detectar un
    número mayor que el guardado, el motor da de alta las tarjetas nuevas de
    los temas que ya estaban vistos (ver applyContentUpdate). */
-export const CONTENT_REVISION = 2;
+export const CONTENT_REVISION = 3;
 
 /* Fechas del plan (ajusta aquí si el plan cambia) */
 export const STUDY_START = new Date(2026, 7, 1);      // 1 de agosto de 2026
@@ -184,7 +184,14 @@ function extraPacks() {
     typeof AREA4_EXTRA !== "undefined" ? AREA4_EXTRA : null,
     typeof AREA5_EXTRA !== "undefined" ? AREA5_EXTRA : null,
     typeof AREA6_EXTRA !== "undefined" ? AREA6_EXTRA : null,
-    typeof AREA7_EXTRA !== "undefined" ? AREA7_EXTRA : null
+    typeof AREA7_EXTRA !== "undefined" ? AREA7_EXTRA : null,
+    typeof AREA1_EXTRA2 !== "undefined" ? AREA1_EXTRA2 : null,
+    typeof AREA2_EXTRA2 !== "undefined" ? AREA2_EXTRA2 : null,
+    typeof AREA3_EXTRA2 !== "undefined" ? AREA3_EXTRA2 : null,
+    typeof AREA4_EXTRA2 !== "undefined" ? AREA4_EXTRA2 : null,
+    typeof AREA5_EXTRA2 !== "undefined" ? AREA5_EXTRA2 : null,
+    typeof AREA6_EXTRA2 !== "undefined" ? AREA6_EXTRA2 : null,
+    typeof AREA7_EXTRA2 !== "undefined" ? AREA7_EXTRA2 : null
   ];
   const merged = {};
   packs.forEach((p) => {
@@ -518,6 +525,26 @@ function seedFor(topicId, salt) {
 }
 
 /** Un reactivo del tema. `salt` fija la variante (por día, por intento, aleatorio). */
+/**
+ * Devuelve el reactivo con las opciones revueltas y el índice de la correcta
+ * ya corregido. Sin esto, la respuesta correcta cae casi siempre en la misma
+ * posición y se aprende el patrón en vez del contenido. La semilla hace que
+ * el orden sea estable mientras se contesta esa pregunta.
+ */
+export function shuffleOptions(question, salt) {
+  if (!question || !Array.isArray(question.options) || question.options.length < 2) return question;
+  const seed = typeof salt === "number" ? salt >>> 0 : hashSeed(String(salt === undefined ? randomSeed() : salt));
+  const rng = makeRng(seed);
+  const idx = question.options.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  const correct = idx.indexOf(question.correct);
+  if (correct < 0) return question;
+  return Object.assign({}, question, { options: idx.map((i) => question.options[i]), correct });
+}
+
 export function pickQuestion(topic, salt) {
   if (!topic) return null;
   const bank = topic.quiz || [];
@@ -526,14 +553,17 @@ export function pickQuestion(topic, salt) {
   const rng = makeRng(seed);
   const puedeGenerar = hasGenerator(topic.id);
 
+  const mezclar = (q) => shuffleOptions(q, (seed ^ 0x9e3779b9) >>> 0);
+
   if (puedeGenerar && (bank.length === 0 || rng() < PROB_GENERADA)) {
     const q = generateQuestion(topic.id, seed);
-    if (q) return q;
+    if (q) return mezclar(q);
   }
   if (!bank.length) {
-    return puedeGenerar ? generateQuestion(topic.id, seed) : null;
+    const q = puedeGenerar ? generateQuestion(topic.id, seed) : null;
+    return q ? mezclar(q) : null;
   }
-  return bank[Math.floor(rng() * bank.length)];
+  return mezclar(bank[Math.floor(rng() * bank.length)]);
 }
 
 /** Semilla estable del día: la pregunta no cambia sola, pero sí al responderla. */
@@ -729,7 +759,9 @@ export function buildDrill(topicId, n = 10) {
   if (out.length < n && hasGenerator(topicId)) {
     generateSet(topicId, n - out.length, randomSeed()).forEach((q) => out.push(q));
   }
-  return shuffle(out).slice(0, n).map((question) => ({ topic: t, question }));
+  return shuffle(out)
+    .slice(0, n)
+    .map((question) => ({ topic: t, question: shuffleOptions(question, randomSeed()) }));
 }
 
 /** Cuántas preguntas distintas puede ofrecer un tema (∞ si tiene generador). */

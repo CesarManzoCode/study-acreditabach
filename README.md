@@ -109,12 +109,14 @@ siguientes siete días, y la pantalla de inicio avisa cuántas se agregaron.
 | `src/` | Código de la app (React 19 + JSX). Es lo único que se edita a mano. |
 | `src/lib/engine.js` | Motor: repetición espaciada (SM-2), plan diario, dominio, mezcla de progresos. |
 | `src/lib/generators/` | Generadores de problemas de matemáticas y ciencias. |
+| `src/lib/calc.js` · `src/ui/Calculator.jsx` | Calculadora científica integrada (motor de evaluación + panel). |
+| `src/lib/calcNeed.js` | Decide en qué reactivos aparece la calculadora. |
 | `src/lib/accounts.js` · `sync.js` | Cuentas locales y sincronización con el espacio remoto. |
 | `src/screens/` | Las pantallas: Hoy, Repasar, Simulacro, Progreso, Guía y Cuenta. |
 | `src/ui/` | Sistema de componentes (botones, tarjetas, anillos, modal, toasts, iconos). |
 | `src/styles.css` | Tokens de diseño y estilos. Tema oscuro y claro completos. |
 | `data/` | El temario base (177 temas) y el contenido de la guía oficial. |
-| `data/extra/` | Paquetes de tarjetas y reactivos adicionales, que se suman al temario base. |
+| `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales, que se suman al temario base. |
 | `server/` | Dos servidores de sincronización listos para usar (Node y Cloudflare). |
 | `fonts/` | Inter y Plus Jakarta Sans (subconjunto latino), servidas desde el repo. |
 | `assets/` · `index.html` | **Generados por el build.** No se editan a mano. |
@@ -130,7 +132,7 @@ corregir o ampliar el temario sin tocar nada del código de la app.
 npm install               # una sola vez
 npm run dev               # servidor local con recarga en http://localhost:5173
 npm run build             # compila a assets/ y regenera index.html
-npm run validate          # revisa que data/*.js y data/extra/*.js tengan la forma correcta
+npm run validate          # revisa que data/*.js, data/extra/*.js y data/extra2/*.js tengan la forma correcta
 npm run test:generadores  # genera miles de reactivos y verifica que todos sean válidos
 npm run check             # validate + generadores + build
 ```
@@ -168,7 +170,27 @@ Durante una sesión de estudio o un simulacro:
 | --- | --- |
 | `espacio` / `Enter` | Mostrar la respuesta · continuar |
 | `1` `2` `3` | Calificar la tarjeta (otra vez / costó / bien) o elegir opción |
+| `C` | Abrir la calculadora científica (en los reactivos que la ofrecen) |
 | `Esc` | Salir de la sesión |
+
+Con la calculadora abierta, el teclado escribe en ella: los números dejan de
+contestar el reactivo y `Esc` la cierra sin salir de la sesión.
+
+### Calculadora científica
+
+Los reactivos numéricos de matemáticas, física y química muestran el botón
+**Abrir calculadora**. El panel es arrastrable en escritorio y aparece como hoja
+inferior en el celular; recuerda entre sesiones el modo `DEG`/`RAD`, la memoria y
+si el teclado científico está desplegado.
+
+Admite jerarquía de operaciones, paréntesis, potencias y raíces, factorial,
+porcentaje, notación científica (`×10ˣ`), funciones trigonométricas e inversas en
+grados o radianes, logaritmos (`ln`, `log`), memoria (`M+`, `M−`, `MR`, `MC`),
+historial y reutilización del último resultado con `ANS`.
+
+El motor (`src/lib/calc.js`) es un tokenizador con analizador descendente
+recursivo: **no usa `eval()` ni `Function()`**, así que una expresión mal escrita
+devuelve un error controlado en vez de ejecutar código.
 
 ---
 

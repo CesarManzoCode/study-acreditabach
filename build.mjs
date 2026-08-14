@@ -43,7 +43,16 @@ const DATA_SCRIPTS = [
   "data/extra/area4.js",
   "data/extra/area5.js",
   "data/extra/area6.js",
-  "data/extra/area7.js"
+  "data/extra/area7.js",
+  /* Segundo paquete de ampliación (data/extra2): triplica el banco de
+     reactivos y de tarjetas de cada tema de las 7 áreas. */
+  "data/extra2/area1.js",
+  "data/extra2/area2.js",
+  "data/extra2/area3.js",
+  "data/extra2/area4.js",
+  "data/extra2/area5.js",
+  "data/extra2/area6.js",
+  "data/extra2/area7.js"
 ];
 
 function cleanOutdir() {
