@@ -1,9 +1,21 @@
 import { useSyncExternalStore, useEffect, useState, useCallback, useRef } from "react";
 import { subscribe, getRevision } from "./engine.js";
+import { subscribeAccounts, accountsRevision } from "./accounts.js";
+import { subscribeSync, syncRevision } from "./sync.js";
 
 /** Se vuelve a renderizar cada vez que el motor guarda progreso. */
 export function useEngine() {
   return useSyncExternalStore(subscribe, getRevision, getRevision);
+}
+
+/** Se vuelve a renderizar cuando cambian las cuentas o la cuenta activa. */
+export function useAccounts() {
+  return useSyncExternalStore(subscribeAccounts, accountsRevision, accountsRevision);
+}
+
+/** Se vuelve a renderizar cuando cambia el estado de la sincronización. */
+export function useSync() {
+  return useSyncExternalStore(subscribeSync, syncRevision, syncRevision);
 }
 
 /* ---------------- Router de hash ---------------- */

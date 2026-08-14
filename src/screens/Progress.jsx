@@ -5,7 +5,7 @@ import { navigate, useEngine } from "../lib/hooks.js";
 import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 import {
   areaNumbers, areaStats, weakestTopics, activityCalendar, upcomingLoad,
-  resetProgress, exportProgress, importProgress, fmtDateShort, toISO, todayDate
+  resetProgress, exportProgress, importProgress, fmtDateShort, toISO, todayDate, contentStats
 } from "../lib/engine.js";
 
 export default function Progress({ plan, stats }) {
@@ -143,12 +143,17 @@ export default function Progress({ plan, stats }) {
         </Card>
       </Reveal>
 
-      <Reveal delay={300}>
+      <Reveal delay={280}>
+        <ContentCard />
+      </Reveal>
+
+      <Reveal delay={320}>
         <Card className="danger-zone">
           <h3>Tus datos</h3>
           <p className="muted">
-            Todo se guarda en este navegador (localStorage). Si borras los datos del sitio o cambias de dispositivo,
-            el avance no viaja contigo: descarga un respaldo de vez en cuando.
+            Todo se guarda en este navegador (localStorage). Para que el avance te siga en otros dispositivos,
+            conecta una cuenta en <button className="link-btn" onClick={() => navigate("cuenta")}>Cuenta y sincronización</button>.
+            Un respaldo descargado de vez en cuando tampoco sobra.
           </p>
           <div className="chips" style={{ marginTop: 14 }}>
             <Button variant="solid" icon="download" onClick={download}>Descargar respaldo</Button>
@@ -187,6 +192,27 @@ export default function Progress({ plan, stats }) {
         }
       />
     </div>
+  );
+}
+
+/* ---------------- Contenido disponible ---------------- */
+
+function ContentCard() {
+  const c = useMemo(() => contentStats(), []);
+  return (
+    <Card>
+      <h3>Contenido del temario</h3>
+      <p className="muted" style={{ marginTop: 0 }}>
+        Los temas marcados con <strong>problemas aleatorios</strong> generan un ejercicio distinto cada vez:
+        cambian los números y los datos, así que nunca se acaba la práctica.
+      </p>
+      <div className="stats" style={{ marginTop: 14 }}>
+        <Stat value={c.topics} label="temas" />
+        <Stat value={c.flashcards} label="tarjetas" tone="brand" />
+        <Stat value={c.quiz} label="preguntas fijas" />
+        <Stat value={c.conGenerador} label="temas con problemas aleatorios" tone="success" />
+      </div>
+    </Card>
   );
 }
 

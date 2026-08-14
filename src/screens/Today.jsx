@@ -4,7 +4,7 @@ import { Button, Card, Ring, Bar, Badge, Stat, Reveal } from "../ui/kit.jsx";
 import { navigate, useCountUp } from "../lib/hooks.js";
 import {
   STATE, saveState, fmtDateLong, fmtDateShort, daysBetween, todayDate,
-  STUDY_START, EXAM_DATE, weakestTopics, upcomingLoad
+  STUDY_START, EXAM_DATE, weakestTopics, upcomingLoad, dismissContentUpdate
 } from "../lib/engine.js";
 import { areaStyle } from "../lib/areas.js";
 
@@ -85,6 +85,12 @@ export default function Today({ plan, stats, onStart }) {
       {showWelcome && (
         <Reveal delay={60}>
           <Welcome />
+        </Reveal>
+      )}
+
+      {STATE.contentUpdate && (
+        <Reveal delay={60}>
+          <ContentUpdateNote update={STATE.contentUpdate} />
         </Reveal>
       )}
 
@@ -238,6 +244,30 @@ function PhaseNote({ plan }) {
       <Icon name={icon} size={15} strokeWidth={2} />
       {text}
     </div>
+  );
+}
+
+/* Aviso de que el temario creció: explica por qué bajó el porcentaje de dominio. */
+function ContentUpdateNote({ update }) {
+  return (
+    <Card className="update-note">
+      <span className="update-icon"><Icon name="sparkles" size={20} /></span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <h3 style={{ margin: "0 0 4px" }}>El temario creció</h3>
+        <p className="muted" style={{ margin: 0 }}>
+          Se agregaron <strong>{update.newCards} tarjetas nuevas</strong> a temas que ya habías visto, repartidas
+          entre los próximos {update.dias || 7} días. Tu porcentaje de dominio bajó a propósito: vuelve a subir
+          conforme repases el material nuevo. Nada de lo que ya llevabas se borró.
+        </p>
+      </div>
+      <button
+        className="btn btn-ghost btn-icon"
+        aria-label="Entendido"
+        onClick={() => dismissContentUpdate()}
+      >
+        <Icon name="x" size={17} />
+      </button>
+    </Card>
   );
 }
 

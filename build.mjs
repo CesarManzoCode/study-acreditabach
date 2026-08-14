@@ -34,7 +34,16 @@ const DATA_SCRIPTS = [
   "data/area5.js",
   "data/area6_es.js",
   "data/area6_en.js",
-  "data/area7.js"
+  "data/area7.js",
+  /* Paquetes de contenido adicional: más tarjetas y más reactivos por tema.
+     Se cargan después de los catálogos base y el motor los concatena. */
+  "data/extra/area1.js",
+  "data/extra/area2.js",
+  "data/extra/area3.js",
+  "data/extra/area4.js",
+  "data/extra/area5.js",
+  "data/extra/area6.js",
+  "data/extra/area7.js"
 ];
 
 function cleanOutdir() {

@@ -6,13 +6,14 @@ import { navigate, useEngine } from "../lib/hooks.js";
 import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 import {
   areaNumbers, areaStats, topicsOfArea, topicsById, isIntroduced, topicMastery,
-  introduceTopic, quizStatsFor, searchTopics, getCard, cardsForTopic, fromISO, fmtDateShort, todayDate
+  introduceTopic, quizStatsFor, searchTopics, peekCard, cardsForTopic, fromISO, fmtDateShort,
+  todayDate, topicHasGenerator
 } from "../lib/engine.js";
 
-export default function Browse({ route, onPractice, onDrill }) {
+export default function Browse({ route, onPractice, onCards, onDrill }) {
   const [kind, value] = route.params;
   if (kind === "a" && value) return <AreaScreen areaNum={Number(value)} />;
-  if (kind === "t" && value) return <TopicScreen topicId={value} onPractice={onPractice} onDrill={onDrill} />;
+  if (kind === "t" && value) return <TopicScreen topicId={value} onPractice={onPractice} onCards={onCards} onDrill={onDrill} />;
   return <AreaList />;
 }
 
@@ -188,7 +189,10 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
   const introduced = isIntroduced(topic.id);
   const mastery = introduced ? topicMastery(topic.id) : 0;
   const qs = quizStatsFor(topic.id);
-  const dues = introduced ? cardsForTopic(topic.id).map((cid) => getCard(cid).due).filter(Boolean).sort() : [];
+  const infinito = topicHasGenerator(topic.id);
+  const dues = introduced
+    ? cardsForTopic(topic.id).map((cid) => (peekCard(cid) || {}).due).filter(Boolean).sort()
+    : [];
   const nextReview = dues.length ? fromISO(dues[0]) : null;
 
   return (
@@ -201,9 +205,12 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
         <Card>
           <div className="detail-head">
             <div style={{ flex: 1, minWidth: 0 }}>
-              <Badge tone="area">
-                {v.short}{topic.lang ? ` · ${topic.lang === "en" ? "Inglés" : "Español"}` : ""}
-              </Badge>
+              <div className="badge-row">
+                <Badge tone="area">
+                  {v.short}{topic.lang ? ` · ${topic.lang === "en" ? "Inglés" : "Español"}` : ""}
+                </Badge>
+                {infinito && <Badge tone="brand" icon="shuffle">problemas aleatorios</Badge>}
+              </div>
               <h2 style={{ fontSize: "1.35rem", margin: "10px 0 3px" }}>{topic.tema}</h2>
               <p className="faint" style={{ margin: 0 }}>{topic.subarea}</p>
             </div>
@@ -294,10 +301,21 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
 
           <Reveal delay={180}>
             <div className="chips">
-              <Button variant="primary" icon="target" onClick={() => onPractice(topic)}>
-                Practicar preguntas
-              </Button>
-              <Button variant="solid" icon="cards" onClick={() => onDrill(topic)}>
+              {infinito ? (
+                <Button variant="primary" icon="infinity" onClick={() => onDrill(topic, 10)}>
+                  Práctica infinita
+                </Button>
+              ) : (
+                <Button variant="primary" icon="target" onClick={() => onPractice(topic)}>
+                  Practicar preguntas
+                </Button>
+              )}
+              {infinito && (
+                <Button variant="solid" icon="target" onClick={() => onPractice(topic)}>
+                  Banco fijo ({topic.quiz.length})
+                </Button>
+              )}
+              <Button variant="solid" icon="cards" onClick={() => onCards(topic)}>
                 Repasar tarjetas
               </Button>
             </div>
