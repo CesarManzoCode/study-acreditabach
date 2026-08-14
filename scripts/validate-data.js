@@ -1,8 +1,11 @@
 // Validación de los archivos data/areaX.js: sintaxis, conteo de temas, forma del esquema.
 // Uso: node scripts/validate-data.js
-const fs = require("fs");
-const path = require("path");
-const vm = require("vm");
+import fs from "node:fs";
+import path from "node:path";
+import vm from "node:vm";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const EXPECTED = [
   { file: "area1.js", varName: "AREA1_TOPICS", count: 30, area: 1 },
