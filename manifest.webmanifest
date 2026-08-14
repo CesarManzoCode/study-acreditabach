@@ -1,0 +1,16 @@
+{
+  "name": "ACREDITA-BACH · Plan de estudio",
+  "short_name": "ACREDITA-BACH",
+  "description": "Plan de estudio diario para el examen ACREDITA-BACH (Ceneval): repetición espaciada, práctica activa y simulacros.",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#090c14",
+  "theme_color": "#090c14",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "study-acreditabach",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Plan de estudio diario para el examen ACREDITA-BACH (Ceneval) — repetición espaciada, práctica activa y simulacros.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch --serve",
+    "validate": "node scripts/validate-data.js",
+    "check": "npm run validate && npm run build"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
