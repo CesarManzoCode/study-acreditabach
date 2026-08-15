@@ -32,6 +32,16 @@ export default function Today({ plan, stats, onStart }) {
       count: plan.reviewCards.length
     },
     {
+      key: "lesson",
+      icon: "info",
+      color: "var(--brand-3, var(--brand))",
+      title: "Lecciones de ampliación",
+      desc: plan.blockLessons.length
+        ? plan.blockLessons.map((b) => b.topic.tema).slice(0, 2).join(" · ") + (plan.blockLessons.length > 2 ? " …" : "")
+        : "Explicación del material que aún no se te ha enseñado",
+      count: plan.blockLessons.length
+    },
+    {
       key: "learn",
       icon: "cards",
       color: "var(--brand-2, var(--brand))",

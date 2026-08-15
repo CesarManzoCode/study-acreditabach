@@ -52,6 +52,7 @@ const AREA5_EXTRA2 = {
   },
 
   "5.1.4": {
+    leccion: "Tres datos que acompañan a las conversiones de temperatura. Las fórmulas completas son **°F = °C × 9/5 + 32**, **°C = (°F − 32) × 5/9** y **K = °C + 273.15**; nota que el kelvin no lleva el símbolo de grado. El **cero absoluto** es 0 K, equivalente a −273.15 °C: la temperatura mínima teórica, en la que el movimiento térmico de las partículas es mínimo, y que no puede alcanzarse. Y un dato útil para verificar tus conversiones: las escalas Celsius y Fahrenheit **coinciden en −40°**, es decir, −40 °C = −40 °F.",
     flashcards: [
       { front: "Fórmulas de conversión entre escalas termométricas", back: "°F = °C × 9/5 + 32 · °C = (°F − 32) × 5/9 · K = °C + 273.15. El kelvin no lleva el símbolo de grado." },
       { front: "¿Qué es el cero absoluto?", back: "0 K, equivalente a −273.15 °C: la temperatura mínima teórica, donde el movimiento térmico de las partículas es mínimo. No puede alcanzarse." },
@@ -97,6 +98,7 @@ const AREA5_EXTRA2 = {
   },
 
   "5.2.2": {
+    leccion: "Tres puntos sobre el calor. La fórmula del **calor sensible** es **Q = m·c·ΔT**, masa por calor específico por cambio de temperatura; si ΔT resulta negativo, significa que el cuerpo cedió calor en vez de absorberlo. El **calor específico del agua** es 4,186 J/(kg·°C), o 1 cal/(g·°C), muy alto comparado con el de otras sustancias: por eso el agua modera el clima de las costas y sirve como refrigerante. Y el **equilibrio térmico** es el estado al que llegan dos cuerpos en contacto cuando alcanzan la misma temperatura; en ese intercambio, el calor cedido por el más caliente es igual al absorbido por el más frío.",
     flashcards: [
       { front: "Fórmula del calor sensible", back: "Q = m·c·ΔT: masa por calor específico por cambio de temperatura. Si ΔT es negativo, el cuerpo cede calor." },
       { front: "¿Cuál es el calor específico del agua y por qué importa?", back: "4,186 J/(kg·°C) o 1 cal/(g·°C), muy alto comparado con otras sustancias. Por eso el agua modera el clima costero y sirve como refrigerante." },
@@ -112,6 +114,7 @@ const AREA5_EXTRA2 = {
   },
 
   "5.2.3": {
+    leccion: "Tres precisiones sobre los tipos de energía. El **uranio no es renovable**: se agota igual que el carbón, el petróleo y el gas; **renovable** es la fuente que se repone a escala humana, es decir solar, eólica, hidráulica, geotérmica y biomasa. La energía que se libera en la **respiración celular** es **química**, la almacenada en los enlaces de las moléculas, la misma que se libera en la combustión y en las pilas. Y la **eficiencia energética** de un dispositivo es la proporción de energía útil obtenida respecto de la suministrada: nunca llega al 100 %, porque siempre hay pérdidas, casi siempre en forma de calor.",
     flashcards: [
       { front: "¿El uranio es una fuente de energía renovable?", back: "No: se agota, igual que el carbón, el petróleo y el gas. **Renovable** es la que se repone a escala humana: solar, eólica, hidráulica, geotérmica y biomasa." },
       { front: "¿Qué tipo de energía se libera en la respiración celular?", back: "Química: la almacenada en los enlaces de las moléculas. También se libera en la combustión y en las pilas." },
@@ -247,6 +250,7 @@ const AREA5_EXTRA2 = {
   },
 
   "5.3.7": {
+    leccion: "Tres consecuencias del desequilibrio ecológico que conviene distinguir. Una **especie invasora** es la que se introduce fuera de su área natural, se establece y desplaza a las nativas al no tener depredadores locales: es una de las principales causas de pérdida de biodiversidad. El **efecto invernadero** es un fenómeno **natural** que mantiene habitable la Tierra, mientras que el **calentamiento global** es su intensificación por el aumento de gases de origen humano; el examen suele probar precisamente esa diferencia. Y la **acidificación de los océanos** es el descenso del pH marino por la absorción del CO₂ atmosférico, que dificulta la formación de conchas y esqueletos de carbonato de calcio en corales y moluscos.",
     flashcards: [
       { front: "¿Qué es una especie invasora y por qué es un problema?", back: "Una especie introducida fuera de su área natural que se establece y desplaza a las nativas al carecer de depredadores locales. Es una de las principales causas de pérdida de biodiversidad." },
       { front: "¿Qué diferencia hay entre el efecto invernadero y el calentamiento global?", back: "El **efecto invernadero** es un fenómeno natural que mantiene habitable la Tierra; el **calentamiento global** es su intensificación por el aumento de gases de origen humano." },
@@ -292,6 +296,7 @@ const AREA5_EXTRA2 = {
   },
 
   "5.4.3": {
+    leccion: "Tres puntos sobre reacciones nucleares y radiactividad. La **fisión** parte un núcleo pesado (uranio, plutonio) en núcleos menores, mientras que la **fusión** une núcleos ligeros (hidrógeno) para formar uno mayor; la fusión libera más energía por unidad de masa y es la del Sol. La **vida media** de un isótopo radiactivo es el tiempo que tarda en desintegrarse la mitad de los núcleos de una muestra, y es constante e independiente de la cantidad inicial. Las **radiaciones** se ordenan por su poder de penetración: **alfa** son núcleos de helio y los detiene una hoja de papel; **beta** son electrones y los detiene una lámina de aluminio; **gamma** son ondas electromagnéticas de altísima energía y requieren plomo o concreto.",
     flashcards: [
       { front: "¿Qué diferencia hay entre fisión y fusión nuclear?", back: "La **fisión** parte un núcleo pesado (uranio, plutonio) en núcleos menores; la **fusión** une núcleos ligeros (hidrógeno) para formar uno mayor. La fusión libera más energía por unidad de masa." },
       { front: "¿Qué es la vida media de un isótopo radiactivo?", back: "El tiempo que tarda en desintegrarse la mitad de los núcleos de una muestra. Es constante e independiente de la cantidad inicial." },
@@ -472,6 +477,7 @@ const AREA5_EXTRA2 = {
   },
 
   "5.7.5": {
+    leccion: "Tres procesos evolutivos que se preguntan por su nombre. La **especiación** es el proceso por el que una población se divide y, tras acumular diferencias, sus miembros dejan de poder reproducirse entre sí; la **alopátrica** es la que ocurre por aislamiento geográfico. Las **estructuras homólogas** comparten origen embrionario aunque tengan distinta función (brazo humano y ala de murciélago), mientras que las **análogas** comparten función pero no origen (ala de insecto y ala de ave). Y la **convergencia evolutiva** es que especies no emparentadas desarrollen rasgos semejantes al enfrentar presiones ambientales parecidas, como la forma hidrodinámica del tiburón y del delfín.",
     flashcards: [
       { front: "¿Qué es la especiación?", back: "El proceso por el que una población se divide y, tras acumular diferencias, sus miembros dejan de poder reproducirse entre sí. La **alopátrica** ocurre por aislamiento geográfico." },
       { front: "¿Qué diferencia hay entre estructuras homólogas y análogas?", back: "Las **homólogas** tienen el mismo origen embrionario aunque distinta función (brazo humano y ala de murciélago); las **análogas** tienen la misma función pero distinto origen (ala de insecto y de ave)." },

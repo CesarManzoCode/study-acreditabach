@@ -28,9 +28,15 @@ const allIds = new Set();
 const porTema = new Map();
 
 function registrar(id, origen, entry) {
-  const acc = porTema.get(id) || { flashcards: [], quiz: [] };
+  const acc = porTema.get(id) || { flashcards: [], quiz: [], bloques: [] };
   (entry.flashcards || []).forEach((fc, i) => acc.flashcards.push({ origen, i, fc }));
   (entry.quiz || []).forEach((q, i) => acc.quiz.push({ origen, i, q }));
+  acc.bloques.push({
+    origen,
+    base: !!entry.note,
+    leccion: entry.note || entry.leccion || "",
+    flashcards: entry.flashcards || []
+  });
   porTema.set(id, acc);
 }
 
@@ -210,6 +216,67 @@ for (const [id, acc] of porTema) {
       reactivos.set(k, { origen, i });
     }
   });
+}
+
+/* ---------------- Nada se pregunta antes de explicarse ----------------
+
+   La app solo explica dos cosas: la `note` del tema y la `leccion` de cada
+   paquete de ampliación. Todo lo demás son preguntas. Cuando un paquete agregó
+   tarjetas que DEFINEN un concepto ("¿Qué es el costo de oportunidad?") y ese
+   concepto no aparecía en ningún texto explicativo del tema, el resultado era
+   una sesión que preguntaba material que nunca se había enseñado.
+
+   Esta revisión exige que el concepto definido por una tarjeta esté nombrado en
+   la lección de su propio bloque o en la nota del tema. Si agregas un paquete
+   con conceptos nuevos, dale su `leccion`. */
+
+const ARTICULOS = new Set(["el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "al", "y", "o", "e", "u", "en", "que", "se", "su", "sus", "lo"]);
+const sinAcentos = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+/** El concepto que una tarjeta define, si es que define alguno. */
+function conceptoDefinido(front) {
+  const m = String(front).match(/^¿(?:qu[ée] (?:es|son|significan?)|en qu[ée] consiste|c[óo]mo se llama)\s+(.+?)\?$/i);
+  return m ? m[1].replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, "").trim() : null;
+}
+
+/** ¿El texto explicativo nombra ese concepto? (tolera plurales y variantes) */
+function loExplica(concepto, texto) {
+  const t = sinAcentos(texto);
+  const claves = sinAcentos(concepto).split(/[\s,]+/).filter((w) => w.length > 3 && !ARTICULOS.has(w));
+  if (!claves.length) return true;
+  return claves.some((w) => t.includes(w.replace(/(es|s)$/, "")));
+}
+
+const sinExplicar = [];
+for (const [id, acc] of porTema) {
+  const notaBase = acc.bloques
+    .filter((b) => b.base)
+    .map((b) => b.leccion + " " + b.flashcards.map((f) => f.front + " " + f.back).join(" "))
+    .join(" ");
+
+  acc.bloques.filter((b) => !b.base).forEach((b) => {
+    const explica = notaBase + " " + b.leccion;
+    b.flashcards.forEach((fc) => {
+      const concepto = conceptoDefinido(fc.front);
+      if (!concepto) return;
+      if (!loExplica(concepto, explica)) {
+        sinExplicar.push(
+          `${id}: ${b.origen} define «${concepto}» pero ni la nota del tema ni la ` +
+          `leccion de ese paquete lo mencionan. Agrégalo a la leccion del paquete: ` +
+          `la app pregunta lo que no explicó.`
+        );
+      }
+    });
+  });
+}
+
+if (sinExplicar.length) {
+  console.log(`\n[nada se pregunta antes de explicarse] ${sinExplicar.length} problema(s):`);
+  sinExplicar.slice(0, 60).forEach((e) => console.log("  - " + e));
+  if (sinExplicar.length > 60) console.log(`  ... y ${sinExplicar.length - 60} más`);
+  totalErrors += sinExplicar.length;
+} else {
+  console.log("[nada se pregunta antes de explicarse] OK — cada concepto que se pregunta está en un texto que la app muestra");
 }
 
 if (cruzados.length) {

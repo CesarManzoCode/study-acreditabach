@@ -19,6 +19,7 @@ const AREA5_EXTRA = {
   },
 
   "5.1.2": {
+    leccion: "Además de los tres estados y de los cambios más conocidos, el examen pregunta por otros tres puntos. La **sublimación** es el paso directo de sólido a gas, sin pasar por líquido (el hielo seco, la naftalina), y la **deposición** o sublimación inversa es el camino contrario, de gas a sólido (la escarcha). La **evaporación** ocurre solo en la superficie del líquido y a cualquier temperatura, mientras que la **ebullición** ocurre en todo el volumen y a una temperatura específica, el punto de ebullición. Y el **plasma** es el cuarto estado de agregación: un gas ionizado con partículas cargadas libres, presente en el Sol, en los rayos y en los tubos de neón; es el estado más abundante del universo visible.",
     flashcards: [
       { front: "¿Qué es la sublimación y qué es la deposición?", back: "La **sublimación** es el paso directo de sólido a gas (hielo seco, naftalina); la **deposición** o sublimación inversa es el paso de gas a sólido (la escarcha)." },
       { front: "¿Qué diferencia hay entre evaporación y ebullición?", back: "La **evaporación** ocurre solo en la superficie y a cualquier temperatura; la **ebullición** ocurre en todo el líquido y a una temperatura específica (el punto de ebullición)." },
@@ -59,6 +60,7 @@ const AREA5_EXTRA = {
   },
 
   "5.1.5": {
+    leccion: "Dos ideas que acompañan a la ley de Coulomb. La primera es su parecido con la **ley de gravitación universal**: ambas disminuyen con el cuadrado de la distancia, y la diferencia está en que la gravedad siempre atrae mientras que la fuerza eléctrica atrae o repele según los signos de las cargas. La segunda es el **campo eléctrico**: la región alrededor de una carga donde otra carga sentiría fuerza. Se mide como fuerza por unidad de carga, **E = F/q**, y sus unidades son N/C.",
     flashcards: [
       { front: "¿En qué se parecen la ley de Coulomb y la ley de gravitación universal?", back: "Las dos son inversamente proporcionales al cuadrado de la distancia. La diferencia es que la gravedad siempre atrae, mientras la fuerza eléctrica atrae o repele según los signos." },
       { front: "¿Qué es un campo eléctrico?", back: "La región alrededor de una carga donde otra carga siente fuerza. Se mide como fuerza por unidad de carga (E = F/q) en N/C." }
@@ -72,6 +74,7 @@ const AREA5_EXTRA = {
   },
 
   "5.2.1": {
+    leccion: "Dos fenómenos de la luz que el examen plantea con situaciones cotidianas. La **refracción** es el cambio de dirección de la luz al pasar de un medio a otro con distinta densidad óptica; es lo que hace que un lápiz metido en un vaso con agua se vea «quebrado». Y el color de los objetos se explica por **reflexión selectiva**: una hoja se ve verde porque absorbe la mayor parte de las longitudes de onda y refleja la verde, que es la que llega a nuestros ojos.",
     flashcards: [
       { front: "¿Qué es la refracción de la luz?", back: "El cambio de dirección al pasar de un medio a otro con distinta densidad óptica. Explica que un lápiz dentro de un vaso con agua se vea 'quebrado'." },
       { front: "¿Por qué vemos de color verde una hoja?", back: "Porque absorbe la mayor parte de las longitudes de onda y **refleja** la verde, que es la que llega a nuestros ojos." }
@@ -267,6 +270,7 @@ const AREA5_EXTRA = {
   },
 
   "5.5.1": {
+    leccion: "Dos aplicaciones de los tipos de choque. Las **zonas de deformación** de un automóvil salvan vidas justamente porque se aplastan: al deformarse alargan el tiempo que dura el impacto, y como la fuerza depende de qué tan rápido cambia el momento, un choque más largo significa menos fuerza sobre los ocupantes; es un choque inelástico diseñado a propósito. El **coeficiente de restitución** es un número entre 0 y 1 que indica cuánta velocidad relativa se conserva después del choque: 1 corresponde al choque perfectamente elástico y 0 al perfectamente inelástico.",
     flashcards: [
       { front: "¿Por qué las zonas de deformación de un auto salvan vidas?", back: "Porque al deformarse alargan el tiempo del choque, lo que reduce la fuerza sobre los ocupantes. Es un choque inelástico diseñado a propósito." },
       { front: "¿Qué es el coeficiente de restitución?", back: "Un número entre 0 y 1 que indica cuánta velocidad relativa se conserva tras el choque: 1 es perfectamente elástico y 0, perfectamente inelástico." }
@@ -293,6 +297,7 @@ const AREA5_EXTRA = {
   },
 
   "5.5.3": {
+    leccion: "Dos ideas para ordenar el espectro electromagnético. Todas las ondas electromagnéticas **viajan a 3×10⁸ m/s en el vacío y no necesitan un medio material** para propagarse; lo único que las distingue es su frecuencia y su longitud de onda. A partir de cierta energía se vuelven **radiación ionizante**: la que tiene energía suficiente para arrancar electrones a los átomos —ultravioleta de alta energía, rayos X y rayos gamma— y que por eso puede dañar el ADN. Las de menor energía, como las microondas y las ondas de radio del wifi, no son ionizantes.",
     flashcards: [
       { front: "¿Qué tienen en común todas las ondas electromagnéticas?", back: "Que viajan a 3×10⁸ m/s en el vacío y no necesitan un medio material. Lo que las distingue es su frecuencia y su longitud de onda." },
       { front: "¿Qué es la radiación ionizante?", back: "La de energía suficiente para arrancar electrones a los átomos: ultravioleta de alta energía, rayos X y rayos gamma. Puede dañar el ADN." }
@@ -345,6 +350,7 @@ const AREA5_EXTRA = {
   },
 
   "5.6.3": {
+    leccion: "Dos precisiones sobre la obtención de energía en la célula. La **fermentación** es la vía anaerobia que sigue a la glucólisis cuando falta oxígeno: produce muy poco ATP y genera ácido láctico en los músculos o etanol y CO₂ en las levaduras. Y de las etapas de la respiración celular, la que produce **más ATP** es la **cadena transportadora de electrones**, en la membrana interna de la mitocondria: ahí se genera la gran mayoría de los 36 a 38 ATP totales, no en la glucólisis ni en el ciclo de Krebs.",
     flashcards: [
       { front: "¿Qué es la fermentación?", back: "La vía anaerobia que sigue a la glucólisis cuando falta oxígeno. Produce muy poco ATP y genera ácido láctico (en músculos) o etanol y CO₂ (en levaduras)." },
       { front: "¿Cuál etapa de la respiración celular produce más ATP?", back: "La cadena transportadora de electrones, en la membrana interna de la mitocondria: ahí se genera la gran mayoría de los 36-38 ATP totales." }
@@ -358,6 +364,7 @@ const AREA5_EXTRA = {
   },
 
   "5.7.1": {
+    leccion: "Detrás de la reproducción sexual y la asexual hay dos tipos de división celular que el examen pregunta por su nombre. La **mitosis** produce dos células idénticas a la original y sirve para el crecimiento y la reparación de tejidos; la **meiosis** produce cuatro células con la mitad de los cromosomas —los gametos— y es la que genera variabilidad genética. Conviene también tener la lista de **formas de reproducción asexual**: bipartición (bacterias), gemación (levaduras, hidras), esporulación (hongos, helechos), fragmentación (estrellas de mar) y reproducción vegetativa (esquejes, tubérculos).",
     flashcards: [
       { front: "¿Qué es la mitosis y qué es la meiosis?", back: "La **mitosis** produce dos células idénticas a la original (crecimiento y reparación); la **meiosis** produce cuatro células con la mitad de cromosomas (gametos) y genera variabilidad." },
       { front: "¿Qué formas de reproducción asexual existen?", back: "Bipartición (bacterias), gemación (levaduras, hidras), esporulación (hongos, helechos), fragmentación (estrellas de mar) y reproducción vegetativa (esquejes, tubérculos)." }
@@ -410,6 +417,7 @@ const AREA5_EXTRA = {
   },
 
   "5.7.5": {
+    leccion: "Dos consecuencias de la evolución que se preguntan con ejemplos concretos. Las **estructuras homólogas** tienen el mismo origen y distinta función —el brazo humano y el ala de murciélago comparten los mismos huesos— e indican **ancestro común**; las **análogas** tienen distinto origen y la misma función —el ala de un ave y la de un insecto— e indican **convergencia**. La **radiación adaptativa** es la diversificación rápida de una especie ancestral en muchas especies que ocupan nichos distintos, como los pinzones de Darwin en las Galápagos.",
     flashcards: [
       { front: "¿Qué son las estructuras homólogas y las análogas?", back: "Las **homólogas** tienen el mismo origen y distinta función (brazo humano y ala de murciélago): indican ancestro común. Las **análogas** tienen distinto origen y misma función (ala de ave e insecto): indican convergencia." },
       { front: "¿Qué es la radiación adaptativa?", back: "La diversificación rápida de una especie ancestral en muchas especies que ocupan nichos distintos, como los pinzones de Darwin en las Galápagos." }

@@ -134,6 +134,10 @@ Cada tema se arma con **bloques**: el `base` (lo que explica su nota), hasta dos
 de ampliación y, en algunos temas, el de formato. Un bloque se comporta como una unidad:
 primero sus tarjetas, después sus reactivos.
 
+- **Cada bloque se explica antes de tocarse.** La app solo explica en dos lugares: la
+  `note` del tema y la `leccion` de cada paquete de ampliación. Mientras esa lección no
+  se haya leído, el bloque entero está cerrado: ni sus tarjetas ni sus reactivos entran
+  a la sesión. En el motor son `lessonsSeen`, `isLessonSeen()` y el paso `lesson`.
 - **Tarjeta nueva → se enseña, no se examina.** La primera vez que una tarjeta aparece
   se muestra con la respuesta a la vista y un solo botón, *Entendido*. Recién al día
   siguiente entra al repaso espaciado y se te pide recordarla. En el motor esto es
@@ -144,17 +148,36 @@ primero sus tarjetas, después sus reactivos.
   nota, que se puede leer en cualquier momento desde **Repasar**.
 - **Al conocer un tema nuevo solo entra su bloque base.** Las ampliaciones llegan
   escalonadas cada dos días, cada una con su propio paso de aprendizaje.
-- **Tope de material nuevo por día:** 12 tarjetas. Lo que sobra espera su turno.
+- **Topes por día:** 12 tarjetas nuevas y 4 lecciones de ampliación. Lo que sobra espera
+  su turno; las tarjetas cuya lección aún no llega no se preguntan mientras tanto.
 
 Hay un bloque que no se cierra nunca: el de `data/formato/`. No trae tarjetas porque no
 agrega conceptos —replantea con el formato del examen lo que la nota base ya explica—,
 así que no hay nada que desbloquear.
 
 El progreso guardado desde antes de esta versión no se re-enseña: cualquier tarjeta con
-repasos o con fecha de último repaso ya cuenta como aprendida (`isLearned()`).
+repasos o con fecha de último repaso ya cuenta como aprendida (`isLearned()`). Las
+lecciones de bloque sí son nuevas para todos, así que la primera vez se presentan antes
+de volver a preguntar ese material; ninguna tarjeta pierde su intervalo ni sus repasos.
 
-`npm run test:motor` comprueba justamente esto: que ninguna pregunta salga de un bloque
-cerrado, que «aprender» y «repasar» no se mezclen y que el simulacro completo no se vacíe.
+### Por qué hizo falta la lección de bloque
+
+Enseñar una tarjeta —mostrarla un momento con su reverso— no es lo mismo que explicar el
+tema. Los paquetes de ampliación le colgaron a 64 temas conceptos que su nota nunca
+mencionaba: la lección de 7.1.1 habla de necesidades vitales y el paquete preguntaba por
+el **costo de oportunidad**, la pirámide de Maslow o los bienes libres. La tarjeta pasaba
+por el paso de aprendizaje y aun así el material llegaba sin explicación. Los 81 bloques
+en esa situación ya tienen su `leccion`.
+
+`npm run validate` incluye la revisión que lo impide hacia adelante: si una tarjeta de un
+paquete **define** un concepto (`¿Qué es…?`, `¿En qué consiste…?`) que no aparece ni en la
+nota del tema ni en la `leccion` de su paquete, la validación falla con el nombre del
+concepto. Si agregas un paquete con conceptos nuevos, dale su `leccion`.
+
+`npm run test:motor` comprueba lo demás: que un bloque con lección siga cerrado aunque sus
+tarjetas ya se hayan visto, que la sesión nunca ponga una tarjeta antes de la lección de su
+bloque, que ninguna pregunta salga de un bloque cerrado, que «aprender» y «repasar» no se
+mezclen y que el simulacro completo no se vacíe.
 
 ---
 
@@ -189,7 +212,7 @@ avisa cuántas se agregaron.
 | `src/ui/` | Sistema de componentes (botones, tarjetas, anillos, modal, toasts, iconos). |
 | `src/styles.css` | Tokens de diseño y estilos. Tema oscuro y claro completos. |
 | `data/` | El temario base (177 temas) y el contenido de la guía oficial. |
-| `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales. Cada uno forma un **bloque** dentro del tema. |
+| `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales. Cada uno forma un **bloque** dentro del tema, con su `leccion` cuando agrega conceptos que la nota no explica. |
 | `data/formato/` | Reactivos de relación de elementos y de ordenamiento, para los temas donde la guía marca esos formatos. |
 | `scripts/` | El validador del temario y las pruebas de los generadores y del motor. |
 | `server/cloudflare-worker.js` | El servidor de cuentas, listo para pegar en Cloudflare Workers. |

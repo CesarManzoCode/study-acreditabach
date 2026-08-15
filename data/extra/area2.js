@@ -47,6 +47,7 @@ const AREA2_EXTRA = {
   },
 
   "2.1.4": {
+    leccion: "Tres amenazas más que el examen suele plantear con casos concretos. El **ciberacoso** o **ciberbullying** es el hostigamiento repetido a una persona por medios digitales: insultos, amenazas, difusión de rumores o de imágenes sin su consentimiento; lo que lo define es la repetición y la intención de dañar. La **ingeniería social** consiste en manipular a la persona para que entregue información confidencial por su propia voluntad, en vez de atacar al sistema: el phishing es su forma más común, y por eso el eslabón débil casi siempre es humano, no técnico. El **sexting** es el envío de contenido íntimo por medios digitales; el riesgo no está en el envío en sí, sino en que ese material se difunda sin consentimiento y se use para extorsionar, lo que se conoce como **sextorsión**.",
     flashcards: [
       { front: "¿Qué es el ciberacoso o ciberbullying?", back: "Hostigamiento repetido a una persona mediante medios digitales: insultos, amenazas, difusión de rumores o imágenes sin consentimiento." },
       { front: "¿Qué es la ingeniería social?", back: "Manipular a una persona para que entregue información confidencial por su propia voluntad, en vez de atacar al sistema. El phishing es su forma más común." },
@@ -176,6 +177,7 @@ const AREA2_EXTRA = {
   },
 
   "2.3.5": {
+    leccion: "Dos tecnologías que el examen distingue de la inteligencia artificial en general. El **aprendizaje automático** o **machine learning** es la rama de la IA en la que un sistema mejora su desempeño a partir de datos y ejemplos, sin que un programador le escriba cada regla: así funcionan los filtros de spam o las recomendaciones que se afinan con el uso. La **realidad aumentada** superpone elementos digitales sobre la vista del mundo real —probarse unos lentes con la cámara del celular, ver indicaciones sobre la calle—, a diferencia de la realidad virtual, que sustituye por completo el entorno por uno simulado.",
     flashcards: [
       { front: "¿Qué es el aprendizaje automático (machine learning)?", back: "Rama de la inteligencia artificial en la que un sistema mejora su desempeño a partir de datos y ejemplos, sin que se le programe cada regla." },
       { front: "¿Qué es la realidad aumentada?", back: "Tecnología que superpone elementos digitales sobre la vista del mundo real, por ejemplo probarse lentes con la cámara del celular." }
@@ -189,6 +191,7 @@ const AREA2_EXTRA = {
   },
 
   "2.4.1": {
+    leccion: "Dos piezas que aparecen en casi todo algoritmo con repeticiones. Un **contador** es una variable que aumenta de uno en uno para llevar la cuenta de cuántas veces ocurrió algo (cuántos alumnos aprobaron). Un **acumulador** va sumando valores distintos para obtener un total (la suma de todas las calificaciones). Se distinguen por lo que suman: el contador siempre suma 1, el acumulador suma el dato en turno. Conviene recordar también que un **operador relacional** (=, ≠, <, >, ≤, ≥) siempre devuelve un valor **booleano**, verdadero o falso, y por eso se usa dentro de las condiciones de las estructuras selectivas y repetitivas.",
     flashcards: [
       { front: "¿Qué es un contador y qué es un acumulador?", back: "El **contador** aumenta de uno en uno para llevar la cuenta de repeticiones; el **acumulador** va sumando valores distintos para obtener un total." },
       { front: "¿Qué devuelve siempre un operador relacional?", back: "Un valor booleano: verdadero o falso. Por eso se usa dentro de las condiciones de las estructuras selectivas y repetitivas." }
@@ -202,6 +205,7 @@ const AREA2_EXTRA = {
   },
 
   "2.4.2": {
+    leccion: "El **pseudocódigo** es la forma de escribir un algoritmo en lenguaje natural estructurado —con palabras como Inicio, Leer, Si… Entonces, Mientras, Fin— antes de traducirlo a un lenguaje de programación real. Sirve para concentrarse en la lógica sin pelearse con la sintaxis, y es lo que el examen suele presentar cuando pide ordenar o completar los pasos de un algoritmo. Recuerda por qué importa el orden: el resultado depende de la secuencia, no se puede calcular con datos que aún no se han leído ni mostrar un resultado que todavía no se ha calculado.",
     flashcards: [
       { front: "¿Qué es el pseudocódigo?", back: "Una forma de escribir un algoritmo en lenguaje natural estructurado (Inicio, Leer, Si, Mientras, Fin) antes de programarlo en un lenguaje real." },
       { front: "¿Por qué importa el orden de los pasos en un algoritmo?", back: "Porque el resultado depende de la secuencia: no se puede calcular con datos que aún no se han leído ni mostrar un resultado que no se ha calculado." }
@@ -214,6 +218,7 @@ const AREA2_EXTRA = {
   },
 
   "2.4.3": {
+    leccion: "Además de ser definido, preciso y finito, un algoritmo se construye con dos operaciones mentales que el examen nombra por su nombre. La **descomposición** consiste en partir un problema grande en subproblemas más pequeños y manejables, que se resuelven por separado y luego se integran (dividir el desarrollo de una app en pantallas, base de datos y pruebas). La **abstracción** consiste en quedarse con lo esencial del problema e ignorar los detalles que no afectan la solución, de modo que la misma solución sirva para casos parecidos. Ambas forman parte de lo que se llama **pensamiento computacional**.",
     flashcards: [
       { front: "¿Qué es la abstracción en el pensamiento computacional?", back: "Quedarse con lo esencial del problema e ignorar los detalles que no afectan la solución, para poder generalizarla a casos parecidos." },
       { front: "¿Qué es la descomposición de un problema?", back: "Partir un problema grande en subproblemas más pequeños y manejables, que se resuelven por separado y luego se integran." }

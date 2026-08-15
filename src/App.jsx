@@ -5,7 +5,7 @@ import { useEngine, useRoute, navigate, useAccounts, useCloud } from "./lib/hook
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
 import {
   computeTodayPlan, overallStats, cardsForTopic, cardsOfBlock, buildDrill,
-  shuffleOptions, subscribe, isLearned, availableQuiz
+  shuffleOptions, subscribe, isLearned, availableQuiz, blockOfCard, isLessonSeen
 } from "./lib/engine.js";
 import { getActiveUser } from "./lib/accounts.js";
 import { startCloud, getCloudStatus } from "./lib/cloud.js";
@@ -63,11 +63,32 @@ function Shell() {
   /* Orden de la sesión: primero se repasa lo ya sabido, luego se ENSEÑA el
      material nuevo (frente y reverso a la vista, sin calificar), después los
      temas nuevos y al final la práctica. La regla que sostiene todo esto es que
-     nada se pregunta antes de haberse mostrado. */
+     nada se pregunta antes de haberse explicado.
+
+     Cuando una tarjeta pertenece a un bloque de ampliación cuya lección todavía
+     no se ha leído, la lección se inserta JUSTO ANTES de esa tarjeta. Así el
+     material nuevo llega explicado y no como una pregunta suelta. */
   const startStudy = useCallback(() => {
     const steps = [];
-    plan.reviewCards.forEach((rc) => steps.push({ type: "review", cardId: rc.cardId, topicId: rc.topicId }));
-    plan.learnCards.forEach((lc) => steps.push({ type: "learn", cardId: lc.cardId, topicId: lc.topicId }));
+    const leccionDe = {};
+    plan.blockLessons.forEach((bl) => { leccionDe[bl.topicId + "::" + bl.bloque] = bl; });
+    const dadas = new Set();
+
+    const conLeccion = (cardId, empuja) => {
+      const bc = blockOfCard(cardId);
+      const key = bc ? bc.topic.id + "::" + bc.block.nombre : null;
+      const bl = key && !dadas.has(key) ? leccionDe[key] : null;
+      if (bl) {
+        dadas.add(key);
+        steps.push({ type: "lesson", topic: bl.topic, bloque: bl.bloque, leccion: bl.leccion });
+      }
+      empuja();
+    };
+
+    plan.reviewCards.forEach((rc) => conLeccion(rc.cardId, () =>
+      steps.push({ type: "review", cardId: rc.cardId, topicId: rc.topicId })));
+    plan.learnCards.forEach((lc) => conLeccion(lc.cardId, () =>
+      steps.push({ type: "learn", cardId: lc.cardId, topicId: lc.topicId })));
     plan.newTopics.forEach((t) => {
       steps.push({ type: "intro", topic: t });
       // Solo el bloque base: es lo que acaba de explicar la nota. Las
@@ -103,13 +124,19 @@ function Shell() {
   }, []);
 
   /* Repasar las tarjetas de un tema a mano: las que nunca se han visto se
-     presentan (paso "aprender") en vez de pedir que las adivines. */
+     presentan (paso "aprender") en vez de pedir que las adivines, y las de un
+     bloque cuya lección no se ha leído la reciben primero. */
   const startTopicCards = useCallback((topic) => {
-    const steps = cardsForTopic(topic.id).map((cid) => ({
-      type: isLearned(cid) ? "review" : "learn",
-      cardId: cid,
-      topicId: topic.id
-    }));
+    const steps = [];
+    const dadas = new Set();
+    cardsForTopic(topic.id).forEach((cid) => {
+      const bc = blockOfCard(cid);
+      if (bc && !isLessonSeen(topic.id, bc.block, bc.index) && !dadas.has(bc.block.nombre)) {
+        dadas.add(bc.block.nombre);
+        steps.push({ type: "lesson", topic, bloque: bc.block.nombre, leccion: bc.block.leccion });
+      }
+      steps.push({ type: isLearned(cid) ? "review" : "learn", cardId: cid, topicId: topic.id });
+    });
     if (!steps.length) return;
     steps.push({ type: "summary" });
     setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });

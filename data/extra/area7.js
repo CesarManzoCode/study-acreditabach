@@ -3,6 +3,7 @@
 
 const AREA7_EXTRA = {
   "7.1.1": {
+    leccion: "Dos formas de ordenar y medir las necesidades. La **pirámide de Maslow** las jerarquiza en cinco niveles —fisiológicas, de seguridad, de afiliación, de reconocimiento y de autorrealización—, con la idea de que las de la base deben cubrirse antes de atender las superiores. Y la **pobreza multidimensional** del Coneval mide la carencia no solo por ingreso, sino por seis carencias sociales: educación, salud, seguridad social, vivienda, servicios básicos y alimentación. Ambas amplían la distinción entre necesidades vitales y no vitales con la que empieza el tema.",
     flashcards: [
       { front: "¿Qué es la pirámide de Maslow?", back: "Una jerarquía de necesidades: fisiológicas, de seguridad, de afiliación, de reconocimiento y de autorrealización. Las de la base deben cubrirse antes de atender las superiores." },
       { front: "¿Qué es la pobreza multidimensional según el Coneval?", back: "La que se mide no solo por ingreso, sino por carencias sociales: educación, salud, seguridad social, vivienda, servicios básicos y alimentación." }
@@ -42,6 +43,7 @@ const AREA7_EXTRA = {
   },
 
   "7.1.4": {
+    leccion: "Dos herramientas para medir y ubicar la desigualdad. El **coeficiente de Gini** es un indicador que va de 0 (igualdad perfecta) a 1 (una sola persona concentra todo el ingreso); México ronda el 0.45, así que un valor cercano a 1 indica mayor desigualdad. Y conviene distinguir dos momentos del reparto: la **distribución primaria** es la que resulta directamente del mercado —salarios, rentas, ganancias— y la **secundaria** es la que realiza el Estado después, mediante impuestos y transferencias.",
     flashcards: [
       { front: "¿Qué es el coeficiente de Gini?", back: "Un indicador de desigualdad en la distribución del ingreso: 0 sería igualdad perfecta y 1, que una sola persona concentra todo. México ronda 0.45." },
       { front: "¿Qué diferencia hay entre distribución primaria y secundaria del ingreso?", back: "La **primaria** ocurre en el mercado (salarios, rentas, ganancias); la **secundaria** la realiza el Estado mediante impuestos y transferencias." }
@@ -107,6 +109,7 @@ const AREA7_EXTRA = {
   },
 
   "7.1.9": {
+    leccion: "Dos conceptos para medir y explicar el daño ambiental de la producción. La **huella ecológica** es la superficie de territorio productivo necesaria para generar los recursos que consume una población y absorber sus desechos; comparar huellas permite contrastar países y estilos de vida, y cuando la suma supera la capacidad del planeta se habla de sobregiro ecológico. La **obsolescencia programada** es el diseño deliberado de productos con vida útil corta para forzar su reemplazo, y su efecto directo es multiplicar los residuos y el consumo de materias primas.",
     flashcards: [
       { front: "¿Qué es la huella ecológica?", back: "La superficie de territorio necesaria para producir los recursos que consume una población y absorber sus desechos. Si supera la capacidad del planeta, hay sobregiro ecológico." },
       { front: "¿Qué es la obsolescencia programada?", back: "El diseño deliberado de productos con vida útil corta para forzar su reemplazo. Multiplica los residuos y el consumo de materias primas." }
@@ -172,6 +175,7 @@ const AREA7_EXTRA = {
   },
 
   "7.2.5": {
+    leccion: "Dos mecanismos por los que los poderes fácticos actúan. El **cabildeo** o **lobbying** es la influencia organizada de grupos de interés sobre legisladores y funcionarios para orientar leyes y políticas a su favor: es legal y está regulado, pero puede degenerar. La **captura del Estado** es esa degeneración: ocurre cuando intereses privados logran que las decisiones públicas se diseñen sistemáticamente en su beneficio, por encima del interés general.",
     flashcards: [
       { front: "¿Qué es el cabildeo o lobbying?", back: "La influencia organizada de grupos de interés sobre legisladores y funcionarios para orientar leyes y políticas a su favor. Es legal, pero puede derivar en captura del Estado." },
       { front: "¿Qué es la captura del Estado?", back: "Cuando intereses privados logran que las decisiones públicas se diseñen sistemáticamente en su beneficio, por encima del interés general." }
@@ -198,6 +202,7 @@ const AREA7_EXTRA = {
   },
 
   "7.2.7": {
+    leccion: "Tres organismos internacionales más, con funciones que el examen suele contrastar. La **OMS** (Organización Mundial de la Salud) coordina la respuesta internacional en salud pública: emite recomendaciones, declara emergencias sanitarias y apoya a los sistemas de salud. **Unicef** es el Fondo de las Naciones Unidas para la Infancia y promueve los derechos, la salud y la educación de niñas, niños y adolescentes. Y el par financiero: el **FMI** vigila la estabilidad financiera y presta a países con crisis de balanza de pagos, mientras que el **Banco Mundial** financia proyectos de desarrollo a largo plazo.",
     flashcards: [
       { front: "¿Qué hace la OMS?", back: "La Organización Mundial de la Salud coordina la respuesta internacional en salud pública: emite recomendaciones, declara emergencias sanitarias y apoya sistemas de salud." },
       { front: "¿Qué es Unicef?", back: "El Fondo de las Naciones Unidas para la Infancia: promueve los derechos, la salud y la educación de niñas, niños y adolescentes en todo el mundo." },
@@ -264,6 +269,7 @@ const AREA7_EXTRA = {
   },
 
   "7.3.4": {
+    leccion: "Dos elementos más sobre la segregación. El **Conapred** es el Consejo Nacional para Prevenir la Discriminación: recibe quejas por discriminación cometida por particulares o por servidores públicos y promueve políticas de igualdad; es la institución a la que apuntan los reactivos que describen un caso de trato discriminatorio. Y la **segregación residencial** es la separación física de grupos sociales en el espacio urbano —fraccionamientos cerrados frente a colonias sin servicios—, que reproduce la desigualdad de oportunidades por la vía del territorio.",
     flashcards: [
       { front: "¿Qué es el Conapred?", back: "El Consejo Nacional para Prevenir la Discriminación: recibe quejas por discriminación cometida por particulares o servidores públicos y promueve políticas de igualdad." },
       { front: "¿Qué es la segregación residencial?", back: "La separación física de grupos sociales en el espacio urbano: fraccionamientos cerrados frente a colonias sin servicios. Reproduce la desigualdad de oportunidades." }
@@ -303,6 +309,7 @@ const AREA7_EXTRA = {
   },
 
   "7.3.7": {
+    leccion: "Dos temas que acompañan a los tipos de migración. Las **remesas** son el dinero que los migrantes envían a sus familias; en México son una de las principales fuentes de divisas y sostienen el consumo de millones de hogares. Y hay que distinguir tres condiciones jurídicas distintas: el **migrante** se mueve por decisión propia (trabajo, estudio); el **refugiado** huye de persecución o violencia y cuenta con protección internacional; el **solicitante de asilo** es quien pidió esa protección y espera resolución.",
     flashcards: [
       { front: "¿Qué son las remesas y qué peso tienen en México?", back: "El dinero que los migrantes envían a sus familias. En México son una de las principales fuentes de divisas y sostienen el consumo de millones de hogares." },
       { front: "¿Qué diferencia hay entre migrante, refugiado y solicitante de asilo?", back: "El **migrante** se mueve por decisión propia (trabajo, estudio); el **refugiado** huye de persecución o violencia y tiene protección internacional; el **solicitante de asilo** espera resolución de esa petición." }

@@ -21,6 +21,7 @@ const AREA4_EXTRA2 = {
   },
 
   "4.1.2": {
+    leccion: "Dos herramientas del pensamiento crítico. El **sesgo de confirmación** es la tendencia a buscar y aceptar solo la información que confirma lo que ya se cree y a descartar la que la contradice: es su obstáculo más común. Una **falacia** es un razonamiento que parece válido pero no lo es; las tres que más aparecen en el examen son *ad hominem* (atacar a la persona en lugar de su argumento), *ad populum* (apelar a que todos lo creen) y *ad verecundiam* (apelar a una autoridad que no es pertinente en ese tema). Los **criterios básicos** para evaluar un argumento son claridad, exactitud, pertinencia, profundidad, amplitud y lógica.",
     flashcards: [
       { front: "¿Qué es un sesgo de confirmación?", back: "La tendencia a buscar y aceptar solo la información que confirma lo que ya se cree, y a descartar la que la contradice. Es el obstáculo más común del pensamiento crítico." },
       { front: "¿Qué es una falacia?", back: "Un razonamiento que parece válido pero no lo es. *Ad hominem* (atacar a la persona), *ad populum* (apelar a que todos lo creen), *ad verecundiam* (apelar a una autoridad no pertinente)." },
@@ -186,6 +187,7 @@ const AREA4_EXTRA2 = {
   },
 
   "4.4.2": {
+    leccion: "Los **recursos retóricos** típicos del discurso político son el «nosotros» inclusivo, la construcción de un adversario, la repetición de consignas, las metáforas bélicas o familiares y la apelación emocional. Lo que distingue a la **demagogia** de un discurso legítimo es que halaga y promete lo que la audiencia quiere oír, apelando a las emociones y prescindiendo de la verdad y de la factibilidad. Para analizarlos, Aristóteles distinguió tres formas de persuasión: **ethos** (la credibilidad de quien habla), **pathos** (las emociones del público) y **logos** (las razones y la evidencia del argumento).",
     flashcards: [
       { front: "¿Qué recursos retóricos son típicos del discurso político?", back: "El uso del «nosotros» inclusivo, la construcción de un adversario, la repetición de consignas, las metáforas bélicas o familiares y la apelación emocional." },
       { front: "¿Qué distingue a la demagogia de un discurso político legítimo?", back: "Que halaga y promete lo que la audiencia quiere oír, apelando a las emociones y prescindiendo de la verdad y de la factibilidad de lo prometido." },
@@ -231,6 +233,7 @@ const AREA4_EXTRA2 = {
   },
 
   "4.5.3": {
+    leccion: "Tres nociones para analizar la desigualdad de género. El **género** varía histórica y socialmente porque son roles, expectativas y atributos que cada cultura asigna, a diferencia del **sexo**, que alude a características biológicas. La **división sexual del trabajo** es la asignación cultural de tareas según el género: el trabajo doméstico y de cuidados no remunerado recae mayoritariamente en las mujeres, lo que limita su participación económica y política. Las **acciones afirmativas** son medidas temporales que compensan una desigualdad histórica, como la paridad en las candidaturas o las cuotas de representación.",
     flashcards: [
       { front: "¿Por qué se dice que el género varía histórica y socialmente?", back: "Porque son roles, expectativas y atributos que cada cultura asigna, a diferencia del **sexo**, que alude a características biológicas." },
       { front: "¿Qué es la división sexual del trabajo?", back: "La asignación cultural de tareas según el género: el trabajo doméstico y de cuidados no remunerado recae mayoritariamente en las mujeres, lo que limita su participación económica y política." },
@@ -261,6 +264,7 @@ const AREA4_EXTRA2 = {
   },
 
   "4.5.5": {
+    leccion: "Tres ideas del debate sobre nuestro trato a otros seres vivos. **Peter Singer** compara el **especismo** con el racismo y el sexismo: considerar irrelevante el sufrimiento de otros animales solo por no ser humanos es discriminar por pertenencia a una especie. El **bienestar animal** se resume en las **cinco libertades**: estar libre de hambre y sed, de incomodidad, de dolor y enfermedad, de miedo y angustia, y tener libertad para expresar un comportamiento natural. Y la **ética ambiental ecocéntrica** amplía el círculo todavía más: atribuye valor moral al ecosistema en su conjunto —especies, suelos, aguas—, no solo a los individuos capaces de sentir.",
     flashcards: [
       { front: "¿Con qué otra forma de discriminación compara Peter Singer al especismo?", back: "Con el racismo y el sexismo: considerar irrelevante el sufrimiento de otros animales solo por no ser humanos es discriminar por pertenencia a una especie." },
       { front: "¿Qué es el bienestar animal según las cinco libertades?", back: "Libre de hambre y sed, de incomodidad, de dolor y enfermedad, de miedo y angustia, y libertad para expresar un comportamiento natural." },
@@ -291,6 +295,7 @@ const AREA4_EXTRA2 = {
   },
 
   "4.6.2": {
+    leccion: "Tres nociones de la hermenéutica contemporánea. La interpretación **avanza en espiral** porque para entender el todo hay que comprender las partes y viceversa: cada detalle nuevo obliga a revisar el sentido global, y eso es el círculo hermenéutico. Los **prejuicios**, en la hermenéutica de Gadamer, son los supuestos previos desde los que se interpreta; no son un defecto que se pueda eliminar, sino la condición misma de la comprensión, aunque deben someterse a revisión. Y la **fusión de horizontes** es el encuentro entre el horizonte de sentido del texto y el del intérprete, del que surge una comprensión nueva que no coincide del todo con ninguno de los dos.",
     flashcards: [
       { front: "¿Por qué se dice que la interpretación avanza en espiral?", back: "Porque para entender el todo hay que comprender las partes y viceversa: cada detalle nuevo obliga a revisar el sentido global. Eso es el círculo hermenéutico." },
       { front: "¿Qué son los prejuicios en la hermenéutica de Gadamer?", back: "Los supuestos previos desde los que se interpreta. No son un defecto que se pueda eliminar: son la condición misma de la comprensión, aunque deben someterse a revisión." },
