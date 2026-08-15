@@ -1329,7 +1329,7 @@ select.input {
 }
 
 /* ============================================================
-   Cuentas y sincronización
+   Cuenta
    ============================================================ */
 
 .avatar {
@@ -1364,44 +1364,72 @@ select.input {
   letter-spacing: -0.01em;
 }
 
-.account-list { display: flex; flex-direction: column; gap: 8px; }
-.account-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px;
+.avatar-guest {
+  color: var(--text-2);
+  background: var(--surface-3);
+  box-shadow: none;
+}
+
+/* Pestañas de "Iniciar sesión" / "Crear cuenta" */
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 18px;
   background: var(--surface-2);
-  border: 1px solid transparent;
   border-radius: var(--r-md);
-  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.account-row.is-active {
-  border-color: color-mix(in oklab, var(--brand) 40%, transparent);
-  background: var(--brand-soft);
-}
-.account-pick {
-  display: flex;
-  flex: 1;
-  gap: 12px;
-  align-items: center;
-  min-width: 0;
-  padding: 6px;
-  color: inherit;
-  text-align: left;
+.auth-tab {
+  padding: 9px 12px;
+  font: inherit;
+  font-weight: 620;
+  color: var(--text-2);
   background: none;
   border: 0;
   border-radius: var(--r-sm);
   cursor: pointer;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.account-row-body { display: flex; flex-direction: column; min-width: 0; }
-.account-row-name {
-  overflow: hidden;
-  font-weight: 620;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.auth-tab:hover { color: var(--text); }
+.auth-tab.is-active {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
 }
-.account-row-meta { font-size: 0.78rem; color: var(--text-3); }
-.account-row-actions { display: flex; gap: 2px; }
+
+/* Contraseña con botón para mostrarla */
+.input-pass { position: relative; display: flex; align-items: center; }
+.input-pass .input { flex: 1; padding-right: 44px; }
+.input-pass .btn-icon {
+  position: absolute;
+  right: 4px;
+  color: var(--text-3);
+}
+.input-pass .btn-icon:hover { color: var(--text); }
+
+.pass-form {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.link-btn {
+  padding: 0;
+  margin-top: 4px;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--brand);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
 
 .sync-chip {
   display: inline-flex;
@@ -1446,17 +1474,10 @@ select.input {
   border: 2px solid var(--bg);
   border-radius: var(--r-pill);
 }
-.sync-dot-ok { background: var(--success); }
-.sync-dot-sync { background: var(--brand); }
+.sync-dot-listo { background: var(--success); }
+.sync-dot-guardando { background: var(--brand); }
 .sync-dot-error { background: var(--danger); }
 .rail-item .sync-dot { position: static; margin-left: auto; border-color: transparent; }
-
-.code-box { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
-.code-input {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.82rem;
-  letter-spacing: 0.01em;
-}
 
 /* ============================================================
    Escritorio

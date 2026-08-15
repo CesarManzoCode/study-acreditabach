@@ -168,14 +168,30 @@ export function Segmented({ options, value, onChange, ariaLabel }) {
 
 export function Modal({ open, title, description, children, onClose, actions, tone }) {
   const ref = useRef(null);
+
+  /* `onClose` suele llegar como función nueva en cada render. Se guarda en una
+     ref para que el efecto de abajo dependa SOLO de `open`: si dependiera de
+     `onClose`, se volvería a ejecutar con cada tecla y devolvería el foco al
+     primer botón, sacándote del campo de texto letra por letra. */
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+
   useScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
+    const onKey = (e) => { if (e.key === "Escape") closeRef.current?.(); };
     window.addEventListener("keydown", onKey);
-    const t = setTimeout(() => ref.current?.querySelector("button")?.focus(), 60);
+    // Al abrir, el foco va al primer campo de texto; si no hay, al primer botón.
+    const t = setTimeout(() => {
+      const caja = ref.current;
+      if (!caja) return;
+      const destino = caja.querySelector("input, textarea, select") || caja.querySelector("button");
+      destino?.focus();
+      if (destino && destino.tagName === "INPUT" && typeof destino.select === "function") destino.select();
+    }, 60);
     return () => { window.removeEventListener("keydown", onKey); clearTimeout(t); };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   return (

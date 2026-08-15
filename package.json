@@ -9,7 +9,6 @@
     "dev": "node build.mjs --watch --serve",
     "validate": "node scripts/validate-data.js",
     "test:generadores": "node scripts/test-generators.js",
-    "sync-server": "node server/sync-server.mjs",
     "check": "npm run validate && npm run test:generadores && npm run build"
   },
   "dependencies": {
