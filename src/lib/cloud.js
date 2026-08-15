@@ -3,12 +3,19 @@
 
    Habla con el Worker de server/cloudflare-worker.js:
 
-     POST /registro   { usuario, password, nombre, progreso } → { token, perfil, progreso }
-     POST /entrar     { usuario, password }                   → { token, perfil, progreso }
+     POST /registro   { usuario, clave, nombre } → { token, perfil }
+     POST /entrar     { usuario, clave }         → { token, perfil, progreso }
      POST /salir
-     GET  /progreso                                           → { progreso, progresoAl }
-     PUT  /progreso   { progreso }
+     GET  /progreso                              → { perfil, progreso, progresoAl }
+     PUT  /progreso   <el progreso, tal cual>
      POST /password   { actual, nueva }
+
+   LA CONTRASEÑA NO SALE DE AQUÍ
+   -----------------------------
+   Lo que viaja no es la contraseña, sino su derivación PBKDF2-SHA256 con
+   210 000 vueltas (`derivarClave`). Se hace en el navegador por dos razones:
+   el servidor gratuito solo tiene 10 ms de CPU por petición, y así el
+   servidor nunca llega a ver la contraseña de verdad.
 
    REGLAS DE PROGRESO (las que pediste)
    ------------------------------------
@@ -154,6 +161,34 @@ export function problemaPassword(password) {
   return null;
 }
 
+/* ---------------- Derivación de la contraseña ---------------- */
+
+const ITERACIONES = 210000;
+const enc = new TextEncoder();
+
+function hex(buffer) {
+  return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Convierte la contraseña en la clave de 64 caracteres que viaja al servidor.
+ * La sal sale del propio usuario, para que salga igual en cualquier
+ * dispositivo sin tener que pedírsela antes al servidor.
+ */
+async function derivarClave(usuario, password) {
+  if (!globalThis.crypto || !crypto.subtle) {
+    throw new ErrorServidor("Este navegador no puede cifrar la contraseña (hace falta una conexión segura)", 0);
+  }
+  const salt = await crypto.subtle.digest("SHA-256", enc.encode("acreditabach|" + normalizarUsuario(usuario)));
+  const key = await crypto.subtle.importKey("raw", enc.encode(String(password)), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt: new Uint8Array(salt), iterations: ITERACIONES },
+    key,
+    256
+  );
+  return hex(bits);
+}
+
 /* ---------------- Registro, entrada y salida ---------------- */
 
 /**
@@ -169,9 +204,10 @@ export async function registrar(usuario, password, nombre) {
   const progreso = stateSnapshot();
 
   setEstado("guardando", "Creando la cuenta…");
+  const clave = await derivarClave(u, password);
   const r = await pedir("/registro", {
     method: "POST",
-    body: { usuario: u, password, nombre: nombre || usuario, progreso }
+    body: { usuario: u, clave, nombre: nombre || usuario }
   }).catch((e) => {
     setEstado(isGuest() ? "invitado" : "error", e.message);
     throw e;
@@ -180,7 +216,9 @@ export async function registrar(usuario, password, nombre) {
   // La copia local de la cuenta arranca con el progreso heredado.
   escribirCopiaLocal(r.perfil.usuario, progreso);
   setSession({ usuario: r.perfil.usuario, nombre: r.perfil.nombre, token: r.token });
-  setEstado("listo", "Cuenta creada");
+
+  // Y ese mismo progreso es lo primero que se sube a la cuenta nueva.
+  await guardarAhora();
   return r.perfil;
 }
 
@@ -192,7 +230,8 @@ export async function entrar(usuario, password) {
   if (!u || !password) throw new ErrorServidor("Escribe tu usuario y tu contraseña", 0);
 
   setEstado("guardando", "Entrando…");
-  const r = await pedir("/entrar", { method: "POST", body: { usuario: u, password } }).catch((e) => {
+  const clave = await derivarClave(u, password);
+  const r = await pedir("/entrar", { method: "POST", body: { usuario: u, clave } }).catch((e) => {
     setEstado(isGuest() ? "invitado" : "error", e.message);
     throw e;
   });
@@ -224,7 +263,16 @@ export async function salir() {
 export async function cambiarPassword(actual, nueva) {
   const problema = problemaPassword(nueva);
   if (problema) throw new ErrorServidor(problema, 0);
-  await pedir("/password", { method: "POST", auth: true, body: { actual, nueva } });
+  const s = getSession();
+  if (!s) throw new ErrorServidor("No hay sesión abierta", 401);
+  await pedir("/password", {
+    method: "POST",
+    auth: true,
+    body: {
+      actual: await derivarClave(s.usuario, actual),
+      nueva: await derivarClave(s.usuario, nueva)
+    }
+  });
   return true;
 }
 
@@ -265,7 +313,8 @@ export async function guardarAhora() {
   subiendo = (async () => {
     setEstado("guardando", "Guardando…");
     try {
-      await pedir("/progreso", { method: "PUT", auth: true, body: { progreso: stateSnapshot() } });
+      // El progreso va como cuerpo entero: el servidor lo guarda tal cual.
+      await pedir("/progreso", { method: "PUT", auth: true, body: stateSnapshot() });
       setEstado("listo", "Guardado en tu cuenta");
       return { ok: true };
     } catch (e) {

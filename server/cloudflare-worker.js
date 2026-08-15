@@ -26,22 +26,34 @@
    Para comprobar que quedó bien, abre en el navegador
    https://…workers.dev/salud → debe responder {"ok":true,"kv":true}.
 
-   SEGURIDAD
-   ---------
-   · Las contraseñas NO se guardan: se guarda su huella PBKDF2-SHA256 con
-     210 000 vueltas y una sal distinta por usuario.
-   · La sesión es un token aleatorio de 256 bits guardado en KV, que caduca
-     a los 180 días.
-   · Comparaciones en tiempo constante para no filtrar información.
-   · Límite de intentos por usuario: tras 10 fallos seguidos se bloquea el
-     acceso 15 minutos.
+   DÓNDE SE CIFRA LA CONTRASEÑA (importante)
+   -----------------------------------------
+   El plan gratis da 10 ms de CPU por petición, y estirar una contraseña como
+   se debe (PBKDF2 con cientos de miles de vueltas) cuesta bastante más que
+   eso. Así que el trabajo pesado lo hace el navegador, que va sobrado:
+
+     navegador → clave = PBKDF2-SHA256(contraseña, sal = SHA-256(usuario),
+                                       210 000 vueltas)
+     servidor  → guarda SHA-256(sal_del_servidor + clave)
+
+   Es el mismo reparto que usan los gestores de contraseñas: el servidor nunca
+   ve la contraseña de verdad, y si algún día se filtrara el KV, para adivinar
+   la contraseña original habría que pagar las 210 000 vueltas por cada intento.
+   Al servidor le queda un SHA-256, que se hace en microsegundos.
+
+   RESTO DE LA SEGURIDAD
+   ---------------------
+   · Sesión: token aleatorio de 256 bits guardado en KV, caduca a los 180 días.
+   · Comparaciones en tiempo constante.
+   · Mismo mensaje cuando el usuario no existe y cuando la contraseña falla.
+   · Tras 10 intentos fallidos seguidos, esa cuenta se bloquea 15 minutos.
    ============================================================ */
 
-const ITERACIONES = 210000;
 const TOKEN_DIAS = 180;
 const MAX_FALLOS = 10;
 const BLOQUEO_MIN = 15;
 const MAX_PROGRESO_BYTES = 512 * 1024; // 512 kB por cuenta, de sobra
+const VERSION_CUENTA = 2;
 
 /* ---------------- Utilidades HTTP ---------------- */
 
@@ -52,18 +64,22 @@ const CORS = {
   "access-control-max-age": "86400"
 };
 
+const TIPO_JSON = { "content-type": "application/json; charset=utf-8", ...CORS };
+
 function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8", ...CORS }
-  });
+  return new Response(JSON.stringify(data), { status, headers: TIPO_JSON });
+}
+
+/** Respuesta JSON armada a mano, para no volver a serializar el progreso. */
+function jsonCrudo(texto, status = 200) {
+  return new Response(texto, { status, headers: TIPO_JSON });
 }
 
 function error(mensaje, status = 400) {
   return json({ error: mensaje }, status);
 }
 
-/* ---------------- Contraseñas ---------------- */
+/* ---------------- Huellas ---------------- */
 
 const enc = new TextEncoder();
 
@@ -75,15 +91,9 @@ function randomHex(bytes) {
   return hex(crypto.getRandomValues(new Uint8Array(bytes)));
 }
 
-async function hashPassword(password, saltHex, iteraciones = ITERACIONES) {
-  const salt = Uint8Array.from(saltHex.match(/.{2}/g).map((h) => parseInt(h, 16)));
-  const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", hash: "SHA-256", salt, iterations: iteraciones },
-    key,
-    256
-  );
-  return hex(bits);
+/** Hash barato sobre la clave que ya llegó estirada desde el navegador. */
+async function hashServidor(clave, salt) {
+  return hex(await crypto.subtle.digest("SHA-256", enc.encode(salt + ":" + clave)));
 }
 
 /** Comparación en tiempo constante (no revela en qué carácter falló). */
@@ -114,10 +124,10 @@ function validarUsuario(usuario) {
   return null;
 }
 
-function validarPassword(password) {
-  const p = String(password || "");
-  if (p.length < 6) return "La contraseña necesita al menos 6 caracteres";
-  if (p.length > 200) return "La contraseña es demasiado larga";
+/* La contraseña nunca llega hasta aquí: llega su derivación, 64 caracteres
+   hexadecimales. El largo mínimo de la contraseña lo comprueba la app. */
+function validarClave(clave) {
+  if (typeof clave !== "string" || !/^[a-f0-9]{64}$/.test(clave)) return "La contraseña no llegó bien";
   return null;
 }
 
@@ -125,6 +135,7 @@ function validarPassword(password) {
 
 const claveUsuario = (u) => "user:" + u;
 const claveToken = (t) => "token:" + t;
+const claveProgreso = (u) => "prog:" + u;
 
 async function leerUsuario(env, usuario) {
   return env.DB.get(claveUsuario(usuario), "json");
@@ -140,7 +151,7 @@ async function crearSesion(env, usuario) {
   return token;
 }
 
-/** Devuelve { usuario, datos } o null si el token no vale. */
+/** Devuelve { usuario, datos, token } o null si el token no vale. */
 async function sesionDe(request, env) {
   const auth = request.headers.get("authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
@@ -165,43 +176,36 @@ async function registrar(request, env) {
   if (!body) return error("Petición inválida");
 
   const usuario = normalizarUsuario(body.usuario);
-  const problema = validarUsuario(usuario) || validarPassword(body.password);
+  const problema = validarUsuario(usuario) || validarClave(body.clave);
   if (problema) return error(problema);
 
   if (await leerUsuario(env, usuario)) return error("Ese usuario ya está ocupado", 409);
 
   const salt = randomHex(16);
   const datos = {
+    version: VERSION_CUENTA,
     usuario,
-    nombre: String(body.nombre || body.usuario || usuario).trim().slice(0, 32) || usuario,
+    nombre: String(body.nombre || usuario).trim().slice(0, 32) || usuario,
     salt,
-    iteraciones: ITERACIONES,
-    hash: await hashPassword(body.password, salt),
+    hash: await hashServidor(body.clave, salt),
     creada: new Date().toISOString(),
     fallos: 0,
-    bloqueoHasta: null,
-    progreso: body.progreso && typeof body.progreso === "object" ? body.progreso : null,
-    progresoAl: new Date().toISOString()
+    bloqueoHasta: null
   };
 
   await guardarUsuario(env, usuario, datos);
   const token = await crearSesion(env, usuario);
-  return json({ token, perfil: perfil(datos), progreso: datos.progreso, progresoAl: datos.progresoAl });
+  return json({ token, perfil: perfil(datos) });
 }
 
 async function entrar(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return error("Petición inválida");
+  if (validarClave(body.clave)) return error("Usuario o contraseña incorrectos", 401);
 
   const usuario = normalizarUsuario(body.usuario);
   const datos = await leerUsuario(env, usuario);
-
-  /* Si el usuario no existe se gasta el mismo tiempo que en un intento real,
-     para que desde fuera no se pueda averiguar qué usuarios existen. */
-  if (!datos) {
-    await hashPassword(String(body.password || ""), randomHex(16));
-    return error("Usuario o contraseña incorrectos", 401);
-  }
+  if (!datos) return error("Usuario o contraseña incorrectos", 401);
 
   const ahora = Date.now();
   if (datos.bloqueoHasta && ahora < Date.parse(datos.bloqueoHasta)) {
@@ -209,7 +213,7 @@ async function entrar(request, env) {
     return error(`Demasiados intentos. Vuelve a intentar en ${min} min`, 429);
   }
 
-  const hash = await hashPassword(String(body.password || ""), datos.salt, datos.iteraciones || ITERACIONES);
+  const hash = await hashServidor(body.clave, datos.salt);
   if (!igual(hash, datos.hash)) {
     datos.fallos = (datos.fallos || 0) + 1;
     if (datos.fallos >= MAX_FALLOS) {
@@ -220,12 +224,14 @@ async function entrar(request, env) {
     return error("Usuario o contraseña incorrectos", 401);
   }
 
-  datos.fallos = 0;
-  datos.bloqueoHasta = null;
-  await guardarUsuario(env, usuario, datos);
+  if (datos.fallos || datos.bloqueoHasta) {
+    datos.fallos = 0;
+    datos.bloqueoHasta = null;
+    await guardarUsuario(env, usuario, datos);
+  }
 
   const token = await crearSesion(env, usuario);
-  return json({ token, perfil: perfil(datos), progreso: datos.progreso || null, progresoAl: datos.progresoAl || null });
+  return leerProgresoDe(env, usuario, datos, { token });
 }
 
 async function salir(request, env) {
@@ -234,14 +240,27 @@ async function salir(request, env) {
   return json({ ok: true });
 }
 
+/* El progreso viaja tal cual, sin volver a analizarlo: se guarda el texto que
+   mandó la app y se devuelve incrustado en la respuesta. Así el servidor no
+   gasta CPU en JSON.parse de un progreso que puede pesar cientos de kB. */
+async function leerProgresoDe(env, usuario, datos, extra) {
+  const guardado = await env.DB.getWithMetadata(claveProgreso(usuario));
+  const progreso = guardado && guardado.value ? guardado.value : "null";
+  const al = guardado && guardado.metadata && guardado.metadata.al ? guardado.metadata.al : null;
+  const cabeza = extra && extra.token ? '{"token":' + JSON.stringify(extra.token) + "," : "{";
+  return jsonCrudo(
+    cabeza +
+      '"perfil":' + JSON.stringify(perfil(datos)) +
+      ',"progresoAl":' + JSON.stringify(al) +
+      ',"progreso":' + progreso +
+      "}"
+  );
+}
+
 async function leerProgreso(request, env) {
   const sesion = await sesionDe(request, env);
   if (!sesion) return error("Sesión caducada", 401);
-  return json({
-    perfil: perfil(sesion.datos),
-    progreso: sesion.datos.progreso || null,
-    progresoAl: sesion.datos.progresoAl || null
-  });
+  return leerProgresoDe(env, sesion.usuario, sesion.datos, null);
 }
 
 async function escribirProgreso(request, env) {
@@ -250,19 +269,11 @@ async function escribirProgreso(request, env) {
 
   const texto = await request.text();
   if (texto.length > MAX_PROGRESO_BYTES) return error("El progreso es demasiado grande", 413);
+  if (!texto.startsWith("{")) return error("Falta el progreso");
 
-  let body;
-  try {
-    body = JSON.parse(texto);
-  } catch (e) {
-    return error("Petición inválida");
-  }
-  if (!body || typeof body.progreso !== "object" || body.progreso === null) return error("Falta el progreso");
-
-  sesion.datos.progreso = body.progreso;
-  sesion.datos.progresoAl = new Date().toISOString();
-  await guardarUsuario(env, sesion.usuario, sesion.datos);
-  return json({ ok: true, progresoAl: sesion.datos.progresoAl });
+  const al = new Date().toISOString();
+  await env.DB.put(claveProgreso(sesion.usuario), texto, { metadata: { al } });
+  return json({ ok: true, progresoAl: al });
 }
 
 async function cambiarPassword(request, env) {
@@ -271,20 +282,13 @@ async function cambiarPassword(request, env) {
 
   const body = await request.json().catch(() => null);
   if (!body) return error("Petición inválida");
+  if (validarClave(body.nueva)) return error("La contraseña nueva no llegó bien");
 
-  const problema = validarPassword(body.nueva);
-  if (problema) return error(problema);
-
-  const actual = await hashPassword(
-    String(body.actual || ""),
-    sesion.datos.salt,
-    sesion.datos.iteraciones || ITERACIONES
-  );
+  const actual = await hashServidor(String(body.actual || ""), sesion.datos.salt);
   if (!igual(actual, sesion.datos.hash)) return error("La contraseña actual no es correcta", 401);
 
   sesion.datos.salt = randomHex(16);
-  sesion.datos.iteraciones = ITERACIONES;
-  sesion.datos.hash = await hashPassword(body.nueva, sesion.datos.salt);
+  sesion.datos.hash = await hashServidor(body.nueva, sesion.datos.salt);
   await guardarUsuario(env, sesion.usuario, sesion.datos);
   return json({ ok: true });
 }
@@ -302,7 +306,7 @@ export default {
     const metodo = request.method;
 
     try {
-      if (ruta === "/salud" && metodo === "GET") return json({ ok: true, kv: true });
+      if (ruta === "/" || ruta === "/salud") return json({ ok: true, kv: true, version: VERSION_CUENTA });
       if (ruta === "/registro" && metodo === "POST") return registrar(request, env);
       if (ruta === "/entrar" && metodo === "POST") return entrar(request, env);
       if (ruta === "/salir" && metodo === "POST") return salir(request, env);

@@ -87,9 +87,15 @@ Para dejarla fija y que ningún dispositivo tenga que pegarla, pon la URL en
 
 | Dato | Dónde | Cómo |
 | --- | --- | --- |
-| Contraseña | KV del Worker | Nunca en claro: huella PBKDF2-SHA256, 210 000 vueltas, sal distinta por usuario. |
+| Contraseña | KV del Worker | Nunca sale del navegador: viaja ya estirada con PBKDF2-SHA256 y 210 000 vueltas (sal derivada del usuario), y el servidor guarda un SHA-256 de eso con su propia sal. |
 | Sesión | KV del Worker | Token aleatorio de 256 bits, caduca a los 180 días. |
-| Progreso | KV del Worker | Un JSON por cuenta, con copia local para poder estudiar sin conexión. |
+| Progreso | KV del Worker | Un JSON por cuenta, guardado tal cual, con copia local para poder estudiar sin conexión. |
+
+El reparto del cifrado no es un capricho: el plan gratis de Workers da **10 ms de
+CPU por petición**, y un PBKDF2 en condiciones cuesta bastante más. Haciéndolo en
+el navegador el servidor queda con un SHA-256 (microsegundos), y de paso nunca
+llega a ver la contraseña de verdad — el mismo reparto que usan los gestores de
+contraseñas.
 
 Además: comparación en tiempo constante al validar la contraseña, mismo mensaje y mismo
 tiempo de respuesta cuando el usuario no existe (para no revelar qué cuentas hay), y
