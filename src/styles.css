@@ -1056,6 +1056,21 @@ button, input, textarea { font: inherit; color: inherit; }
   margin: 14px 0 18px;
   text-wrap: pretty;
 }
+
+/* Listas de los reactivos de relación de elementos y de jerarquización: van
+   debajo de la instrucción y se leen como cuerpo de texto, no como título. */
+.quiz-detail {
+  margin: -8px 0 18px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+.quiz-detail strong { color: var(--text); }
 .options { display: flex; flex-direction: column; gap: 9px; }
 .option {
   display: flex; align-items: center; gap: 12px;

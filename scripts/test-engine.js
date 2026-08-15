@@ -26,11 +26,12 @@ let src = "";
 for (const f of fs.readdirSync(path.join(ROOT, "data")).filter((f) => f.endsWith(".js"))) src += fs.readFileSync(path.join(ROOT, "data") + "/" + f, "utf8") + "\n";
 for (const f of fs.readdirSync(path.join(ROOT, "data/extra"))) src += fs.readFileSync(path.join(ROOT, "data/extra") + "/" + f, "utf8") + "\n";
 for (const f of fs.readdirSync(path.join(ROOT, "data/extra2"))) src += fs.readFileSync(path.join(ROOT, "data/extra2") + "/" + f, "utf8") + "\n";
+for (const f of fs.readdirSync(path.join(ROOT, "data/formato"))) src += fs.readFileSync(path.join(ROOT, "data/formato") + "/" + f, "utf8") + "\n";
 const NOMBRES = [
   "AREA_META", "SESSION_META", "INFO_SECTIONS", "BIBLIOGRAFIA", "TOTAL_REACTIVOS",
   "AREA1_TOPICS", "AREA2_TOPICS", "AREA3_TOPICS", "AREA4_TOPICS", "AREA5_TOPICS",
   "AREA6_ES_TOPICS", "AREA6_EN_TOPICS", "AREA7_TOPICS",
-  ...[1, 2, 3, 4, 5, 6, 7].flatMap((n) => [`AREA${n}_EXTRA`, `AREA${n}_EXTRA2`])
+  ...[1, 2, 3, 4, 5, 6, 7].flatMap((n) => [`AREA${n}_EXTRA`, `AREA${n}_EXTRA2`, `AREA${n}_FORMATO`])
 ];
 src += ";" + NOMBRES.map((n) => `try{globalThis.${n}=${n}}catch(e){}`).join(";");
 const ctx = { console, globalThis };
@@ -97,6 +98,30 @@ check(E.isLearned(viejo), "y sigue contando aunque el progreso venga de antes de
 
 console.log("\n8) El simulacro completo no se queda vacío");
 check(E.countMockQuestions([1, 2, 3, 4, 5, 6, 7], false) > 150, "el simulacro de todo el temario conserva sus reactivos");
+
+console.log("\n9) El bloque de formato (relación y ordenamiento) está abierto desde el principio");
+// Los reactivos de data/formato no traen tarjetas: replantean con el formato del
+// examen lo que la nota base ya explica, así que no hay nada que desbloquear.
+const CON_FORMATO = ["2.2.3", "2.4.1", "2.4.2", "3.2.1", "4.3.2", "6.1.3", "6.3.1", "6.3.6", "6.4.2", "7.3.1"];
+let sinBloque = 0;
+let cerrados = 0;
+CON_FORMATO.forEach((id) => {
+  const t = E.topicsById()[id];
+  const b = (t.blocks || []).find((x) => x.nombre === "formato");
+  if (!b) { sinBloque++; return; }
+  if (!E.blockUnlocked(t, b, t.blocks.indexOf(b))) cerrados++;
+});
+check(sinBloque === 0, `los ${CON_FORMATO.length} temas que la guía marca con relación u ordenamiento tienen su bloque de formato`);
+check(cerrados === 0, "y ninguno queda cerrado esperando tarjetas que no existen");
+
+console.log("\n10) Los reactivos de formato sí se ofrecen");
+const tf = E.topicsById()["4.3.2"];
+const bancoF = E.availableQuiz(tf);
+check(bancoF.some((q) => /^Relacione/.test(q.q)), "un tema con bloque de formato ofrece sus reactivos de relación de elementos");
+check(
+  bancoF.every((q) => Array.isArray(q.options) && q.options.length === 3),
+  "todos los reactivos traen tres opciones, como el examen real (guía, p. 25)"
+);
 
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);
 process.exit(fallos === 0 ? 0 : 1);

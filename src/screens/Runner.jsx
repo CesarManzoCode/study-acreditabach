@@ -11,7 +11,25 @@ import {
   logSessionProgress, computeTodayPlan, areaNumbers
 } from "../lib/engine.js";
 
-const LETTERS = ["A", "B", "C", "D"];
+/* El examen real presenta tres opciones: A, B y C (guía del sustentante, p. 25). */
+const LETTERS = ["A", "B", "C"];
+
+/* Enunciado del reactivo.
+
+   Los formatos de "relación de elementos" y de "jerarquización" traen listas
+   debajo de la instrucción. Se parte en la primera línea para que la
+   instrucción conserve el tamaño de título y las listas se lean como cuerpo de
+   texto, en vez de un bloque enorme en tipografía de display. */
+function QuestionStem({ text }) {
+  const salto = String(text).indexOf("\n");
+  if (salto < 0) return <h2 className="quiz-q"><Inline>{text}</Inline></h2>;
+  return (
+    <>
+      <h2 className="quiz-q"><Inline>{String(text).slice(0, salto)}</Inline></h2>
+      <div className="quiz-detail"><Inline>{String(text).slice(salto + 1)}</Inline></div>
+    </>
+  );
+}
 
 /* ============================================================
    Contenedor común
@@ -311,7 +329,7 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
           <span className="faint">{topic.tema}</span>
         </div>
 
-        <h2 className="quiz-q"><Inline>{question.q}</Inline></h2>
+        <QuestionStem text={question.q} />
 
         {withCalc && !calcOpen && (
           <button className="calc-open" onClick={() => setCalcOpen(true)}>
@@ -457,7 +475,7 @@ export function MockRunner({ mock, onExit }) {
       <div className="step-anim" key={idx}>
         <Card style={areaStyle(topic.area)}>
           <Badge tone="area">{v.short}</Badge>
-          <h2 className="quiz-q"><Inline>{question.q}</Inline></h2>
+          <QuestionStem text={question.q} />
           {withCalc && !calcOpen && (
             <button className="calc-open" onClick={() => setCalcOpen(true)}>
               <Icon name="calc" size={17} />

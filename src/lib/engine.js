@@ -183,9 +183,23 @@ export {
    banco completo quedaba disponible desde el primer día, así que el repaso
    preguntaba material que la app todavía no había mostrado. */
 
-export const BLOQUES = ["base", "ampliacion", "ampliacion2"];
+export const BLOQUES = ["base", "ampliacion", "ampliacion2", "formato"];
 
 function packGroups() {
+  /* data/formato/*.js: reactivos con los formatos de relación de elementos y de
+     jerarquización que la guía oficial marca para ciertos temas. No traen
+     tarjetas —no agregan conceptos, replantean con otro formato lo que la nota
+     base ya explica—, así que su bloque queda abierto desde el principio. */
+  const formato = [
+    typeof AREA1_FORMATO !== "undefined" ? AREA1_FORMATO : null,
+    typeof AREA2_FORMATO !== "undefined" ? AREA2_FORMATO : null,
+    typeof AREA3_FORMATO !== "undefined" ? AREA3_FORMATO : null,
+    typeof AREA4_FORMATO !== "undefined" ? AREA4_FORMATO : null,
+    typeof AREA5_FORMATO !== "undefined" ? AREA5_FORMATO : null,
+    typeof AREA6_FORMATO !== "undefined" ? AREA6_FORMATO : null,
+    typeof AREA7_FORMATO !== "undefined" ? AREA7_FORMATO : null
+  ].filter(Boolean);
+
   const grupo = (sufijo) => [
     typeof AREA1_EXTRA !== "undefined" && sufijo === "" ? AREA1_EXTRA : null,
     typeof AREA2_EXTRA !== "undefined" && sufijo === "" ? AREA2_EXTRA : null,
@@ -205,7 +219,8 @@ function packGroups() {
 
   return [
     { nombre: "ampliacion", packs: grupo("") },
-    { nombre: "ampliacion2", packs: grupo("2") }
+    { nombre: "ampliacion2", packs: grupo("2") },
+    { nombre: "formato", packs: formato }
   ];
 }
 

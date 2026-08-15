@@ -93,7 +93,8 @@ for (const spec of EXPECTED) {
 
 const EXTRA_DIRS = [
   { dir: "extra", suffix: "EXTRA" },
-  { dir: "extra2", suffix: "EXTRA2" }
+  { dir: "extra2", suffix: "EXTRA2" },
+  { dir: "formato", suffix: "FORMATO" }
 ];
 const EXTRA_SPECS = EXTRA_DIRS.flatMap(({ dir, suffix }) =>
   [1, 2, 3, 4, 5, 6, 7].map((n) => ({

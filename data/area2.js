@@ -153,7 +153,7 @@ const AREA2_TOPICS = [
     id: "2.2.2",
     area: 2,
     subarea: "2.2 Comunicación y colaboración a través de medios digitales",
-    tema: "Definición de las TICCAD (tecnologías de la información, comunicación, conocimiento y aprendizaje digital)",
+    tema: "Definición de las tecnologías de la información, comunicación, conocimiento y aprendizaje digital (TICCAD)",
     note: "Las **TICCAD** son el conjunto de tecnologías (dispositivos, programas y plataformas) que se usan para gestionar información, comunicarse, generar conocimiento y facilitar el aprendizaje de manera digital. Es un concepto más amplio que las TIC tradicionales porque además de información y comunicación, incluye la construcción de conocimiento y el aprendizaje digital, por ejemplo plataformas educativas, simuladores, entornos virtuales de aprendizaje. La idea clave para el examen: las TICCAD no son solo \"tecnología para comunicarse\", sino también herramientas para aprender y generar conocimiento (como un curso en línea con foros y evaluaciones).",
     flashcards: [
       { front: "¿Qué significan las siglas TICCAD?", back: "Tecnologías de la Información, Comunicación, Conocimiento y Aprendizaje Digital." },
