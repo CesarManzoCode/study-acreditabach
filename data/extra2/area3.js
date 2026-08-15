@@ -5,6 +5,7 @@
 
 const AREA3_EXTRA2 = {
   "3.1.1": {
+    leccion: "Tres claves de la conquista que el examen plantea como caso. La caída de **Tenochtitlan** en 1521 no se explica por la superioridad española sola, sino por la suma de tres factores: las **alianzas indígenas** contra el dominio mexica (tlaxcaltecas, totonacas), la **viruela** que diezmó a la población —incluido el tlatoani Cuitláhuac— y la ventaja tecnológica de armas de fuego, acero y caballos. La diferencia entre conquistar **Mesoamérica** y **Aridoamérica** está en la organización política: los estados centralizados del centro se sometían de golpe tomando su cabeza, mientras que los pueblos nómadas del norte resistieron siglos en las guerras chichimecas. Y la **encomienda** fue el instrumento con que se organizó el dominio: el derecho concedido a un español para recibir tributo y trabajo de un grupo de indígenas a cambio de evangelizarlos y protegerlos; en la práctica funcionó como una forma de explotación.",
     flashcards: [
       { front: "¿Por qué cayó Tenochtitlan tan rápido pese a su tamaño?", back: "Por la suma de tres factores: las **alianzas indígenas** contra el dominio mexica (tlaxcaltecas, totonacas), la **viruela** que diezmó a la población y la ventaja tecnológica (armas de fuego, acero, caballos)." },
       { front: "¿Qué diferencia hubo entre la conquista de Mesoamérica y la de Aridoamérica?", back: "Mesoamérica cayó rápido porque había estados centralizados que se podían someter de golpe. En Aridoamérica los pueblos nómadas resistieron siglos, en las llamadas guerras chichimecas." },
@@ -35,6 +36,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.1.3": {
+    leccion: "Tres precisiones sobre la sociedad novohispana. **Peninsulares** y **criollos** eran ambos españoles, pero los primeros habían nacido en España y ocupaban los cargos más altos, mientras que los criollos nacieron en América y, pese a su riqueza, quedaban excluidos del poder político: de ahí su descontento posterior. El **sistema de castas** era la clasificación social según el origen étnico y la mezcla (mestizo, mulato, castizo, zambo…), y determinaba impuestos, oficios permitidos y derechos legales. Las **repúblicas de indios** eran comunidades indígenas con gobierno propio, tierras comunales y obligación de tributo, jurídicamente separadas de la república de españoles.",
     flashcards: [
       { front: "¿Qué diferencia había entre peninsulares y criollos?", back: "Ambos eran españoles, pero los **peninsulares** habían nacido en España y ocupaban los cargos más altos; los **criollos** nacieron en América y, pese a su riqueza, quedaban excluidos del poder político." },
       { front: "¿Qué fue el sistema de castas?", back: "La clasificación social novohispana según el origen étnico y la mezcla (mestizo, mulato, castizo, zambo…). Determinaba impuestos, oficios permitidos y derechos legales." },
@@ -80,6 +82,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.2.1": {
+    leccion: "Tres detonantes de la Independencia que el examen pregunta por su nombre. Las **reformas borbónicas** centralizaron el poder, aumentaron impuestos, expulsaron a los jesuitas y desplazaron a los criollos de los cargos, generando un malestar que después se volvió político. La **Consolidación de Vales Reales (1804)** fue la medida de la Corona que obligó a cobrar de golpe los préstamos de la Iglesia, arruinando a hacendados y comerciantes criollos endeudados: fue un detonante económico directo. Y la **invasión napoleónica a España en 1808** dejó al reino sin rey legítimo y abrió el debate sobre a quién correspondía la soberanía; los criollos sostuvieron que debía volver a los pueblos, y ese es el origen inmediato del movimiento.",
     flashcards: [
       { front: "¿Qué papel jugaron las reformas borbónicas en la Independencia?", back: "Centralizaron el poder, aumentaron impuestos, expulsaron a los jesuitas y desplazaron a los criollos de los cargos, generando un malestar que después se volvió político." },
       { front: "¿Qué fue la Consolidación de Vales Reales (1804)?", back: "Una medida de la Corona que obligó a cobrar de golpe los préstamos de la Iglesia, arruinando a hacendados y comerciantes criollos endeudados. Fue un detonante económico directo del descontento." },
@@ -140,6 +143,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.2.5": {
+    leccion: "Tres rasgos de los movimientos sociales del siglo XIX en México, además de los europeos que explica la nota. Aquí fueron sobre todo **rebeliones agrarias** contra el despojo de tierras comunales y las cargas fiscales, muchas veces protagonizadas por pueblos indígenas y campesinos. El **Plan de Ayutla (1854)** fue el levantamiento liberal que derrocó a Santa Anna, abrió el periodo de la Reforma y llevó al Congreso Constituyente de 1856-1857. Y las **mujeres** participaron como correos, conspiradoras, financiadoras y combatientes —Josefa Ortiz, Leona Vicario—, aunque quedaron excluidas de los derechos políticos formales.",
     flashcards: [
       { front: "¿Qué caracterizó a los movimientos sociales del siglo XIX mexicano?", back: "Fueron sobre todo rebeliones agrarias contra el despojo de tierras comunales y las cargas fiscales, muchas veces protagonizadas por pueblos indígenas y campesinos." },
       { front: "¿Qué fue el Plan de Ayutla (1854)?", back: "El levantamiento liberal que derrocó a Santa Anna, abrió el periodo de la Reforma y llevó al Congreso Constituyente de 1856-1857." },
@@ -155,6 +159,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.2.6": {
+    leccion: "Tres puntos sobre la tierra y su despojo. Los **bienes comunales** eran tierras que pertenecían al pueblo en conjunto, no a personas: se usaban para cultivo, pastoreo, leña y agua, y sostenían la economía y la organización de las comunidades. Las **compañías deslindadoras** fueron empresas autorizadas durante el porfiriato para medir «terrenos baldíos»; se quedaban con hasta un tercio de lo deslindado y despojaron a numerosos pueblos que no tenían títulos escritos. La **consecuencia social** fue la concentración de la tierra en pocas manos y la conversión de campesinos con tierra en peones acasillados o jornaleros: causa directa de la Revolución.",
     flashcards: [
       { front: "¿Qué eran los bienes comunales?", back: "Tierras que pertenecían al pueblo en conjunto, no a personas: se usaban para cultivo, pastoreo, leña y agua. Sostenían la economía y la organización de las comunidades." },
       { front: "¿Qué fueron las compañías deslindadoras?", back: "Empresas autorizadas durante el porfiriato para medir «terrenos baldíos»; se quedaban con hasta un tercio de lo deslindado y despojaron a numerosos pueblos que no tenían títulos escritos." },

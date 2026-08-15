@@ -31,6 +31,7 @@ const AREA3_EXTRA = {
   },
 
   "3.1.3": {
+    leccion: "Tres piezas de la organización social novohispana. La **encomienda** era el sistema por el cual la Corona entregaba a un español un grupo de indígenas para que trabajaran para él a cambio de «protegerlos» y evangelizarlos; en los hechos fue trabajo forzado. La **república de indios** era la organización jurídica separada de los pueblos indígenas, con sus propias autoridades y tierras comunales, distinta de la «república de españoles»: pagaban tributo, pero conservaban cierta protección legal. Y las **castas** eran las categorías sociales derivadas de la mezcla entre españoles, indígenas y africanos (mestizo, mulato, castizo, zambo…), que determinaban impuestos, oficios permitidos y trato legal.",
     flashcards: [
       { front: "¿Qué era la encomienda?", back: "Un sistema por el cual la Corona entregaba a un español un grupo de indígenas para que trabajaran para él a cambio de 'protegerlos' y evangelizarlos; en los hechos fue trabajo forzado." },
       { front: "¿Qué era la 'república de indios'?", back: "La organización jurídica separada de los pueblos indígenas, con sus propias autoridades y tierras comunales, distinta de la 'república de españoles'. Pagaban tributo, pero tenían cierta protección legal." },
@@ -85,6 +86,7 @@ const AREA3_EXTRA = {
   },
 
   "3.2.2": {
+    leccion: "Dos documentos y un acuerdo que marcan los proyectos de emancipación. La **Constitución de Apatzingán (1814)** fue el primer texto constitucional insurgente: soberanía popular, división de poderes y una república sin monarca, redactada bajo la influencia de Morelos; nunca llegó a aplicarse. Y el **Abrazo de Acatempan** fue el acuerdo de 1821 entre Agustín de Iturbide, del bando realista, y Vicente Guerrero, insurgente, que unió a ambos bandos y dio origen al Ejército Trigarante: es el momento en que el proyecto radical de Morelos cede el paso al proyecto conservador que consumó la Independencia.",
     flashcards: [
       { front: "¿Qué establecía la Constitución de Apatzingán (1814)?", back: "El primer texto constitucional insurgente: soberanía popular, división de poderes y una república sin monarca, redactada bajo la influencia de Morelos. Nunca llegó a aplicarse." },
       { front: "¿Qué fue el Abrazo de Acatempan?", back: "El acuerdo de 1821 entre Agustín de Iturbide (realista) y Vicente Guerrero (insurgente) que unió a ambos bandos y dio origen al Ejército Trigarante." }
@@ -138,6 +140,7 @@ const AREA3_EXTRA = {
   },
 
   "3.2.6": {
+    leccion: "Dos mecanismos concretos del despojo. El **peonaje por deudas** ataba al trabajador a la hacienda: la tienda de raya le vendía a crédito y la deuda, que además era heredable, le impedía irse; en los hechos era servidumbre. Las **compañías deslindadoras** fueron empresas autorizadas durante el porfiriato para medir «tierras baldías»: se quedaban con un tercio de lo deslindado y despojaron a miles de comunidades que no tenían títulos modernos, aunque llevaran siglos en esas tierras.",
     flashcards: [
       { front: "¿Qué era el peonaje por deudas?", back: "Un mecanismo por el cual el trabajador quedaba atado a la hacienda: la tienda de raya le vendía a crédito y la deuda, heredable, le impedía irse. Servidumbre en los hechos." },
       { front: "¿Qué eran las compañías deslindadoras?", back: "Empresas autorizadas durante el porfiriato para medir 'tierras baldías'. Se quedaban con un tercio de lo deslindado y despojaron a miles de comunidades que no tenían títulos modernos." }
@@ -151,6 +154,7 @@ const AREA3_EXTRA = {
   },
 
   "3.2.7": {
+    leccion: "Dos elementos del porfiriato que el examen nombra directamente. Los **«científicos»** fueron el grupo de asesores de Díaz, influidos por el positivismo de Comte, que defendían gobernar con criterios «científicos» y atraer inversión extranjera; José Yves Limantour fue su figura central. Y las **huelgas de Cananea y Río Blanco** fueron las protestas obreras de 1906 (mineros en Sonora) y 1907 (textileros en Veracruz), reprimidas con violencia: mostraron el costo social del modelo porfirista y anticiparon la Revolución.",
     flashcards: [
       { front: "¿Qué eran los 'científicos' del porfiriato?", back: "El grupo de asesores de Díaz, influidos por el positivismo de Comte, que defendían gobernar con criterios 'científicos' y atraer inversión extranjera. José Yves Limantour fue su figura central." },
       { front: "¿Qué fueron las huelgas de Cananea y Río Blanco?", back: "Las protestas obreras de 1906 (mineros en Sonora) y 1907 (textileros en Veracruz), reprimidas con violencia. Mostraron el costo social del modelo porfirista." }
@@ -177,6 +181,7 @@ const AREA3_EXTRA = {
   },
 
   "3.2.9": {
+    leccion: "Dos episodios que explican por qué la Revolución se dividió en facciones. La **Decena Trágica** fue el golpe militar de febrero de 1913: diez días de combates en la capital que terminaron con el asesinato de Madero y Pino Suárez y la usurpación de Victoriano Huerta. El **Plan de Guadalupe** fue el documento con el que Carranza, ese mismo año, desconoció a Huerta y creó el Ejército Constitucionalista para restaurar el orden legal. De ahí sale el bando constitucionalista que después se enfrentaría a villistas y zapatistas.",
     flashcards: [
       { front: "¿Qué fue la Decena Trágica?", back: "El golpe militar de febrero de 1913: diez días de combates en la capital que terminaron con el asesinato de Madero y Pino Suárez y la usurpación de Victoriano Huerta." },
       { front: "¿Qué fue el Plan de Guadalupe?", back: "El documento de 1913 con el que Carranza desconoció a Huerta y creó el Ejército Constitucionalista para restaurar el orden legal." }
@@ -204,6 +209,7 @@ const AREA3_EXTRA = {
   },
 
   "3.3.1": {
+    leccion: "Dos mecanismos del presidencialismo mexicano. Los **sectores del PRI** eran las tres ramas en que se organizaba a la sociedad dentro del partido: obrero (CTM), campesino (CNC) y popular (CNOP); así se encuadraba y se controlaba la movilización social. El **«dedazo»** era la práctica no escrita por la cual el presidente en turno elegía a su sucesor como candidato del partido oficial, que después ganaba la elección casi con seguridad: es la expresión más clara del poder personal del presidente dentro del sistema.",
     flashcards: [
       { front: "¿Qué eran los sectores del PRI?", back: "Las tres ramas en que se organizaba a la sociedad dentro del partido: obrero (CTM), campesino (CNC) y popular (CNOP). Así se encuadraba y controlaba la movilización social." },
       { front: "¿Qué era el 'dedazo'?", back: "La práctica no escrita por la cual el presidente en turno elegía a su sucesor como candidato del partido oficial, que después ganaba la elección casi con seguridad." }
@@ -217,6 +223,7 @@ const AREA3_EXTRA = {
   },
 
   "3.3.2": {
+    leccion: "Dos hitos de la política exterior mexicana del siglo XX. La **Doctrina Estrada** es el principio, formulado en 1930, de no juzgar los gobiernos de otros países ni otorgar o negar reconocimientos: México mantiene o retira a sus embajadores, y nada más; es una expresión concreta del principio de no intervención. El **Programa Bracero** fue el acuerdo con Estados Unidos (1942-1964) por el cual millones de mexicanos fueron a trabajar temporalmente en el campo y los ferrocarriles estadounidenses durante la guerra y los años siguientes.",
     flashcards: [
       { front: "¿Qué fue la Doctrina Estrada?", back: "El principio de política exterior mexicano (1930) de no juzgar los gobiernos de otros países ni otorgar o negar reconocimientos: es una expresión de la no intervención." },
       { front: "¿Qué fue el Programa Bracero?", back: "El acuerdo con Estados Unidos (1942-1964) por el que millones de mexicanos fueron a trabajar temporalmente en el campo y los ferrocarriles estadounidenses durante y después de la guerra." }

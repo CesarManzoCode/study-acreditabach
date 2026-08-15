@@ -231,11 +231,31 @@ for (const [id, acc] of porTema) {
    con conceptos nuevos, dale su `leccion`. */
 
 const ARTICULOS = new Set(["el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "al", "y", "o", "e", "u", "en", "que", "se", "su", "sus", "lo"]);
-const sinAcentos = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+/* Se comparan sin acentos y sin puntuación: la nota puede escribir **dedazo** en
+   negritas y la tarjeta preguntar por «'dedazo'» entre comillas, y es el mismo
+   concepto. Sin esta limpieza la revisión marcaba huecos que no existen. */
+const sinAcentos = (s) =>
+  String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9ñ\s]/g, " ");
 
-/** El concepto que una tarjeta define, si es que define alguno. */
+/* El concepto que una tarjeta define, si es que define alguno.
+
+   Ojo con los tiempos verbales: la primera versión de esta revisión solo miraba
+   el presente («¿Qué es…?») y por eso dejó pasar «¿Qué fue la encomienda?», que
+   es justo como pregunta Historia. Aquí van todas las formas con las que los
+   paquetes introducen un concepto nuevo. */
+const DEFINICION = new RegExp(
+  "^¿(?:" +
+    "qu[ée] (?:es|son|era|eran|fue|fueron|significan?|significaban?|implican?)|" +
+    "en qu[ée] consist(?:e|en|ía|ían|ió|ieron)|" +
+    "c[óo]mo se llama(?:ba)?|a qu[ée] se (?:llama|le llama)|" +
+    "qu[ée] se entiende por|" +
+    "qui[ée]n (?:es|fue|era)" +
+  ")\\s+(.+?)\\?$",
+  "i"
+);
+
 function conceptoDefinido(front) {
-  const m = String(front).match(/^¿(?:qu[ée] (?:es|son|significan?)|en qu[ée] consiste|c[óo]mo se llama)\s+(.+?)\?$/i);
+  const m = String(front).match(DEFINICION);
   return m ? m[1].replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, "").trim() : null;
 }
 
