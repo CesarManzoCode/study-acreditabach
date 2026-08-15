@@ -38,10 +38,7 @@ const AREA5_EXTRA2 = {
       { front: "¿Qué se conserva al balancear una ecuación química?", back: "El número de átomos de cada elemento a ambos lados de la ecuación; solo se ajustan los coeficientes, nunca los subíndices de las fórmulas." }
     ],
     quiz: [
-      { q: "Se hacen reaccionar 12 g de carbono con 32 g de oxígeno y se obtiene únicamente dióxido de carbono. ¿Cuánta masa de CO₂ se produce?", options: ["44 g","20 g","32 g"], correct: 0, explanation: "Por conservación de la materia, 12 g + 32 g = 44 g de producto." },
-      { q: "En un recipiente cerrado reaccionan 25 g de una sustancia con 40 g de otra. Si se forman 18 g de un producto sólido, ¿cuánta masa tiene el gas producido?", options: ["47 g","65 g","22 g"], correct: 0, explanation: "La masa total es 65 g; al restar los 18 g del sólido quedan 47 g de gas." },
       { q: "Al balancear la ecuación H₂ + O₂ → H₂O, los coeficientes correctos son:", options: ["2, 1 y 2","1, 1 y 1","2, 2 y 2"], correct: 0, explanation: "2H₂ + O₂ → 2H₂O deja 4 hidrógenos y 2 oxígenos de cada lado." },
-      { q: "Un trozo de hierro de 56 g se oxida completamente y el óxido resultante pesa 80 g. ¿Cuánto oxígeno se combinó?", options: ["24 g","80 g","136 g"], correct: 0, explanation: "80 g − 56 g = 24 g de oxígeno incorporado del aire." },
       { q: "Para balancear una ecuación química está permitido modificar:", options: ["Los coeficientes que anteceden a cada fórmula","Los subíndices de las fórmulas","Los símbolos de los elementos"], correct: 0, explanation: "Cambiar los subíndices alteraría la identidad de las sustancias." }
     ]
   },
@@ -50,10 +47,6 @@ const AREA5_EXTRA2 = {
     flashcards: [
       { front: "Fórmulas de conversión entre escalas termométricas", back: "°F = °C × 9/5 + 32 · °C = (°F − 32) × 5/9 · K = °C + 273.15. El kelvin no lleva el símbolo de grado." },
       { front: "¿A qué temperatura coinciden las escalas Celsius y Fahrenheit?", back: "A −40°: −40 °C = −40 °F. Es un dato útil para verificar que la conversión se hizo bien." }
-    ],
-    quiz: [
-      { q: "Convierte 35 °C a grados Fahrenheit.", options: ["95 °F","63 °F","88 °F"], correct: 0, explanation: "35 × 9/5 = 63; 63 + 32 = 95 °F." },
-      { q: "Convierte 77 °F a grados Celsius.", options: ["25 °C","45 °C","20 °C"], correct: 0, explanation: "(77 − 32) × 5/9 = 45 × 5/9 = 25 °C." }
     ]
   },
   "5.1.5": {
@@ -64,10 +57,8 @@ const AREA5_EXTRA2 = {
     ],
     quiz: [
       { q: "Dos cargas se separan al doble de su distancia original. La fuerza eléctrica entre ellas:", options: ["Se reduce a la cuarta parte","Se reduce a la mitad","Se duplica"], correct: 0, explanation: "F es inversamente proporcional a r²: al duplicar r, la fuerza se divide entre 4." },
-      { q: "Dos cargas de 2×10⁻⁶ C y 3×10⁻⁶ C están separadas 0.3 m. ¿Cuál es la fuerza entre ellas? (k = 9×10⁹)", options: ["0.6 N","0.18 N","6 N"], correct: 0, explanation: "F = 9×10⁹ × (6×10⁻¹²) / 0.09 = 0.054/0.09 = 0.6 N." },
       { q: "Si ambas cargas se duplican y la distancia no cambia, la fuerza eléctrica:", options: ["Se cuadruplica","Se duplica","No cambia"], correct: 0, explanation: "F es proporcional al producto de las cargas: 2 × 2 = 4 veces mayor." },
-      { q: "Entre una carga positiva y una negativa, la fuerza eléctrica es:", options: ["De atracción","De repulsión","Nula"], correct: 0, explanation: "Cargas de signo contrario se atraen." },
-      { q: "Dos cargas iguales de 1×10⁻⁶ C están separadas 1 m. ¿Cuál es la magnitud de la fuerza entre ellas?", options: ["9×10⁻³ N","9×10⁹ N","9×10⁻⁶ N"], correct: 0, explanation: "F = 9×10⁹ × 10⁻¹² / 1 = 9×10⁻³ N." }
+      { q: "Entre una carga positiva y una negativa, la fuerza eléctrica es:", options: ["De atracción","De repulsión","Nula"], correct: 0, explanation: "Cargas de signo contrario se atraen." }
     ]
   },
   "5.2.1": {
@@ -76,8 +67,6 @@ const AREA5_EXTRA2 = {
       { front: "¿Cuál es el orden del espectro visible por energía?", back: "De menor a mayor energía: rojo, naranja, amarillo, verde, azul, violeta. El rojo tiene la mayor longitud de onda (≈700 nm) y el violeta la menor (≈400 nm)." }
     ],
     quiz: [
-      { q: "Dentro del espectro visible, el color con mayor longitud de onda es:", options: ["El rojo","El violeta","El verde"], correct: 0, explanation: "El rojo ronda los 700 nm, el extremo superior del visible." },
-      { q: "Una luz tiene una frecuencia de 6×10¹⁴ Hz. ¿Cuál es su longitud de onda? (c = 3×10⁸ m/s)", options: ["5×10⁻⁷ m","5×10⁻⁵ m","2×10⁶ m"], correct: 0, explanation: "λ = c/f = 3×10⁸ / 6×10¹⁴ = 5×10⁻⁷ m, es decir 500 nm (luz verde)." },
       { q: "Una hoja se ve verde porque:", options: ["Refleja la luz verde y absorbe el resto de los colores","Emite luz verde propia","Absorbe únicamente la luz verde"], correct: 0, explanation: "El color percibido corresponde a la luz reflejada, no a la absorbida." },
       { q: "La luz ultravioleta es más energética que la visible porque:", options: ["Tiene mayor frecuencia y menor longitud de onda","Viaja más rápido","Tiene mayor longitud de onda"], correct: 0, explanation: "La energía del fotón es proporcional a la frecuencia (E = hf)." },
       { q: "El arcoíris se forma por la:", options: ["Refracción y dispersión de la luz blanca en las gotas de agua","Reflexión total en las nubes","Absorción del color por el aire"], correct: 0, explanation: "Cada longitud de onda se desvía con un ángulo distinto y los colores se separan." }
@@ -90,11 +79,8 @@ const AREA5_EXTRA2 = {
       { front: "¿Cuál es el calor específico del agua y por qué importa?", back: "4,186 J/(kg·°C) o 1 cal/(g·°C), muy alto comparado con otras sustancias. Por eso el agua modera el clima costero y sirve como refrigerante." }
     ],
     quiz: [
-      { q: "¿Cuánto calor se necesita para elevar 20 °C la temperatura de 2 kg de agua? (c = 4,186 J/kg·°C)", options: ["167,440 J","83,720 J","8,372 J"], correct: 0, explanation: "Q = 2 × 4,186 × 20 = 167,440 J." },
       { q: "Dos cuerpos de la misma masa reciben la misma cantidad de calor. ¿Cuál se calienta más?", options: ["El de menor calor específico","El de mayor calor específico","Ambos por igual"], correct: 0, explanation: "Un calor específico bajo significa que se requiere poca energía por grado, así que ΔT resulta mayor." },
-      { q: "Se aplican 9,000 J a 500 g de una sustancia y su temperatura sube 10 °C. ¿Cuál es su calor específico?", options: ["1,800 J/(kg·°C)","180 J/(kg·°C)","450 J/(kg·°C)"], correct: 0, explanation: "c = Q/(m·ΔT) = 9,000/(0.5 × 10) = 1,800 J/(kg·°C)." },
-      { q: "El agua modera el clima de las zonas costeras porque:", options: ["Su alto calor específico le permite absorber mucho calor con poco cambio de temperatura","Refleja toda la luz solar","Se evapora instantáneamente"], correct: 0, explanation: "Actúa como un enorme regulador térmico." },
-      { q: "¿Cuánto calor cede 1 kg de aluminio al enfriarse 50 °C? (c = 900 J/kg·°C)", options: ["45,000 J","4,500 J","18,000 J"], correct: 0, explanation: "Q = 1 × 900 × 50 = 45,000 J cedidos al entorno." }
+      { q: "El agua modera el clima de las zonas costeras porque:", options: ["Su alto calor específico le permite absorber mucho calor con poco cambio de temperatura","Refleja toda la luz solar","Se evapora instantáneamente"], correct: 0, explanation: "Actúa como un enorme regulador térmico." }
     ]
   },
   "5.2.3": {
@@ -110,11 +96,7 @@ const AREA5_EXTRA2 = {
       { front: "¿Qué pasa con la energía cinética si la velocidad se duplica?", back: "Se cuadruplica, porque depende de v². Por eso la distancia de frenado de un auto crece mucho más rápido que su velocidad." }
     ],
     quiz: [
-      { q: "¿Cuál es la energía cinética de un cuerpo de 4 kg que se mueve a 10 m/s?", options: ["200 J","40 J","400 J"], correct: 0, explanation: "Ec = ½(4)(10²) = ½(4)(100) = 200 J." },
-      { q: "Un objeto de 5 kg está a 8 m de altura. ¿Cuál es su energía potencial gravitatoria? (g = 9.8 m/s²)", options: ["392 J","40 J","196 J"], correct: 0, explanation: "Ep = mgh = 5 × 9.8 × 8 = 392 J." },
-      { q: "Si la velocidad de un auto se duplica, su energía cinética:", options: ["Se cuadruplica","Se duplica","No cambia"], correct: 0, explanation: "Ec depende de v²: (2v)² = 4v²." },
-      { q: "Una pelota se suelta desde cierta altura. Justo antes de tocar el suelo:", options: ["Su energía potencial se convirtió casi toda en cinética","Su energía cinética es cero","Su energía mecánica aumentó"], correct: 0, explanation: "Sin fricción apreciable, la energía mecánica se conserva y solo cambia de forma." },
-      { q: "¿A qué velocidad se mueve un cuerpo de 2 kg que tiene 100 J de energía cinética?", options: ["10 m/s","50 m/s","5 m/s"], correct: 0, explanation: "100 = ½(2)v² → v² = 100 → v = 10 m/s." }
+      { q: "Una pelota se suelta desde cierta altura. Justo antes de tocar el suelo:", options: ["Su energía potencial se convirtió casi toda en cinética","Su energía cinética es cero","Su energía mecánica aumentó"], correct: 0, explanation: "Sin fricción apreciable, la energía mecánica se conserva y solo cambia de forma." }
     ]
   },
   "5.2.5": {
@@ -163,7 +145,6 @@ const AREA5_EXTRA2 = {
       { front: "¿Qué papel juegan los descomponedores?", back: "Devuelven al suelo los nutrientes de la materia orgánica muerta, cerrando los ciclos biogeoquímicos. Sin ellos, la materia quedaría inmovilizada." }
     ],
     quiz: [
-      { q: "Si los productores de un ecosistema fijan 20,000 kcal, ¿cuánta energía llega aproximadamente a los consumidores secundarios?", options: ["200 kcal","2,000 kcal","20 kcal"], correct: 0, explanation: "10 % pasa a los primarios (2,000) y 10 % de eso a los secundarios: 200 kcal." },
       { q: "En la cadena pasto → conejo → zorro, el conejo es:", options: ["Consumidor primario","Productor","Descomponedor"], correct: 0, explanation: "Se alimenta directamente de los productores." },
       { q: "Los hongos y las bacterias del suelo cumplen la función de:", options: ["Descomponedores que reciclan los nutrientes","Productores primarios","Consumidores terciarios"], correct: 0, explanation: "Transforman la materia orgánica muerta en compuestos inorgánicos reutilizables." },
       { q: "Las pirámides de energía son siempre más anchas en la base porque:", options: ["Solo una fracción pequeña de la energía pasa al nivel superior","Hay más especies grandes","Los productores son más pesados"], correct: 0, explanation: "La pérdida energética en cada transferencia limita el tamaño de los niveles altos." }
@@ -184,7 +165,6 @@ const AREA5_EXTRA2 = {
       { front: "¿Qué ecosistemas tienen la MENOR productividad primaria?", back: "Los desiertos y el océano abierto, por unidad de superficie. En el otro extremo están los arrecifes de coral, los estuarios y las selvas húmedas." }
     ],
     quiz: [
-      { q: "Un ecosistema fija 5,000 kcal/m² al año y sus productores gastan 2,000 en respiración. ¿Cuál es la productividad primaria neta?", options: ["3,000 kcal/m²","7,000 kcal/m²","2,000 kcal/m²"], correct: 0, explanation: "PPN = PPB − R = 5,000 − 2,000 = 3,000 kcal/m² al año." },
       { q: "La productividad primaria neta es importante porque representa:", options: ["La energía realmente disponible para los consumidores","La energía total captada por el Sol","La biomasa de los descomponedores"], correct: 0, explanation: "Es la fracción que puede sostener a los niveles tróficos superiores." },
       { q: "¿Cuál de estos ecosistemas tiene la menor productividad primaria por unidad de superficie?", options: ["El desierto","El arrecife de coral","La selva húmeda"], correct: 0, explanation: "La escasez de agua limita severamente la fotosíntesis." },
       { q: "La productividad secundaria corresponde a:", options: ["La biomasa producida por los consumidores","La energía fijada por las plantas","El carbono del suelo"], correct: 0, explanation: "Se refiere a la generación de biomasa animal a partir del alimento consumido." },
@@ -221,13 +201,6 @@ const AREA5_EXTRA2 = {
       { front: "¿Qué es un mol y cuánto vale el número de Avogadro?", back: "Un mol es la cantidad de sustancia que contiene 6.022×10²³ partículas. La masa de un mol en gramos coincide con la masa molar." },
       { front: "¿Cuál es la masa molar del H₂SO₄?", back: "98 g/mol: 2(1) + 32 + 4(16), sumando las masas atómicas de todos los átomos de la fórmula." },
       { front: "Fórmula para convertir gramos en moles", back: "n = m / M (masa entre masa molar). Y para obtener partículas: N = n × 6.022×10²³." }
-    ],
-    quiz: [
-      { q: "¿Cuál es la masa molar del agua (H₂O)? (H = 1, O = 16)", options: ["18 g/mol","17 g/mol","20 g/mol"], correct: 0, explanation: "2(1) + 16 = 18 g/mol." },
-      { q: "¿Cuál es la masa molar del ácido sulfúrico (H₂SO₄)? (H = 1, S = 32, O = 16)", options: ["98 g/mol","82 g/mol","114 g/mol"], correct: 0, explanation: "2(1) + 32 + 4(16) = 2 + 32 + 64 = 98 g/mol." },
-      { q: "¿Cuántos moles hay en 88 g de dióxido de carbono? (masa molar del CO₂ = 44 g/mol)", options: ["2 moles","4 moles","0.5 moles"], correct: 0, explanation: "n = 88/44 = 2 moles." },
-      { q: "¿Cuál es la masa molar del carbonato de calcio (CaCO₃)? (Ca = 40, C = 12, O = 16)", options: ["100 g/mol","68 g/mol","88 g/mol"], correct: 0, explanation: "40 + 12 + 3(16) = 40 + 12 + 48 = 100 g/mol." },
-      { q: "¿Cuántas moléculas hay en 2 moles de cualquier sustancia?", options: ["1.2044×10²⁴","6.022×10²³","3.011×10²³"], correct: 0, explanation: "2 × 6.022×10²³ = 1.2044×10²⁴ moléculas." }
     ]
   },
   "5.4.2": {
@@ -254,7 +227,6 @@ const AREA5_EXTRA2 = {
     quiz: [
       { q: "En un choque perfectamente inelástico, los cuerpos:", options: ["Quedan unidos y se mueven con una velocidad común","Rebotan conservando toda su energía cinética","Se detienen siempre por completo"], correct: 0, explanation: "La unión tras el impacto es la característica que lo define." },
       { q: "¿Qué magnitud se conserva en todos los tipos de choque?", options: ["El momento lineal","La energía cinética","La velocidad de cada cuerpo"], correct: 0, explanation: "La conservación del momento se cumple siempre que no haya fuerzas externas netas." },
-      { q: "Un carrito de 2 kg a 3 m/s choca y queda unido a otro de 1 kg en reposo. ¿Cuál es la velocidad final del conjunto?", options: ["2 m/s","3 m/s","1.5 m/s"], correct: 0, explanation: "p = 2(3) = 6 kg·m/s; al repartirse entre 3 kg: v = 6/3 = 2 m/s." },
       { q: "En un choque elástico entre dos bolas de billar:", options: ["Se conservan el momento lineal y la energía cinética","Solo se conserva la energía cinética","No se conserva nada"], correct: 0, explanation: "Es la definición de choque elástico, muy bien aproximada por las bolas de billar." },
       { q: "La energía cinética que se pierde en un choque inelástico se transforma principalmente en:", options: ["Calor, sonido y deformación de los cuerpos","Momento lineal adicional","Energía potencial gravitatoria"], correct: 0, explanation: "La energía no desaparece: cambia a formas no mecánicas." }
     ]
@@ -266,10 +238,7 @@ const AREA5_EXTRA2 = {
       { front: "¿Cuándo se conserva el momento lineal de un sistema?", back: "Siempre que la suma de las fuerzas externas sea cero. Por eso funciona en choques y explosiones aisladas." }
     ],
     quiz: [
-      { q: "¿Cuál es el momento lineal de un cuerpo de 6 kg que se mueve a 4 m/s?", options: ["24 kg·m/s","10 kg·m/s","1.5 kg·m/s"], correct: 0, explanation: "p = mv = 6 × 4 = 24 kg·m/s." },
-      { q: "Una pelota de 0.5 kg cambia su velocidad de 0 a 20 m/s en 0.1 s. ¿Qué fuerza media actuó sobre ella?", options: ["100 N","10 N","1,000 N"], correct: 0, explanation: "F = Δp/Δt = (0.5 × 20)/0.1 = 10/0.1 = 100 N." },
       { q: "La bolsa de aire de un automóvil reduce las lesiones porque:", options: ["Aumenta el tiempo del impacto y con ello disminuye la fuerza","Reduce el momento lineal del pasajero a la mitad","Elimina la energía cinética"], correct: 0, explanation: "Con el mismo cambio de momento, un Δt mayor implica una fuerza menor." },
-      { q: "Un objeto de 3 kg tiene un momento lineal de 45 kg·m/s. ¿Cuál es su velocidad?", options: ["15 m/s","135 m/s","48 m/s"], correct: 0, explanation: "v = p/m = 45/3 = 15 m/s." },
       { q: "El momento lineal es una magnitud vectorial, lo que significa que:", options: ["Tiene magnitud y dirección, la misma de la velocidad","Solo tiene magnitud","Siempre es positivo"], correct: 0, explanation: "Por eso en un choque frontal los momentos de signo contrario se restan." }
     ]
   },
@@ -283,7 +252,6 @@ const AREA5_EXTRA2 = {
       { q: "Las ondas de radio se caracterizan porque:", options: ["Tienen la mayor longitud de onda y la menor energía del espectro","Son las más energéticas","Solo viajan por medios materiales"], correct: 0, explanation: "Ocupan el extremo de baja frecuencia del espectro electromagnético." },
       { q: "El control remoto de un televisor funciona con radiación:", options: ["Infrarroja","Ultravioleta","De rayos X"], correct: 0, explanation: "Emite pulsos infrarrojos que el receptor decodifica." },
       { q: "Las radiografías médicas emplean:", options: ["Rayos X, que atraviesan tejidos blandos pero no los huesos","Ondas de radio","Luz visible intensa"], correct: 0, explanation: "La distinta absorción entre hueso y tejido produce la imagen." },
-      { q: "Una onda electromagnética tiene una longitud de 3 m. ¿Cuál es su frecuencia? (c = 3×10⁸ m/s)", options: ["1×10⁸ Hz","9×10⁸ Hz","1×10⁻⁸ Hz"], correct: 0, explanation: "f = c/λ = 3×10⁸ / 3 = 1×10⁸ Hz (100 MHz, banda de FM)." },
       { q: "El bloqueador solar protege principalmente de la radiación:", options: ["Ultravioleta","Infrarroja","De microondas"], correct: 0, explanation: "La radiación UV es la que daña el ADN de las células de la piel." }
     ]
   },
@@ -293,10 +261,7 @@ const AREA5_EXTRA2 = {
       { front: "¿De qué depende el tiempo de caída de un objeto en el vacío?", back: "Solo de la altura y de la gravedad, nunca de la masa. En el vacío, una pluma y un martillo caen exactamente igual." }
     ],
     quiz: [
-      { q: "Un objeto se deja caer desde el reposo. ¿Qué velocidad lleva a los 3 segundos? (g = 9.8 m/s²)", options: ["29.4 m/s","9.8 m/s","44.1 m/s"], correct: 0, explanation: "v = gt = 9.8 × 3 = 29.4 m/s." },
-      { q: "¿Desde qué altura cayó un objeto que tardó 2 segundos en llegar al suelo? (g = 9.8 m/s²)", options: ["19.6 m","9.8 m","39.2 m"], correct: 0, explanation: "h = ½gt² = ½(9.8)(4) = 19.6 m." },
-      { q: "En el vacío, una pluma y una piedra soltadas desde la misma altura:", options: ["Llegan al suelo al mismo tiempo","La piedra llega primero","La pluma llega primero"], correct: 0, explanation: "Sin resistencia del aire, la aceleración es igual para todas las masas." },
-      { q: "¿Qué velocidad lleva al llegar al suelo un objeto soltado desde 45 m? (usa g = 10 m/s²)", options: ["30 m/s","45 m/s","22.5 m/s"], correct: 0, explanation: "v² = 2gh = 2(10)(45) = 900, así que v = 30 m/s." }
+      { q: "En el vacío, una pluma y una piedra soltadas desde la misma altura:", options: ["Llegan al suelo al mismo tiempo","La piedra llega primero","La pluma llega primero"], correct: 0, explanation: "Sin resistencia del aire, la aceleración es igual para todas las masas." }
     ]
   },
   "5.6.1": {
@@ -349,8 +314,7 @@ const AREA5_EXTRA2 = {
       { q: "La principal ventaja de la reproducción sexual es:", options: ["La variabilidad genética de la descendencia","La rapidez del proceso","No requerir pareja"], correct: 0, explanation: "La recombinación aumenta las probabilidades de adaptación ante cambios del ambiente." },
       { q: "Una planta que se propaga por estolones se reproduce de manera:", options: ["Asexual (vegetativa)","Sexual","Por polinización cruzada"], correct: 0, explanation: "La descendencia es genéticamente idéntica a la planta madre." },
       { q: "La meiosis se distingue de la mitosis porque:", options: ["Reduce a la mitad el número de cromosomas y genera variabilidad","Produce células idénticas","Ocurre en todas las células del cuerpo"], correct: 0, explanation: "Es indispensable para que al unirse los gametos se restablezca el número diploide." },
-      { q: "La bipartición es una forma de reproducción típica de:", options: ["Las bacterias","Los mamíferos","Las aves"], correct: 0, explanation: "La célula duplica su material genético y se divide en dos células idénticas." },
-      { q: "Una desventaja de la reproducción asexual es que:", options: ["La falta de variabilidad hace vulnerable a toda la población ante una misma amenaza","Requiere mucha energía","Produce pocos descendientes"], correct: 0, explanation: "Al ser clones, una plaga o enfermedad puede afectar a todos por igual." }
+      { q: "La bipartición es una forma de reproducción típica de:", options: ["Las bacterias","Los mamíferos","Las aves"], correct: 0, explanation: "La célula duplica su material genético y se divide en dos células idénticas." }
     ]
   },
   "5.7.2": {

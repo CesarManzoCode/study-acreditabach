@@ -38,7 +38,6 @@ const AREA5_EXTRA = {
     quiz: [
       { q: "Al balancear una ecuación química, ¿qué está permitido modificar?", options: ["Solo los coeficientes que van delante de las fórmulas","Los subíndices de las fórmulas","Tanto coeficientes como subíndices"], correct: 0, explanation: "Cambiar un subíndice cambiaría la sustancia: H₂O y H₂O₂ son compuestos distintos." },
       { q: "Un tronco arde y las cenizas pesan mucho menos que el tronco original. ¿Se viola la conservación de la materia?", options: ["No: los gases liberados no se pesaron, y con ellos la masa total se conserva","Sí, la materia se destruyó al quemarse","Sí, la masa se convirtió en energía pura"], correct: 0, explanation: "El CO₂ y el vapor de agua escapan al aire; en un sistema cerrado la masa total no cambiaría." },
-      { q: "¿Cuántos átomos de oxígeno hay en total del lado izquierdo de la ecuación 2H₂ + O₂ → 2H₂O?", options: ["2","1","4"], correct: 0, explanation: "O₂ tiene dos átomos de oxígeno, que coinciden con los dos del lado derecho (2 × 1 en 2H₂O)." },
       { q: "En un experimento cerrado reaccionan 10 g de A con 15 g de B. ¿Cuánta masa tendrán los productos?", options: ["25 g","Menos de 25 g","Depende del tipo de reacción"], correct: 0, explanation: "En un sistema cerrado la masa de los productos siempre iguala a la de los reactivos." }
     ]
   },
@@ -194,7 +193,6 @@ const AREA5_EXTRA = {
     ],
     quiz: [
       { q: "¿Cuántas moléculas hay en un mol de cualquier sustancia?", options: ["6.022×10²³","1,000","100"], correct: 0, explanation: "Es el número de Avogadro, constante para cualquier sustancia." },
-      { q: "La masa molar del agua es 18 g/mol. ¿Cuántos moles hay en 90 g de agua?", options: ["5 moles","1,620 moles","0.2 moles"], correct: 0, explanation: "moles = 90 ÷ 18 = 5 moles." },
       { q: "Para calcular la masa molar de un compuesto se necesita:", options: ["La fórmula química y las masas atómicas de sus elementos","Solo el número de átomos totales","La densidad del compuesto"], correct: 0, explanation: "Se multiplica cada masa atómica por su subíndice y se suman los resultados." },
       { q: "En la fórmula Ca(OH)₂, ¿cuántos átomos de oxígeno hay?", options: ["2","1","3"], correct: 0, explanation: "El subíndice fuera del paréntesis multiplica todo lo que está dentro: hay 2 O y 2 H." }
     ]

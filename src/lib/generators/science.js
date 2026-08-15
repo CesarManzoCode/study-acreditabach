@@ -67,8 +67,11 @@ export function conservacionMateria(h) {
   };
 }
 
+/* Guía 5.1.4: "Conversión de valores de temperatura entre escalas Celsius y
+   Fahrenheit". Los modos con kelvin quedaron fuera: la orientación nombra dos
+   escalas y solo dos. */
 export function escalasTermometricas(h) {
-  const modo = h.pick(["CaF", "FaC", "CaK", "KaC"]);
+  const modo = h.pick(["CaF", "FaC"]);
   const c = h.int(-8, 20) * 5; // múltiplo de 5 → conversión exacta
 
   if (modo === "CaF") {
@@ -95,28 +98,7 @@ export function escalasTermometricas(h) {
     };
   }
 
-  if (modo === "CaK") {
-    const k = c + 273;
-    const opts = h.choice3(`${fmt(k)} K`, [`${fmt(c - 273)} K`, `${fmt(273 - c)} K`, `${fmt((c * 9) / 5 + 32)} K`]);
-    if (!opts) return null;
-    return {
-      q: `Convierte ${c} °C a kelvin.`,
-      options: opts.options,
-      correct: opts.correct,
-      explanation: `K = °C + 273 = ${c} + 273 = ${fmt(k)} K. La escala Kelvin usa el mismo tamaño de grado que Celsius, solo cambia el punto de partida (el cero absoluto).`
-    };
-  }
-
-  const k = c + 273;
-  if (k < 0) return null;
-  const opts = h.choice3(`${fmt(c)} °C`, [`${fmt(k + 273)} °C`, `${fmt(273 - k)} °C`, `${fmt(k)} °C`]);
-  if (!opts) return null;
-  return {
-    q: `Convierte ${fmt(k)} K a grados Celsius.`,
-    options: opts.options,
-    correct: opts.correct,
-    explanation: `°C = K - 273 = ${fmt(k)} - 273 = ${fmt(c)} °C.`
-  };
+  return null;
 }
 
 export function leyCoulomb(h) {

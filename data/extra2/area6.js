@@ -363,7 +363,6 @@ const AREA6_EXTRA2 = {
       { front: "Should y ought to", back: "Expresan consejo o recomendación: «You should see a doctor». Son menos fuertes que must y siempre van seguidos de verbo en forma base." }
     ],
     quiz: [
-      { q: "Complete: «You ______ smoke in the hospital. It's forbidden.»", options: ["mustn't","don't have to","shouldn't"], correct: 0, explanation: "«Mustn't» expresa prohibición absoluta." },
       { q: "Complete: «You look pale. You ______ see a doctor.»", options: ["should","must not","can"], correct: 0, explanation: "Se trata de un consejo: should." },
       { q: "Complete: «He ______ be at home; his car is in the driveway.»", options: ["must","can't","shouldn't"], correct: 0, explanation: "Deducción con alta certeza a partir de una evidencia." }
     ]
@@ -374,7 +373,6 @@ const AREA6_EXTRA2 = {
       { front: "Second conditional", back: "if + past simple, would + base. Situación hipotética o improbable en el presente: «If I had money, I would travel». Con el verbo to be se usa «were» para todas las personas." }
     ],
     quiz: [
-      { q: "Complete: «If it ______ tomorrow, we will cancel the trip.»", options: ["rains","will rain","rained"], correct: 0, explanation: "En el first conditional, la cláusula con «if» va en presente simple." },
       { q: "Complete: «If I ______ rich, I would buy a house by the sea.»", options: ["were","am","will be"], correct: 0, explanation: "Second conditional: situación hipotética con «were» para todas las personas." },
       { q: "Complete: «If you heat water to 100 °C, it ______.»", options: ["boils","will boil","would boil"], correct: 0, explanation: "Zero conditional: verdad general con presente en ambas cláusulas." }
     ]

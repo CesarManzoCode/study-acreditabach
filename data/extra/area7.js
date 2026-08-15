@@ -234,7 +234,6 @@ const AREA7_EXTRA = {
     ],
     quiz: [
       { q: "Un anuncio de empleo que pide 'buena presentación' y foto puede propiciar:", options: ["Discriminación por apariencia u origen étnico","Igualdad de oportunidades","Movilidad social"], correct: 0, explanation: "Introduce criterios ajenos a la capacidad para el puesto y suele traducirse en exclusión." },
-      { q: "Suponer que todas las personas de una región son flojas es un ejemplo de:", options: ["Estereotipo","Exclusión legal","Movilidad social"], correct: 0, explanation: "Es una generalización simplificada sobre un grupo, base frecuente de la discriminación." },
       { q: "¿Cuál es la diferencia entre estereotipo y discriminación?", options: ["El estereotipo es la idea generalizada; la discriminación es el trato desigual que puede derivar de ella","Son sinónimos","La discriminación es una idea y el estereotipo una acción"], correct: 0, explanation: "El prejuicio está en la cabeza; la discriminación se manifiesta en actos concretos." },
       { q: "Una escuela sin rampas ni señalización accesible genera:", options: ["Exclusión de estudiantes con discapacidad","Segregación residencial","Movilidad social ascendente"], correct: 0, explanation: "Las barreras físicas impiden el ejercicio efectivo del derecho a la educación." }
     ]

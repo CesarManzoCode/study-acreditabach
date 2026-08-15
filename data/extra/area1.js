@@ -52,7 +52,6 @@ const AREA1_EXTRA = {
       { front: "¿Cuánto vale 0!?", back: "Por definición, 0! = 1. Sirve para que las fórmulas de permutaciones y combinaciones funcionen en los casos extremos." }
     ],
     quiz: [
-      { q: "Un menú ofrece 3 sopas, 4 guisados y 2 postres. ¿Cuántas comidas distintas de tres tiempos se pueden armar?", options: ["24","9","12"], correct: 0, explanation: "Por el principio multiplicativo: 3 × 4 × 2 = 24 combinaciones posibles." },
       { q: "¿Cuál es la relación entre nPr y nCr?", options: ["nPr = nCr × r!, porque la permutación además ordena cada selección","Son siempre iguales","nCr es siempre mayor que nPr"], correct: 0, explanation: "Cada combinación de r elementos puede ordenarse de r! maneras distintas." },
       { q: "Para formar una contraseña de 4 dígitos donde los números pueden repetirse, ¿cuántas opciones hay?", options: ["10⁴ = 10,000","10P4 = 5,040","10C4 = 210"], correct: 0, explanation: "Al permitirse la repetición no aplica la permutación: hay 10 opciones en cada una de las 4 posiciones." }
     ]
@@ -63,7 +62,6 @@ const AREA1_EXTRA = {
       { front: "¿Qué es la probabilidad complementaria?", back: "P(no A) = 1 - P(A). Es el atajo para los problemas de 'al menos uno': calcular la probabilidad de que no ocurra ninguno y restarla de 1." }
     ],
     quiz: [
-      { q: "Si la probabilidad de que llueva es 0.3, ¿cuál es la probabilidad de que NO llueva?", options: ["0.7","0.3","1.3"], correct: 0, explanation: "El complemento se obtiene restando de 1: 1 - 0.3 = 0.7." },
       { q: "Se lanzan dos monedas. ¿Cuál es la probabilidad de obtener al menos un águila?", options: ["3/4","1/2","1/4"], correct: 0, explanation: "Los cuatro resultados posibles son AA, AS, SA, SS; solo SS no tiene águila, así que 3/4." },
       { q: "Se lanza una moneda cinco veces y sale sol las cinco. ¿Cuál es la probabilidad de que el sexto lanzamiento sea águila?", options: ["1/2, porque los lanzamientos son independientes","Mayor que 1/2, porque 'toca' águila","Menor que 1/2"], correct: 0, explanation: "La moneda no recuerda los resultados anteriores: creer lo contrario es la falacia del jugador." }
     ]
@@ -75,8 +73,7 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "¿Qué significa la notación P(A|B)?", options: ["La probabilidad de que ocurra A dado que ya ocurrió B","La probabilidad de que ocurran A y B a la vez","La probabilidad de que ocurra A o B"], correct: 0, explanation: "La barra vertical indica condición: se restringe el espacio muestral a los casos donde ocurrió B." },
-      { q: "Se extraen dos cartas de una baraja SIN reemplazo. Los eventos son:", options: ["Dependientes, porque la primera extracción cambia el mazo","Independientes","Mutuamente excluyentes"], correct: 0, explanation: "Al no regresar la carta cambian tanto los casos favorables como los posibles de la segunda extracción." },
-      { q: "En un grupo, 60% son mujeres y 30% del total son mujeres que practican deporte. ¿Qué probabilidad hay de que una mujer elegida al azar practique deporte?", options: ["0.5","0.3","0.18"], correct: 0, explanation: "P(deporte|mujer) = 0.30 / 0.60 = 0.5, es decir, la mitad de las mujeres del grupo." }
+      { q: "Se extraen dos cartas de una baraja SIN reemplazo. Los eventos son:", options: ["Dependientes, porque la primera extracción cambia el mazo","Independientes","Mutuamente excluyentes"], correct: 0, explanation: "Al no regresar la carta cambian tanto los casos favorables como los posibles de la segunda extracción." }
     ]
   },
   "1.3.1": {
@@ -86,8 +83,7 @@ const AREA1_EXTRA = {
       { front: "¿Qué es el coeficiente y qué es el término independiente?", back: "En 4x + 7, el **coeficiente** es el 4 que multiplica a la variable, y el **término independiente** es el 7, que no depende de x." }
     ],
     quiz: [
-      { q: "Si x es la edad de Ana y Luis tiene 3 años menos que el doble de la edad de Ana, ¿qué expresión representa la edad de Luis?", options: ["2x - 3","2(x - 3)","3 - 2x"], correct: 0, explanation: "Primero el doble (2x) y luego se le restan 3 años: 2x - 3." },
-      { q: "Un taxi cobra $12 de banderazo más $8 por kilómetro. ¿Qué expresión representa el costo de un viaje de k kilómetros?", options: ["12 + 8k","8 + 12k","20k"], correct: 0, explanation: "El banderazo es fijo y los $8 se multiplican por la cantidad de kilómetros recorridos." }
+      { q: "Si x es la edad de Ana y Luis tiene 3 años menos que el doble de la edad de Ana, ¿qué expresión representa la edad de Luis?", options: ["2x - 3","2(x - 3)","3 - 2x"], correct: 0, explanation: "Primero el doble (2x) y luego se le restan 3 años: 2x - 3." }
     ]
   },
   "1.3.2": {
@@ -118,7 +114,6 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "Al resolver una ecuación se llega a 3 = 7. ¿Qué significa?", options: ["Que la ecuación no tiene solución","Que la solución es x = 4","Que hay infinitas soluciones"], correct: 0, explanation: "Se llegó a una contradicción: ningún valor de x satisface la igualdad original." },
-      { q: "La suma de tres números consecutivos es 72. ¿Cuál es el menor?", options: ["23","24","22"], correct: 0, explanation: "x + (x+1) + (x+2) = 72 → 3x + 3 = 72 → x = 23, y los números son 23, 24 y 25." },
       { q: "¿Cuál es el primer paso recomendable para resolver 2(x - 3) = 4x + 8?", options: ["Aplicar la propiedad distributiva del lado izquierdo","Dividir todo entre 4","Sumar 3 a los dos lados"], correct: 0, explanation: "Conviene eliminar el paréntesis antes de agrupar términos semejantes: 2x - 6 = 4x + 8." }
     ]
   },
@@ -140,7 +135,6 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "Al resolver un sistema de dos ecuaciones se obtiene 0 = 8. ¿Qué se concluye?", options: ["El sistema no tiene solución: las rectas son paralelas","Hay infinitas soluciones","La solución es x = 8"], correct: 0, explanation: "La contradicción indica que no existe ningún par (x, y) que cumpla las dos ecuaciones a la vez." },
-      { q: "En una tienda, 3 cuadernos y 2 plumas cuestan $86, y 1 cuaderno y 4 plumas cuestan $72. ¿Cuánto cuesta un cuaderno?", options: ["$20","$13","$26"], correct: 0, explanation: "Del sistema 3c + 2p = 86 y c + 4p = 72 se obtiene c = 20 y p = 13; comprobando: 3(20) + 2(13) = 86." },
       { q: "Gráficamente, la solución de un sistema de dos ecuaciones lineales es:", options: ["El punto donde se cruzan las dos rectas","La pendiente común de ambas rectas","El área entre las rectas"], correct: 0, explanation: "Ese punto es el único par de valores que satisface las dos ecuaciones simultáneamente." }
     ]
   },
@@ -150,9 +144,7 @@ const AREA1_EXTRA = {
       { front: "¿Qué pasa si la tasa es anual y el plazo está en meses?", back: "Hay que convertir: t = meses/12, o dividir la tasa anual entre 12 para volverla mensual. Mezclar unidades es el error más frecuente." }
     ],
     quiz: [
-      { q: "Se prestan $6,000 al 12% anual simple durante 6 meses. ¿Cuánto interés se genera?", options: ["$360","$720","$60"], correct: 0, explanation: "Seis meses son 0.5 años: I = 6,000 × 0.12 × 0.5 = $360." },
-      { q: "En el interés simple, ¿sobre qué monto se calculan los intereses de cada periodo?", options: ["Siempre sobre el capital inicial","Sobre el capital más los intereses acumulados","Sobre el monto final"], correct: 0, explanation: "Esa es justo la diferencia con el interés compuesto, donde los intereses también generan intereses." },
-      { q: "Un capital de $10,000 genera $1,500 de interés simple en 3 años. ¿Cuál es la tasa anual?", options: ["5%","15%","1.5%"], correct: 0, explanation: "De I = C·i·t: 1,500 = 10,000 · i · 3, de donde i = 0.05, es decir, 5% anual." }
+      { q: "En el interés simple, ¿sobre qué monto se calculan los intereses de cada periodo?", options: ["Siempre sobre el capital inicial","Sobre el capital más los intereses acumulados","Sobre el monto final"], correct: 0, explanation: "Esa es justo la diferencia con el interés compuesto, donde los intereses también generan intereses." }
     ]
   },
   "1.3.8": {
@@ -161,9 +153,7 @@ const AREA1_EXTRA = {
       { front: "¿Qué pasa si la capitalización es mensual y la tasa es anual?", back: "Se divide la tasa entre 12 y se multiplica el plazo por 12: M = C(1 + i/12)^(12t). A mayor frecuencia de capitalización, mayor monto final." }
     ],
     quiz: [
-      { q: "¿Por qué el interés compuesto produce más que el simple con la misma tasa y plazo?", options: ["Porque los intereses ganados también generan intereses en los periodos siguientes","Porque la tasa se duplica automáticamente","Porque el capital inicial aumenta por sí solo"], correct: 0, explanation: "En cada periodo la base de cálculo crece: es el efecto del interés sobre el interés." },
-      { q: "Un capital se invierte al 10% anual compuesto. ¿Cuánto vale $1 después de 2 años?", options: ["$1.21","$1.20","$1.10"], correct: 0, explanation: "1 × 1.10² = 1.21; con interés simple habrían sido solo $1.20." },
-      { q: "Si la tasa anual es del 24% con capitalización mensual, la tasa por periodo es:", options: ["2%","24%","12%"], correct: 0, explanation: "Se divide la tasa anual entre el número de periodos del año: 24% ÷ 12 = 2% mensual." }
+      { q: "¿Por qué el interés compuesto produce más que el simple con la misma tasa y plazo?", options: ["Porque los intereses ganados también generan intereses en los periodos siguientes","Porque la tasa se duplica automáticamente","Porque el capital inicial aumenta por sí solo"], correct: 0, explanation: "En cada periodo la base de cálculo crece: es el efecto del interés sobre el interés." }
     ]
   },
   "1.4.1": {
@@ -173,7 +163,6 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "¿Cuándo se usa el MCM en un problema de la vida diaria?", options: ["Cuando algo se repite en ciclos y se busca la próxima coincidencia","Cuando se reparte algo en grupos iguales lo más grandes posible","Cuando se calcula un promedio"], correct: 0, explanation: "Camiones que salen cada cierto tiempo, luces que parpadean, ciclos que se sincronizan: todos son MCM." },
-      { q: "Si MCD(12, 18) = 6, ¿cuánto vale MCM(12, 18)?", options: ["36","216","108"], correct: 0, explanation: "MCM = (12 × 18) / 6 = 216/6 = 36." },
       { q: "El MCM de dos números primos distintos, como 7 y 11, es:", options: ["Su producto: 77","El menor de los dos: 7","1"], correct: 0, explanation: "Al no compartir factores, el mínimo común múltiplo es simplemente el producto." }
     ]
   },
@@ -184,8 +173,7 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "¿En qué situación se usa el MCD?", options: ["Al repartir cantidades en grupos iguales lo más grandes posible sin que sobre nada","Al buscar cuándo coinciden dos ciclos","Al calcular un porcentaje"], correct: 0, explanation: "Cortar listones, armar paquetes iguales o formar equipos parejos sin sobrantes son problemas de MCD." },
-      { q: "Para simplificar la fracción 24/36, ¿entre qué número conviene dividir?", options: ["Entre 12, que es su MCD","Entre 2, que es el menor divisor","Entre 72, que es su MCM"], correct: 0, explanation: "24/12 = 2 y 36/12 = 3, así que la fracción irreducible es 2/3 en un solo paso." },
-      { q: "¿Cuál es el MCD de 14 y 25?", options: ["1, son primos entre sí","7","350"], correct: 0, explanation: "14 = 2×7 y 25 = 5²: no comparten factores, así que su MCD es 1." }
+      { q: "Para simplificar la fracción 24/36, ¿entre qué número conviene dividir?", options: ["Entre 12, que es su MCD","Entre 2, que es el menor divisor","Entre 72, que es su MCM"], correct: 0, explanation: "24/12 = 2 y 36/12 = 3, así que la fracción irreducible es 2/3 en un solo paso." }
     ]
   },
   "1.4.3": {
@@ -201,8 +189,7 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "¿Cuál de estas relaciones es de proporcionalidad INVERSA?", options: ["La velocidad y el tiempo para recorrer una distancia fija","El número de kilos comprados y lo que se paga","Las horas trabajadas y el sueldo por hora fija"], correct: 0, explanation: "A mayor velocidad, menos tiempo: el producto velocidad × tiempo se mantiene constante." },
-      { q: "En una proporcionalidad directa, si x se duplica, ¿qué le pasa a y?", options: ["También se duplica","Se reduce a la mitad","Queda igual"], correct: 0, explanation: "En y = kx, multiplicar x por 2 multiplica y por 2: el cociente y/x no cambia." },
-      { q: "Una alberca se llena con 6 llaves en 8 horas. ¿Cuánto tardarían 4 llaves con el mismo caudal?", options: ["12 horas","6 horas","5.33 horas"], correct: 0, explanation: "Es proporcionalidad inversa: 6 × 8 = 48 llaves-hora, así que 48 ÷ 4 = 12 horas." }
+      { q: "En una proporcionalidad directa, si x se duplica, ¿qué le pasa a y?", options: ["También se duplica","Se reduce a la mitad","Queda igual"], correct: 0, explanation: "En y = kx, multiplicar x por 2 multiplica y por 2: el cociente y/x no cambia." }
     ]
   },
   "1.4.5": {
@@ -211,9 +198,7 @@ const AREA1_EXTRA = {
       { front: "¿Dos descuentos sucesivos del 20% equivalen a uno del 40%?", back: "No. El segundo 20% se aplica al precio ya rebajado: 0.8 × 0.8 = 0.64, es decir, un descuento total del 36%." }
     ],
     quiz: [
-      { q: "Un producto sube 20% y después baja 20%. ¿Cómo queda respecto al precio original?", options: ["Queda 4% más barato","Queda igual","Queda 4% más caro"], correct: 0, explanation: "1.20 × 0.80 = 0.96: la baja se aplica sobre un precio mayor, así que no se compensan." },
-      { q: "Un estudiante obtuvo 27 aciertos de 45 reactivos. ¿Qué porcentaje logró?", options: ["60%","45%","27%"], correct: 0, explanation: "(27 ÷ 45) × 100 = 60%." },
-      { q: "Al precio de $500 se le agrega 16% de IVA. ¿Cuál es el total a pagar?", options: ["$580","$516","$484"], correct: 0, explanation: "500 × 1.16 = $580; el IVA de $80 se suma al precio base." }
+      { q: "Un producto sube 20% y después baja 20%. ¿Cómo queda respecto al precio original?", options: ["Queda 4% más barato","Queda igual","Queda 4% más caro"], correct: 0, explanation: "1.20 × 0.80 = 0.96: la baja se aplica sobre un precio mayor, así que no se compensan." }
     ]
   },
   "1.5.1": {
@@ -238,16 +223,12 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "¿Un triángulo de lados 6, 8 y 10 cm es rectángulo?", options: ["Sí, porque 6² + 8² = 10²","No, porque no son múltiplos de 5","No se puede determinar"], correct: 0, explanation: "36 + 64 = 100 = 10²: cumple el teorema de Pitágoras, así que es rectángulo." },
-      { q: "En un triángulo rectángulo, la hipotenusa siempre es:", options: ["El lado más largo, opuesto al ángulo recto","El lado más corto","Cualquiera de los tres lados"], correct: 0, explanation: "Al ser opuesta al mayor ángulo (90°), es necesariamente el lado de mayor longitud." },
-      { q: "Se quiere saber cuántos metros de cable se necesitan para ir de la punta de un poste de 12 m a un punto en el suelo a 5 m de su base. ¿Cuánto mide el cable?", options: ["13 m","17 m","7 m"], correct: 0, explanation: "√(12² + 5²) = √169 = 13 m: el poste y el suelo forman un ángulo recto." }
+      { q: "En un triángulo rectángulo, la hipotenusa siempre es:", options: ["El lado más largo, opuesto al ángulo recto","El lado más corto","Cualquiera de los tres lados"], correct: 0, explanation: "Al ser opuesta al mayor ángulo (90°), es necesariamente el lado de mayor longitud." }
     ]
   },
   "1.5.4": {
     flashcards: [
       { front: "¿Cómo se calcula la distancia entre dos puntos del plano?", back: "d = √((x₂-x₁)² + (y₂-y₁)²). Es el teorema de Pitágoras aplicado al triángulo que forman las diferencias horizontales y verticales." }
-    ],
-    quiz: [
-      { q: "¿Cuál es la distancia entre los puntos (1, 2) y (4, 6)?", options: ["5","7","25"], correct: 0, explanation: "√((4-1)² + (6-2)²) = √(9 + 16) = √25 = 5." }
     ]
   },
   "1.6.1": {
@@ -257,7 +238,6 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "Al resolver -2x > 8, la solución es:", options: ["x < -4","x > -4","x > 4"], correct: 0, explanation: "Al dividir entre -2 (negativo) se invierte el signo de la desigualdad." },
-      { q: "El conjunto de números mayores o iguales a -3 y menores que 7 se escribe:", options: ["[-3, 7)","(-3, 7]","[-3, 7]"], correct: 0, explanation: "El corchete incluye el -3 (≥) y el paréntesis excluye el 7 (<)." },
       { q: "'Para entrar se requiere tener al menos 18 años' se expresa como:", options: ["edad ≥ 18","edad > 18","edad ≤ 18"], correct: 0, explanation: "'Al menos' incluye el valor mencionado, así que corresponde a mayor o igual que." }
     ]
   },
@@ -279,7 +259,6 @@ const AREA1_EXTRA = {
     ],
     quiz: [
       { q: "¿Qué indica una indeterminación de la forma 0/0 al evaluar un límite?", options: ["Que hay que transformar la expresión antes de concluir","Que el límite es cero","Que el límite no existe"], correct: 0, explanation: "Es una señal de que la sustitución directa no basta: hay que factorizar o racionalizar." },
-      { q: "¿Cuál es el límite de f(x) = 5 cuando x tiende a 3?", options: ["5","3","0"], correct: 0, explanation: "En una función constante el valor no depende de x: el límite es la propia constante." },
       { q: "Los límites son la base para definir:", options: ["La derivada y la continuidad de una función","El teorema de Pitágoras","Las técnicas de conteo"], correct: 0, explanation: "La derivada se define como el límite del cociente incremental cuando el incremento tiende a cero." }
     ]
   },
@@ -289,7 +268,6 @@ const AREA1_EXTRA = {
       { front: "¿Cuál es la derivada de una constante y la de x?", back: "La de cualquier constante es **0** (no cambia) y la de x es **1**. De ahí sale toda la regla de la potencia." }
     ],
     quiz: [
-      { q: "Si f(x) = 7, ¿cuánto vale f'(x)?", options: ["0","7","1"], correct: 0, explanation: "Una función constante no cambia: su razón de cambio es cero en todo punto." },
       { q: "La derivada de f(x) = x⁵ es:", options: ["5x⁴","x⁴","5x⁶"], correct: 0, explanation: "Regla de la potencia: el exponente baja como coeficiente y se resta 1 al exponente." },
       { q: "Si la posición de un objeto es s(t), ¿qué representa s'(t)?", options: ["Su velocidad instantánea","Su aceleración","La distancia total recorrida"], correct: 0, explanation: "La derivada de la posición respecto al tiempo es la velocidad; derivando otra vez se obtiene la aceleración." }
     ]

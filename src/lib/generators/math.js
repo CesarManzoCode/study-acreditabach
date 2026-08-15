@@ -503,9 +503,62 @@ export function factorizacion(h) {
   };
 }
 
+/* Guía 1.3.3: el tema se llama "Producto notable de binomios", pero la
+   orientación dice "Cálculo de los valores de OPTIMIZACIÓN de funciones
+   polinomiales de segundo grado". Es el mismo procedimiento visto de otro lado:
+   se completa el cuadrado con el binomio al cuadrado y el resultado es el valor
+   máximo o mínimo. El generador anterior solo desarrollaba binomios y nunca
+   llegaba a la optimización, que es lo que se evalúa.
+
+   Es la vía algebraica; la vía con derivada es el tema 1.6.6. */
 export function productosNotables(h) {
-  const tipo = h.pick(["binomioCuadrado", "conjugados", "binomiosComun"]);
+  const tipo = h.pick(["optimiza", "optimiza", "completaCuadrado", "binomioCuadrado", "conjugados"]);
   const a = h.int(2, 9);
+
+  if (tipo === "optimiza") {
+    const h0 = h.int(2, 9);          // vértice en x = h0
+    const k = h.signedInt(1, 12);    // valor óptimo
+    const haciaArriba = h.chance(0.65);
+    const s = haciaArriba ? 1 : -1;
+    /* f(x) = s(x − h0)² + k  →  desarrollada */
+    const b = -2 * h0 * s;
+    const c = h0 * h0 * s + k;
+    const expr = poly([[s, pw("x", 2)], [b, "x"], [c, ""]]);
+    const cual = haciaArriba ? "mínimo" : "máximo";
+    const opts = h.choice3(`${cual === "mínimo" ? "Mínimo" : "Máximo"} de ${fmt(k)} en x = ${fmt(h0)}`, [
+      `${cual === "mínimo" ? "Mínimo" : "Máximo"} de ${fmt(h0)} en x = ${fmt(k)}`,
+      `${cual === "mínimo" ? "Máximo" : "Mínimo"} de ${fmt(k)} en x = ${fmt(h0)}`,
+      `${cual === "mínimo" ? "Mínimo" : "Máximo"} de ${fmt(c)} en x = 0`
+    ]);
+    if (!opts) return null;
+    return {
+      q: `¿Cuál es el valor de optimización de la función f(x) = ${expr} y en qué x ocurre?`,
+      options: opts.options,
+      correct: opts.correct,
+      explanation: `Se completa el cuadrado: f(x) = ${s < 0 ? "−" : ""}(x − ${fmt(h0)})² ${k >= 0 ? "+" : "−"} ${Math.abs(k)}. Como el coeficiente de x² es ${haciaArriba ? "positivo" : "negativo"}, la parábola abre hacia ${haciaArriba ? "arriba y tiene un MÍNIMO" : "abajo y tiene un MÁXIMO"}: vale ${fmt(k)} y ocurre en x = ${fmt(h0)}.`
+    };
+  }
+
+  if (tipo === "completaCuadrado") {
+    const h0 = h.int(2, 8);
+    const k = h.signedInt(1, 10);
+    const b = -2 * h0;
+    const c = h0 * h0 + k;
+    const expr = poly([[1, pw("x", 2)], [b, "x"], [c, ""]]);
+    const ans = `(x − ${fmt(h0)})² ${k >= 0 ? "+" : "−"} ${Math.abs(k)}`;
+    const opts = h.choice3(ans, [
+      `(x + ${fmt(h0)})² ${k >= 0 ? "+" : "−"} ${Math.abs(k)}`,
+      `(x − ${fmt(h0)})² ${k >= 0 ? "−" : "+"} ${Math.abs(k)}`,
+      `(x − ${fmt(c)})² ${k >= 0 ? "+" : "−"} ${Math.abs(h0)}`
+    ]);
+    if (!opts) return null;
+    return {
+      q: `¿Cuál es la forma de cuadrado completado de ${expr}?`,
+      options: opts.options,
+      correct: opts.correct,
+      explanation: `La mitad del coeficiente de x es ${fmt(b)} ÷ 2 = ${fmt(-h0)}, y su cuadrado es ${fmt(h0 * h0)}. Entonces ${expr} = (x − ${fmt(h0)})² ${k >= 0 ? "+" : "−"} ${Math.abs(k)}. De ahí se lee el valor óptimo: ${fmt(k)} en x = ${fmt(h0)}.`
+    };
+  }
 
   if (tipo === "binomioCuadrado") {
     const neg = h.chance(0.5);
@@ -729,28 +782,62 @@ export function mcd(h) {
   };
 }
 
+/* Guía 1.4.3: "Identificación de la razón aritmética o geométrica correspondiente
+   a una SUCESIÓN numérica".
+
+   El generador anterior producía reparto en razón dada —regla de tres—, que es
+   el tema 1.4.4. Ni un solo problema de los que generaba correspondía a lo que
+   este tema evalúa. Ahora genera sucesiones y pide su razón. */
 export function razones(h) {
-  const a = h.int(2, 7);
-  const b = h.int(2, 7);
-  if (a === b || gcd(a, b) !== 1) return null;
-  const unidad = h.int(3, 25);
-  const total = (a + b) * unidad;
-  const parteA = a * unidad;
-  const parteB = b * unidad;
-  const cual = h.chance(0.5);
-  const ans = cual ? parteA : parteB;
-  const contexto = h.pick([
-    `Se reparten ${total} pesos entre dos personas en razón ${a}:${b}.`,
-    `Una mezcla de ${total} litros combina dos líquidos en razón ${a}:${b}.`,
-    `Un premio de ${total} puntos se divide en razón ${a}:${b}.`
+  const geometrica = h.chance(0.45);
+  const largo = 4;
+
+  if (geometrica) {
+    const r = h.pick([2, 3, 4, 5]);
+    const a0 = h.pick([1, 2, 3, 5, 6]);
+    const decreciente = h.chance(0.25);
+    const terminos = [];
+    if (decreciente) {
+      /* Se construye al revés para que todos los términos sean enteros. */
+      let v = a0 * Math.pow(r, largo - 1);
+      for (let i = 0; i < largo; i++) { terminos.push(v); v = v / r; }
+    } else {
+      let v = a0;
+      for (let i = 0; i < largo; i++) { terminos.push(v); v = v * r; }
+    }
+    if (terminos.some((t) => !Number.isInteger(t) || t > 100000)) return null;
+    const razonMostrada = decreciente ? `1/${r}` : String(r);
+    const opts = h.choice3(`Geométrica, de razón ${razonMostrada}`, [
+      `Aritmética, de razón ${fmt(terminos[1] - terminos[0])}`,
+      `Geométrica, de razón ${r + 1}`,
+      `Aritmética, de razón ${r}`
+    ]);
+    if (!opts) return null;
+    return {
+      q: `¿Cuál es la razón de la sucesión ${terminos.join(", ")}…?`,
+      options: opts.options,
+      correct: opts.correct,
+      explanation: `Cada término se obtiene MULTIPLICANDO por el mismo número: ${fmt(terminos[1])} ÷ ${fmt(terminos[0])} = ${razonMostrada} y ${fmt(terminos[2])} ÷ ${fmt(terminos[1])} = ${razonMostrada}. Como se multiplica, la sucesión es geométrica y su razón es ${razonMostrada}. No es aritmética porque la diferencia entre términos no se mantiene constante.`
+    };
+  }
+
+  const d = h.signedInt(2, 9);
+  const a0 = h.int(3, 40);
+  const terminos = [];
+  let v = a0;
+  for (let i = 0; i < largo; i++) { terminos.push(v); v = v + d; }
+  if (terminos.some((t) => t < 0)) return null;
+  const opts = h.choice3(`Aritmética, de razón ${fmt(d)}`, [
+    `Geométrica, de razón ${fmt(d)}`,
+    `Aritmética, de razón ${fmt(a0)}`,
+    `Aritmética, de razón ${fmt(-d)}`
   ]);
-  const opts = h.choice3(ans, [cual ? parteB : parteA, total / 2, Math.round(total / (a + b)), ans + unidad]);
   if (!opts) return null;
   return {
-    q: `${contexto} ¿Cuánto le corresponde a la ${cual ? "primera" : "segunda"} parte?`,
+    q: `¿Cuál es la razón de la sucesión ${terminos.join(", ")}…?`,
     options: opts.options,
     correct: opts.correct,
-    explanation: `La razón ${a}:${b} son ${a + b} partes iguales: ${total} ÷ ${a + b} = ${unidad} por parte. A la ${cual ? "primera" : "segunda"} le tocan ${cual ? a : b} partes: ${cual ? a : b} × ${unidad} = ${fmt(ans)}.`
+    explanation: `Cada término se obtiene SUMANDO siempre la misma cantidad: ${fmt(terminos[1])} − ${fmt(terminos[0])} = ${fmt(d)} y ${fmt(terminos[2])} − ${fmt(terminos[1])} = ${fmt(d)}. Como se suma, la sucesión es aritmética y su razón es ${fmt(d)}.`
   };
 }
 
@@ -855,8 +942,29 @@ export function porcentajes(h) {
    1.5 Pensamiento geométrico
    ============================================================ */
 
+/* Guía 1.5.1: "Cálculo del área de triángulos y trapecios". Antes generaba
+   además rectángulos, cuadrados y círculos, que la orientación no evalúa: tres
+   de cada cinco problemas caían fuera del examen. */
 export function areaFiguras(h) {
-  const figura = h.pick(["rectangulo", "triangulo", "circulo", "trapecio", "cuadrado"]);
+  const figura = h.pick(["triangulo", "trapecio", "despeje"]);
+
+  /* Problema inverso: se da el área y falta una medida. El examen lo pregunta
+     en los dos sentidos, y despejar es donde se equivoca la mayoría. */
+  if (figura === "despeje") {
+    const B = h.int(8, 20);
+    const bMenor = h.int(3, B - 2);
+    const altura = h.pick([4, 6, 8, 10, 12]);
+    const area = ((B + bMenor) / 2) * altura;
+    if (!Number.isInteger(area)) return null;
+    const opts = h.choice3(`${fmt(B)} cm`, [`${fmt(bMenor)} cm`, `${fmt(B + bMenor)} cm`, `${fmt(Math.round(area / altura))} cm`]);
+    if (!opts) return null;
+    return {
+      q: `Un trapecio tiene un área de ${fmt(area)} cm², una altura de ${altura} cm y una base menor de ${bMenor} cm. ¿Cuánto mide su base mayor?`,
+      options: opts.options,
+      correct: opts.correct,
+      explanation: `De área = ((B + b) ÷ 2) × altura se despeja: ${fmt(area)} ÷ ${altura} = ${fmt(area / altura)}, así que (B + ${bMenor}) ÷ 2 = ${fmt(area / altura)}. Entonces B + ${bMenor} = ${fmt((area / altura) * 2)} y B = ${fmt(B)} cm.`
+    };
+  }
 
   if (figura === "rectangulo") {
     const b = h.int(4, 25);
@@ -927,8 +1035,10 @@ export function areaFiguras(h) {
   };
 }
 
+/* Guía 1.5.2: "propiedades de semejanza entre TRIÁNGULOS de acuerdo con sus
+   medidas". La variante de razón entre áreas de polígonos quedó fuera. */
 export function semejanza(h) {
-  const modo = h.pick(["ladoFaltante", "sombra", "razonAreas"]);
+  const modo = h.pick(["ladoFaltante", "sombra"]);
   const k = h.pick([2, 3, 4, 1.5, 2.5]);
   const a = h.int(3, 12);
   const b = h.int(4, 15);
@@ -1011,22 +1121,25 @@ export function pitagoras(h) {
   };
 }
 
+/* Guía 1.5.4: "Cálculo del área de CUADRADOS y triángulos rectángulos en el
+   plano cartesiano". Antes generaba rectángulos de lados distintos; ahora el
+   caso de cuatro vértices es un cuadrado, como dice la orientación. */
 export function areaPlanoCartesiano(h) {
-  const modo = h.pick(["rectangulo", "triangulo"]);
+  const modo = h.pick(["cuadrado", "triangulo"]);
   const x0 = h.int(-6, 3);
   const y0 = h.int(-6, 3);
   const w = h.int(3, 9);
-  const t = h.int(3, 9);
+  const t = modo === "cuadrado" ? w : h.int(3, 9);
 
-  if (modo === "rectangulo") {
-    const ans = w * t;
-    const opts = h.choice3(ans, [2 * (w + t), ans / 2, w + t]);
+  if (modo === "cuadrado") {
+    const ans = w * w;
+    const opts = h.choice3(ans, [4 * w, 2 * w, ans - w]);
     if (!opts) return null;
     return {
-      q: `Un rectángulo tiene vértices en (${x0}, ${y0}), (${x0 + w}, ${y0}), (${x0 + w}, ${y0 + t}) y (${x0}, ${y0 + t}). ¿Cuál es su área en unidades cuadradas?`,
+      q: `Un cuadrado tiene vértices en (${x0}, ${y0}), (${x0 + w}, ${y0}), (${x0 + w}, ${y0 + w}) y (${x0}, ${y0 + w}). ¿Cuál es su área en unidades cuadradas?`,
       options: opts.options,
       correct: opts.correct,
-      explanation: `La base va de x = ${x0} a x = ${x0 + w}, es decir ${w} unidades; la altura va de y = ${y0} a y = ${y0 + t}, es decir ${t}. Área = ${w} × ${t} = ${fmt(ans)}.`
+      explanation: `El lado va de x = ${x0} a x = ${x0 + w}, es decir ${w} unidades, y lo mismo en vertical. Área del cuadrado = lado² = ${w}² = ${fmt(ans)}. (${4 * w} sería el perímetro.)`
     };
   }
 
@@ -1111,8 +1224,11 @@ export function intervalos(h) {
   };
 }
 
+/* Guía 1.6.2: "determinar sus valores máximos y mínimos, así como su concavidad
+   y su comportamiento creciente o decreciente". El corte con el eje Y no está en
+   la orientación; la pendiente sí, porque es el signo del crecimiento. */
 export function graficasFunciones(h) {
-  const modo = h.pick(["pendiente", "ordenada", "vertice", "tipo"]);
+  const modo = h.pick(["pendiente", "vertice", "vertice", "tipo"]);
 
   if (modo === "pendiente") {
     const x1 = h.int(-6, 3);
@@ -1182,8 +1298,11 @@ export function graficasFunciones(h) {
   };
 }
 
+/* Guía 1.6.3: "Cálculo de límites de funciones cuadráticas". El modo "racional"
+   producía límites al infinito de funciones racionales, que la orientación no
+   contempla; se quitó junto con los reactivos estáticos equivalentes. */
 export function limites(h) {
-  const modo = h.pick(["directo", "indeterminado", "racional"]);
+  const modo = h.pick(["directo", "indeterminado"]);
 
   if (modo === "directo") {
     const a = h.int(1, 5);
@@ -1215,17 +1334,7 @@ export function limites(h) {
     };
   }
 
-  const a = h.int(2, 8);
-  const b = h.int(1, 9);
-  const ans = frac(a, b);
-  const opts = h.choice3(ans, [frac(b, a), "0", "∞"]);
-  if (!opts) return null;
-  return {
-    q: `Calcula el límite: lím(x→∞) (${a}x² + ${b}x)/(${b}x² + ${a}).`,
-    options: opts.options,
-    correct: opts.correct,
-    explanation: `Cuando x tiende a infinito mandan los términos de mayor grado: ${a}x²/${b}x² = ${simpl(a, b)}.`
-  };
+  return null;
 }
 
 export function derivadasPolinomiales(h) {
