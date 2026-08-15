@@ -201,13 +201,28 @@ export {
    entran a la sesión. El bloque base no necesita lección porque su lección es
    la nota del tema. */
 
-export const BLOQUES = ["base", "ampliacion", "ampliacion2", "formato"];
+export const BLOQUES = ["base", "ampliacion", "ampliacion2", "formato", "refuerzo"];
 
 function packGroups() {
   /* data/formato/*.js: reactivos con los formatos de relación de elementos y de
      jerarquización que la guía oficial marca para ciertos temas. No traen
      tarjetas —no agregan conceptos, replantean con otro formato lo que la nota
      base ya explica—, así que su bloque queda abierto desde el principio. */
+  /* data/refuerzo/*.js: lo que la poda dejó descubierto y los formatos que
+     faltaban. Repone los elementos que la guía nombra por su nombre y no
+     tenían ni un reactivo, y trae los textos completos de comprensión lectora
+     del área 6, que el examen sí presenta y el banco solo describía. Tampoco
+     traen tarjetas, así que su bloque queda abierto desde el principio. */
+  const refuerzo = [
+    typeof AREA1_REFUERZO !== "undefined" ? AREA1_REFUERZO : null,
+    typeof AREA2_REFUERZO !== "undefined" ? AREA2_REFUERZO : null,
+    typeof AREA3_REFUERZO !== "undefined" ? AREA3_REFUERZO : null,
+    typeof AREA4_REFUERZO !== "undefined" ? AREA4_REFUERZO : null,
+    typeof AREA5_REFUERZO !== "undefined" ? AREA5_REFUERZO : null,
+    typeof AREA6_REFUERZO !== "undefined" ? AREA6_REFUERZO : null,
+    typeof AREA7_REFUERZO !== "undefined" ? AREA7_REFUERZO : null
+  ].filter(Boolean);
+
   const formato = [
     typeof AREA1_FORMATO !== "undefined" ? AREA1_FORMATO : null,
     typeof AREA2_FORMATO !== "undefined" ? AREA2_FORMATO : null,
@@ -238,7 +253,8 @@ function packGroups() {
   return [
     { nombre: "ampliacion", packs: grupo("") },
     { nombre: "ampliacion2", packs: grupo("2") },
-    { nombre: "formato", packs: formato }
+    { nombre: "formato", packs: formato },
+    { nombre: "refuerzo", packs: refuerzo }
   ];
 }
 
@@ -1004,19 +1020,56 @@ export function upcomingLoad(days = 14) {
 
 /* ---------------- Simulacros y práctica ---------------- */
 
+/* El simulacro debe traer tantos reactivos por área como el examen real.
+
+   Antes tomaba uno por tema, y eso no daba la cuenta: la guía lista 177 temas
+   pero 180 reactivos, porque cultura digital tiene 18 temas y 19 reactivos, y
+   conciencia histórica 21 temas y 23. La sesión 1 salía de 89 reactivos
+   mientras la pantalla anunciaba 92. Ceneval no dice qué temas se repiten, así
+   que los reactivos sobrantes se sortean entre los temas de esa misma área. */
 export function buildMockExam(areaNums, onlyIntroduced, limit) {
-  const topics = getAllTopics().filter(
-    (t) => areaNums.includes(t.area) && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
-  );
   const semilla = randomSeed();
-  let items = topics
-    .map((t, i) => {
-      const question = pickQuestion(t, semilla + "|" + i);
-      return question ? { topic: t, question } : null;
-    })
-    .filter(Boolean);
-  if (limit && items.length > limit) items = shuffle(items).slice(0, limit);
+  const items = [];
+  let n = 0;
+
+  areaNums.forEach((area) => {
+    const topics = getAllTopics().filter(
+      (t) => t.area === area && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
+    );
+    if (!topics.length) return;
+
+    /* Uno por tema, que es el piso: todo tema evaluado aparece al menos una vez. */
+    topics.forEach((t) => {
+      const question = pickQuestion(t, semilla + "|" + n++);
+      if (question) items.push({ topic: t, question });
+    });
+
+    /* Y los reactivos que al área le faltan para llegar a su cuota real. */
+    const cuota = onlyIntroduced ? 0 : (_AREA_META[area] || {}).reactivos || 0;
+    const faltan = cuota - topics.length;
+    if (faltan > 0) {
+      shuffle(topics)
+        .slice(0, faltan)
+        .forEach((t) => {
+          const question = pickQuestion(t, semilla + "|" + n++);
+          if (question) items.push({ topic: t, question });
+        });
+    }
+  });
+
+  if (limit && items.length > limit) return shuffle(items).slice(0, limit);
   return items;
+}
+
+/** Cuánto dura la sesión de simulacro que cubre esas áreas, en minutos. */
+export function mockMinutes(areaNums) {
+  const sesiones = new Set(areaNums.map((a) => (_AREA_META[a] || {}).session).filter(Boolean));
+  if (sesiones.size !== 1) return 0;
+  const s = _SESSION_META[[...sesiones][0]];
+  if (!s) return 0;
+  /* SESSION_META guarda la duración como texto ("4 h 30 min"). */
+  const m = String(s.duracion).match(/(\d+)\s*h(?:\s*(\d+)\s*min)?/);
+  return m ? Number(m[1]) * 60 + Number(m[2] || 0) : 0;
 }
 
 function puedeExaminar(t) {
@@ -1025,9 +1078,14 @@ function puedeExaminar(t) {
 
 /** Cuántas preguntas tendría un simulacro con esos filtros. */
 export function countMockQuestions(areaNums, onlyIntroduced) {
-  return getAllTopics().filter(
-    (t) => areaNums.includes(t.area) && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
-  ).length;
+  return areaNums.reduce((total, area) => {
+    const temas = getAllTopics().filter(
+      (t) => t.area === area && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
+    ).length;
+    if (!temas) return total;
+    const cuota = onlyIntroduced ? 0 : (_AREA_META[area] || {}).reactivos || 0;
+    return total + Math.max(temas, cuota);
+  }, 0);
 }
 
 /**

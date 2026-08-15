@@ -3,7 +3,7 @@ import Icon from "../ui/Icon.jsx";
 import { Button, Card, Badge, SectionTitle, Reveal, useToast } from "../ui/kit.jsx";
 import { useEngine } from "../lib/hooks.js";
 import { areaVisual } from "../lib/areas.js";
-import { buildMockExam, countMockQuestions, SESSION_META } from "../lib/engine.js";
+import { buildMockExam, countMockQuestions, mockMinutes, SESSION_META } from "../lib/engine.js";
 
 const OPTIONS = [
   {
@@ -38,19 +38,19 @@ const OPTIONS = [
     key: "s1full",
     icon: "simulacro",
     title: "Sesión 1 completa",
-    desc: "Como el examen real: incluye temas que quizá todavía no estudias.",
+    desc: "Como el examen real: mismo número de reactivos por área, con cronómetro, e incluye temas que quizá todavía no estudias.",
     areas: [1, 2, 3, 4],
     onlyIntroduced: false,
-    tag: "92 reactivos reales · 4 h 30 min"
+    tag: "92 reactivos · 4 h 30 min con reloj"
   },
   {
     key: "s2full",
     icon: "simulacro",
     title: "Sesión 2 completa",
-    desc: "Como el examen real: incluye temas que quizá todavía no estudias.",
+    desc: "Como el examen real: mismo número de reactivos por área, con cronómetro, e incluye temas que quizá todavía no estudias.",
     areas: [5, 6, 7],
     onlyIntroduced: false,
-    tag: "88 reactivos reales · 4 h"
+    tag: "88 reactivos · 4 h con reloj"
   }
 ];
 
@@ -69,7 +69,11 @@ export default function Mock({ onStart }) {
       toast("Aún no hay preguntas disponibles para esta opción", { tone: "danger", icon: "alert" });
       return;
     }
-    onStart({ title: o.title, questions });
+    /* El cronómetro solo corre en los simulacros completos: en los parciales,
+       que se adaptan a lo que ya estudiaste, un reloj del examen real no mide
+       nada. */
+    const minutes = o.onlyIntroduced ? 0 : mockMinutes(o.areas);
+    onStart({ title: o.title, questions, minutes });
   };
 
   return (
