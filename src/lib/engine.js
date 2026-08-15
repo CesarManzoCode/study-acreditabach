@@ -75,7 +75,9 @@ function defaultState() {
     dismissedWelcome: false,
     createdAt: toISO(new Date()),
     contentRevision: 0,     // revisión del temario ya incorporada a este progreso
-    contentUpdate: null     // {at, newCards} del último crecimiento del temario
+    contentUpdate: null,    // {at, newCards} del último crecimiento del temario
+    podaAplicada: false,    // ¿ya se migró el progreso tras podar el temario?
+    poda: null              // {at, quitadas, movidas} del aviso de la poda
   };
 }
 
@@ -368,7 +370,60 @@ export function getLearningOrder() {
    Efecto buscado: el dominio baja y hay que repasar lo nuevo para recuperarlo.
    ------------------------------------------------------------ */
 
+/* ---------------- Poda del temario ----------------
+
+   Al quitar del temario lo que quedaba fuera de la orientación oficial, las
+   tarjetas de un tema se recorren: la que era `5.1.4::fc7` pasa a ser
+   `5.1.4::fc4`. Como el progreso se guarda contra esos identificadores, sin
+   migrar quedaría apuntando a la tarjeta equivocada —con su intervalo y sus
+   repasos— y el sistema de repaso espaciado se volvería ruido.
+
+   data/poda.js guarda el orden ANTERIOR de los frentes de cada tema. Aquí se
+   empareja cada tarjeta vieja con su nueva posición por el texto del frente:
+   lo que sobrevivió conserva intacto su intervalo, y lo que se podó se borra.
+   Corre una sola vez, marcada con `podaAplicada`.
+   ------------------------------------------------------------ */
+
+function applyPoda() {
+  if (STATE.podaAplicada) return;
+  const previos = typeof PODA_FRONTS_PREVIOS !== "undefined" ? PODA_FRONTS_PREVIOS : null;
+  if (!previos) return; // sin el mapa no se toca nada
+
+  const cards = {};
+  let migradas = 0;
+  let podadas = 0;
+
+  Object.keys(STATE.cards).forEach((cid) => {
+    const sep = String(cid).lastIndexOf("::fc");
+    if (sep < 0) { cards[cid] = STATE.cards[cid]; return; }
+    const topicId = cid.slice(0, sep);
+    const viejoIdx = Number(cid.slice(sep + 4));
+    const frentesViejos = previos[topicId];
+    const topic = topicsById()[topicId];
+    if (!frentesViejos || !topic) { cards[cid] = STATE.cards[cid]; return; }
+
+    const front = frentesViejos[viejoIdx];
+    if (front === undefined) { podadas++; return; }
+    const nuevoIdx = (topic.flashcards || []).findIndex((f) => f.front === front);
+    if (nuevoIdx < 0) { podadas++; return; } // la tarjeta salió del temario
+    cards[topicId + "::fc" + nuevoIdx] = STATE.cards[cid];
+    if (nuevoIdx !== viejoIdx) migradas++;
+  });
+
+  STATE.cards = cards;
+  STATE.podaAplicada = true;
+  STATE.poda = podadas ? { at: toISO(todayDate()), quitadas: podadas, movidas: migradas } : null;
+  saveState();
+}
+
+/** Quita el aviso de "se podó el temario" de la pantalla de inicio. */
+export function dismissPoda() {
+  STATE.poda = null;
+  saveState();
+}
+
 function applyContentUpdate() {
+  applyPoda();
   if (STATE.contentRevision === CONTENT_REVISION) return;
   const primeraVez = Object.keys(STATE.topicsIntroduced).length === 0;
   const today = todayDate();
