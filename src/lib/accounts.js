@@ -22,7 +22,7 @@ const SERVER_KEY = "acreditabach_servidor";
 /* Dirección del servidor de cuentas (el Worker de server/cloudflare-worker.js).
    Si se deja vacía, la app pide la dirección una vez en la pantalla de Cuenta
    y la recuerda en este navegador. */
-export const SERVIDOR_POR_DEFECTO = "";
+export const SERVIDOR_POR_DEFECTO = "https://young-moon-639a.cesarmanzocode.workers.dev";
 
 const listeners = new Set();
 let revision = 0;
