@@ -39,7 +39,7 @@ const AREA6_EXTRA2 = {
 
   "6.1.3": {
     flashcards: [
-      { front: "¿Qué son las palabras de enlace en un mapa conceptual?", back: "Las que unen dos conceptos y forman una proposición con sentido: «los mamíferos **son** vertebrados», «el agua **se compone de** hidrógeno y oxígeno»." },
+      { front: "¿Qué forman dos conceptos unidos por una palabra de enlace?", back: "Una proposición con sentido: «los mamíferos **son** vertebrados», «el agua **se compone de** hidrógeno y oxígeno»." },
       { front: "¿Qué diferencia hay entre un mapa conceptual y un mapa mental?", back: "El **conceptual** es jerárquico, va de lo general a lo particular y usa palabras de enlace. El **mental** parte de una idea central y se ramifica libremente, con colores e imágenes." },
       { front: "¿Qué es un enlace cruzado?", back: "La conexión entre conceptos de ramas distintas del mapa. Es la marca de una comprensión profunda, porque revela relaciones no evidentes." }
     ],
@@ -223,7 +223,7 @@ const AREA6_EXTRA2 = {
 
   "6.3.5": {
     flashcards: [
-      { front: "¿Cómo se identifica el sujeto de una oración?", back: "Preguntando quién o qué realiza la acción, y comprobando la concordancia: si se cambia el verbo al plural, el sujeto también cambia." },
+      { front: "¿Qué prueba de concordancia confirma cuál es el sujeto?", back: "Cambiar el verbo al plural: si esa parte de la oración tiene que cambiar también, es el sujeto." },
       { front: "¿Qué es el complemento directo y cómo se reconoce?", back: "Recibe directamente la acción del verbo y se puede sustituir por **lo, la, los, las**: «compré el libro» → «lo compré»." },
       { front: "¿Qué es el complemento indirecto?", back: "Indica el destinatario o beneficiario de la acción y se sustituye por **le** o **les**: «di el libro a Juan» → «le di el libro»." }
     ],
@@ -238,7 +238,7 @@ const AREA6_EXTRA2 = {
 
   "6.3.6": {
     flashcards: [
-      { front: "¿Qué diferencia hay entre coherencia y cohesión?", back: "La **coherencia** es la unidad de sentido global del texto; la **cohesión** son los recursos lingüísticos que enlazan sus partes: conectores, pronombres, sinónimos y repeticiones." },
+      { front: "Los conectores y los pronombres, ¿dan coherencia o cohesión?", back: "Cohesión: son los recursos lingüísticos que enlazan las partes del texto. La **coherencia** es la unidad de sentido global." },
       { front: "¿Qué es la progresión temática?", back: "El avance del texto sumando información nueva sobre lo ya dicho, sin saltos ni repeticiones vacías. Sin progresión, el texto da vueltas sobre sí mismo." },
       { front: "¿Qué es una anáfora textual?", back: "El uso de un pronombre o una expresión que remite a algo mencionado antes: «Compré un libro. **Lo** leí en dos días»." }
     ],
@@ -253,7 +253,7 @@ const AREA6_EXTRA2 = {
 
   "6.3.7": {
     flashcards: [
-      { front: "¿Qué es la adecuación de un texto?", back: "El ajuste del registro, el vocabulario y el formato al destinatario, al propósito y a la situación comunicativa." },
+      { front: "¿De qué depende el registro que se elige al escribir?", back: "Del destinatario, el propósito y la situación comunicativa. Ajustar a eso el registro, el vocabulario y el formato es la **adecuación**." },
       { front: "¿Qué diferencia hay entre registro formal e informal?", back: "El **formal** usa tratamiento de usted, vocabulario preciso y evita coloquialismos y abreviaturas; el **informal** admite tuteo, expresiones cotidianas y mayor espontaneidad." },
       { front: "¿Qué es la jerga o lenguaje especializado?", back: "El vocabulario técnico propio de un campo. Es adecuado entre especialistas, pero debe explicarse cuando el destinatario no pertenece a ese ámbito." }
     ],
@@ -286,7 +286,7 @@ const AREA6_EXTRA2 = {
   "6.4.2": {
     flashcards: [
       { front: "¿Qué es la alternancia de turnos en el diálogo?", back: "La regla implícita por la que los interlocutores se ceden la palabra. Interrumpir sistemáticamente rompe la reciprocidad que define al diálogo." },
-      { front: "¿Qué es la escucha activa?", back: "Atender con la intención de comprender: sin interrumpir, mostrando atención, parafraseando lo dicho y preguntando para aclarar antes de responder." },
+      { front: "¿Qué hace antes de responder alguien que escucha activamente?", back: "Parafrasea lo dicho y pregunta para aclarar, sin interrumpir: escucha con la intención de comprender, no de contestar." },
       { front: "¿Qué diferencia hay entre diálogo y discusión?", back: "El **diálogo** busca comprender al otro y construir sentido en común; la **discusión** busca imponer la propia posición." }
     ],
     quiz: [

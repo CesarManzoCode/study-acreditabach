@@ -7,7 +7,7 @@ import { needsCalculator } from "../lib/calcNeed.js";
 import { useKeys, useScrollLock, navigate } from "../lib/hooks.js";
 import { areaStyle, areaVisual } from "../lib/areas.js";
 import {
-  topicsById, gradeCard, nextIntervalPreview, introduceTopic, recordQuizAnswer,
+  topicsById, gradeCard, learnCard, nextIntervalPreview, introduceTopic, recordQuizAnswer,
   logSessionProgress, computeTodayPlan, areaNumbers
 } from "../lib/engine.js";
 
@@ -73,7 +73,7 @@ function RunnerShell({ title, step, total, onExit, children, footer, exitConfirm
 
 export function SessionRunner({ session, onExit, onAgain }) {
   const [idx, setIdx] = useState(0);
-  const [stats, setStats] = useState({ cardsReviewed: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
+  const [stats, setStats] = useState({ cardsReviewed: 0, cardsLearned: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
   const steps = session.steps;
   const step = steps[Math.min(idx, steps.length - 1)];
 
@@ -102,6 +102,12 @@ export function SessionRunner({ session, onExit, onAgain }) {
             onGraded={() => { bump({ cardsReviewed: 1 }); advance(); }}
           />
         )}
+        {step.type === "learn" && (
+          <LearnStep
+            step={step}
+            onLearned={() => { bump({ cardsLearned: 1 }); advance(); }}
+          />
+        )}
         {step.type === "intro" && (
           <IntroStep topic={step.topic} onNext={() => { bump({ newTopics: 1 }); advance(); }} />
         )}
@@ -119,6 +125,49 @@ export function SessionRunner({ session, onExit, onAgain }) {
         {isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} />}
       </div>
     </RunnerShell>
+  );
+}
+
+/* --- Paso: tarjeta nueva (se enseña, no se califica) ---
+
+   Una tarjeta que nunca se ha mostrado no se puede "recordar". Aquí aparece con
+   la respuesta a la vista y un solo botón: se lee y pasa al repaso espaciado a
+   partir del día siguiente. Antes estas tarjetas entraban directo como repaso,
+   con el texto "intenta responder de memoria", y por eso la sesión preguntaba
+   cosas que la app nunca había explicado. */
+
+function LearnStep({ step, onLearned }) {
+  const topic = topicsById()[step.topicId];
+  const fcIndex = Number(step.cardId.split("::fc")[1]);
+  const fc = topic?.flashcards?.[fcIndex];
+
+  const listo = () => { learnCard(step.cardId); onLearned(); };
+  useKeys({ " ": listo, Enter: listo }, [step.cardId]);
+
+  if (!fc) return null;
+  const v = areaVisual(topic.area);
+
+  return (
+    <Stack>
+      <Card className="flash is-learning" style={areaStyle(topic.area)}>
+        <div className="flash-tag">
+          <Badge tone="area">{v.short}</Badge>
+          <Badge tone="brand" icon="sparkles">material nuevo</Badge>
+        </div>
+
+        <div className="flash-front"><Inline>{fc.front}</Inline></div>
+        <div className="flash-divider" />
+        <div className="flash-back"><Inline>{fc.back}</Inline></div>
+
+        <p className="flash-hint">
+          Solo léela. Mañana te toca recordarla · <span className="kbd">espacio</span>
+        </p>
+      </Card>
+
+      <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={listo}>
+        Entendido
+      </Button>
+    </Stack>
   );
 }
 
@@ -325,7 +374,7 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
   useEffect(() => {
     if (loggedRef.current) return;
     loggedRef.current = true;
-    if (stats.cardsReviewed || stats.newTopics || stats.quizAnswered) logSessionProgress(stats);
+    if (stats.cardsReviewed || stats.cardsLearned || stats.newTopics || stats.quizAnswered) logSessionProgress(stats);
   }, [stats]);
 
   const plan = useMemo(() => computeTodayPlan(), []);
@@ -349,6 +398,7 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
       <Card>
         <div className="stats">
           <Stat value={stats.cardsReviewed} label="tarjetas repasadas" />
+          <Stat value={stats.cardsLearned} label="tarjetas aprendidas" tone="brand" />
           <Stat value={stats.newTopics} label="temas nuevos" tone="brand" />
           <Stat value={accuracy == null ? "—" : accuracy + "%"} label="aciertos" tone={accuracy != null && accuracy >= 70 ? "success" : undefined} />
         </div>

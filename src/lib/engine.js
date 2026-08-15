@@ -173,38 +173,51 @@ export {
   _TOTAL_REACTIVOS as TOTAL_REACTIVOS
 };
 
-/* Paquetes de contenido adicional (data/extra/*.js): más flashcards y más
-   reactivos por tema. Se CONCATENAN al final de los arreglos originales para
-   no mover los índices de las tarjetas que ya tienen progreso. */
-function extraPacks() {
-  const packs = [
-    typeof AREA1_EXTRA !== "undefined" ? AREA1_EXTRA : null,
-    typeof AREA2_EXTRA !== "undefined" ? AREA2_EXTRA : null,
-    typeof AREA3_EXTRA !== "undefined" ? AREA3_EXTRA : null,
-    typeof AREA4_EXTRA !== "undefined" ? AREA4_EXTRA : null,
-    typeof AREA5_EXTRA !== "undefined" ? AREA5_EXTRA : null,
-    typeof AREA6_EXTRA !== "undefined" ? AREA6_EXTRA : null,
-    typeof AREA7_EXTRA !== "undefined" ? AREA7_EXTRA : null,
-    typeof AREA1_EXTRA2 !== "undefined" ? AREA1_EXTRA2 : null,
-    typeof AREA2_EXTRA2 !== "undefined" ? AREA2_EXTRA2 : null,
-    typeof AREA3_EXTRA2 !== "undefined" ? AREA3_EXTRA2 : null,
-    typeof AREA4_EXTRA2 !== "undefined" ? AREA4_EXTRA2 : null,
-    typeof AREA5_EXTRA2 !== "undefined" ? AREA5_EXTRA2 : null,
-    typeof AREA6_EXTRA2 !== "undefined" ? AREA6_EXTRA2 : null,
-    typeof AREA7_EXTRA2 !== "undefined" ? AREA7_EXTRA2 : null
+/* Paquetes de contenido adicional (data/extra/*.js, data/extra2/*.js): más
+   flashcards y más reactivos por tema. Se CONCATENAN al final de los arreglos
+   originales para no mover los índices de las tarjetas que ya tienen progreso.
+
+   Cada paquete forma un BLOQUE dentro del tema. El bloque importa porque marca
+   qué se enseña junto: los reactivos de un bloque no se preguntan hasta que sus
+   tarjetas ya se estudiaron (ver availableQuiz). Antes no había bloques y el
+   banco completo quedaba disponible desde el primer día, así que el repaso
+   preguntaba material que la app todavía no había mostrado. */
+
+export const BLOQUES = ["base", "ampliacion", "ampliacion2"];
+
+function packGroups() {
+  const grupo = (sufijo) => [
+    typeof AREA1_EXTRA !== "undefined" && sufijo === "" ? AREA1_EXTRA : null,
+    typeof AREA2_EXTRA !== "undefined" && sufijo === "" ? AREA2_EXTRA : null,
+    typeof AREA3_EXTRA !== "undefined" && sufijo === "" ? AREA3_EXTRA : null,
+    typeof AREA4_EXTRA !== "undefined" && sufijo === "" ? AREA4_EXTRA : null,
+    typeof AREA5_EXTRA !== "undefined" && sufijo === "" ? AREA5_EXTRA : null,
+    typeof AREA6_EXTRA !== "undefined" && sufijo === "" ? AREA6_EXTRA : null,
+    typeof AREA7_EXTRA !== "undefined" && sufijo === "" ? AREA7_EXTRA : null,
+    typeof AREA1_EXTRA2 !== "undefined" && sufijo === "2" ? AREA1_EXTRA2 : null,
+    typeof AREA2_EXTRA2 !== "undefined" && sufijo === "2" ? AREA2_EXTRA2 : null,
+    typeof AREA3_EXTRA2 !== "undefined" && sufijo === "2" ? AREA3_EXTRA2 : null,
+    typeof AREA4_EXTRA2 !== "undefined" && sufijo === "2" ? AREA4_EXTRA2 : null,
+    typeof AREA5_EXTRA2 !== "undefined" && sufijo === "2" ? AREA5_EXTRA2 : null,
+    typeof AREA6_EXTRA2 !== "undefined" && sufijo === "2" ? AREA6_EXTRA2 : null,
+    typeof AREA7_EXTRA2 !== "undefined" && sufijo === "2" ? AREA7_EXTRA2 : null
+  ].filter(Boolean);
+
+  return [
+    { nombre: "ampliacion", packs: grupo("") },
+    { nombre: "ampliacion2", packs: grupo("2") }
   ];
-  const merged = {};
+}
+
+/** Lo que un grupo de paquetes aporta a un tema (un tema vive en un solo paquete por grupo). */
+function aporteDe(packs, id) {
+  const out = { flashcards: [], quiz: [] };
   packs.forEach((p) => {
-    if (!p) return;
-    Object.keys(p).forEach((id) => {
-      const cur = merged[id] || { flashcards: [], quiz: [] };
-      merged[id] = {
-        flashcards: cur.flashcards.concat(p[id].flashcards || []),
-        quiz: cur.quiz.concat(p[id].quiz || [])
-      };
-    });
+    if (!p || !p[id]) return;
+    out.flashcards = out.flashcards.concat(p[id].flashcards || []);
+    out.quiz = out.quiz.concat(p[id].quiz || []);
   });
-  return merged;
+  return out;
 }
 
 let TOPICS_CACHE = null;
@@ -222,14 +235,30 @@ export function getAllTopics() {
     typeof AREA7_TOPICS !== "undefined" ? AREA7_TOPICS : []
   ];
   const base = [].concat(...groups);
-  const extra = extraPacks();
+  const grupos = packGroups();
+
   TOPICS_CACHE = base.map((t) => {
-    const ex = extra[t.id];
-    if (!ex) return t;
-    return Object.assign({}, t, {
-      flashcards: (t.flashcards || []).concat(ex.flashcards || []),
-      quiz: (t.quiz || []).concat(ex.quiz || [])
+    let flashcards = (t.flashcards || []).slice();
+    let quiz = (t.quiz || []).slice();
+    const blocks = [{
+      nombre: "base",
+      fcFrom: 0, fcTo: flashcards.length,
+      qFrom: 0, qTo: quiz.length
+    }];
+
+    grupos.forEach((g) => {
+      const ap = aporteDe(g.packs, t.id);
+      if (!ap.flashcards.length && !ap.quiz.length) return;
+      blocks.push({
+        nombre: g.nombre,
+        fcFrom: flashcards.length, fcTo: flashcards.length + ap.flashcards.length,
+        qFrom: quiz.length, qTo: quiz.length + ap.quiz.length
+      });
+      flashcards = flashcards.concat(ap.flashcards);
+      quiz = quiz.concat(ap.quiz);
     });
+
+    return Object.assign({}, t, { flashcards, quiz, blocks });
   });
   return TOPICS_CACHE;
 }
@@ -317,7 +346,7 @@ function applyContentUpdate() {
     });
   });
 
-  const REPARTO = 7; // días entre los que se reparten las tarjetas nuevas
+  const REPARTO = 21; // días entre los que se reparten las tarjetas nuevas
   nuevas.forEach((cid, i) => {
     STATE.cards[cid] = {
       interval: 0,
@@ -357,9 +386,31 @@ export function peekCard(cardId) {
   return STATE.cards[cardId] || null;
 }
 
+/* ¿La tarjeta ya se mostró alguna vez con su respuesta a la vista?
+
+   `learned` es una llave nueva y aditiva. Para el progreso guardado desde antes
+   de que existiera, cualquier tarjeta con repasos o con fecha de último repaso
+   cuenta como aprendida: ya se vio, no hay que volver a presentarla. */
+export function isLearned(cardId) {
+  const c = STATE.cards[cardId];
+  if (!c) return false;
+  return c.learned === true || (c.repetitions || 0) > 0 || !!c.lastReview;
+}
+
+/** Presentación de una tarjeta nueva: se enseña, no se califica. */
+export function learnCard(cardId) {
+  const card = getCard(cardId);
+  card.learned = true;
+  card.interval = 1;
+  card.due = toISO(addDays(todayDate(), 1));
+  saveState();
+  return card;
+}
+
 export function gradeCard(cardId, quality) {
   const card = getCard(cardId);
   const today = todayDate();
+  card.learned = true;
   if (quality === 0) {
     card.repetitions = 0;
     card.interval = 1;
@@ -408,6 +459,44 @@ export function cardsForTopic(topicId) {
   return (t.flashcards || []).map((fc, i) => topicId + "::fc" + i);
 }
 
+/** Las tarjetas de un bloque concreto del tema. */
+export function cardsOfBlock(topicId, block) {
+  const out = [];
+  for (let i = block.fcFrom; i < block.fcTo; i++) out.push(topicId + "::fc" + i);
+  return out;
+}
+
+/* Un bloque de ampliación se abre cuando sus tarjetas ya se enseñaron. El bloque
+   base se abre al conocer el tema, porque su contenido es justo el de la nota
+   que se muestra en la introducción. */
+export function blockUnlocked(topic, block, index) {
+  if (index === 0) return true; // lo cubre la nota del tema, que siempre se puede leer
+  const cards = cardsOfBlock(topic.id, block);
+  if (!cards.length) return true;
+  return cards.every(isLearned);
+}
+
+/** Los reactivos que hoy es justo preguntar de este tema. */
+export function availableQuiz(topic) {
+  if (!topic) return [];
+  const bank = topic.quiz || [];
+  const blocks = topic.blocks;
+  if (!blocks || !blocks.length) return bank;
+  const out = [];
+  blocks.forEach((b, i) => {
+    if (!blockUnlocked(topic, b, i)) return;
+    for (let q = b.qFrom; q < b.qTo; q++) if (bank[q]) out.push(bank[q]);
+  });
+  return out;
+}
+
+/** Cuánto del banco de un tema está abierto (para mostrarlo en pantalla). */
+export function quizProgress(topicId) {
+  const t = topicsById()[topicId];
+  if (!t) return { disponibles: 0, total: 0 };
+  return { disponibles: availableQuiz(t).length, total: (t.quiz || []).length };
+}
+
 /** Datos de la flashcard a partir de su id (`tema::fcN`). */
 export function flashcardOf(cardId) {
   const [topicId, tail] = String(cardId).split("::");
@@ -422,12 +511,35 @@ export function flashcardOf(cardId) {
 
 export function isIntroduced(topicId) { return !!STATE.topicsIntroduced[topicId]; }
 
+/* Días entre un bloque y el siguiente al conocer un tema. El bloque base se
+   estudia el mismo día (es lo que explica la nota); las ampliaciones llegan
+   escalonadas, cada una con su propio paso de aprendizaje. */
+const DIAS_ENTRE_BLOQUES = 2;
+
 export function introduceTopic(topicId) {
-  if (!STATE.topicsIntroduced[topicId]) {
-    STATE.topicsIntroduced[topicId] = toISO(todayDate());
-    cardsForTopic(topicId).forEach((cid) => getCard(cid)); // inicializa tarjetas
-    saveState();
+  if (STATE.topicsIntroduced[topicId]) return;
+  STATE.topicsIntroduced[topicId] = toISO(todayDate());
+  const t = topicsById()[topicId];
+  const today = todayDate();
+  const blocks = (t && t.blocks) || [];
+
+  if (!blocks.length) {
+    cardsForTopic(topicId).forEach((cid) => getCard(cid));
+  } else {
+    blocks.forEach((b, i) => {
+      cardsOfBlock(topicId, b).forEach((cid) => {
+        if (STATE.cards[cid]) return;
+        STATE.cards[cid] = {
+          interval: 0,
+          repetitions: 0,
+          ef: 2.5,
+          due: toISO(addDays(today, i * DIAS_ENTRE_BLOQUES)),
+          lastReview: null
+        };
+      });
+    });
   }
+  saveState();
 }
 
 export function quizStatsFor(topicId) {
@@ -547,7 +659,7 @@ export function shuffleOptions(question, salt) {
 
 export function pickQuestion(topic, salt) {
   if (!topic) return null;
-  const bank = topic.quiz || [];
+  const bank = availableQuiz(topic);
   const key = salt === undefined ? String(randomSeed()) : String(salt);
   const seed = seedFor(topic.id, key);
   const rng = makeRng(seed);
@@ -572,6 +684,10 @@ function saltDelDia(topicId) {
 }
 
 /* ---------------- Plan de hoy / ritmo adaptativo ---------------- */
+
+/* Tope de tarjetas nuevas que se enseñan en un mismo día. Sin tope, un paquete
+   de contenido recién agregado convertiría la sesión en una lectura larguísima. */
+const MAX_APRENDER_POR_DIA = 12;
 
 export function planPhase(today) {
   if (today < STUDY_START) return "before";
@@ -601,14 +717,20 @@ export function computeTodayPlan() {
 
   const todayISO = toISO(rawToday);
   const dueCardEntries = [];
+  const learnCardEntries = [];
   Object.keys(STATE.cards).forEach((cardId) => {
     const topicId = cardId.split("::")[0];
     if (!isIntroduced(topicId)) return;
     if (newTopics.some((t) => t.id === topicId)) return; // los nuevos se repasan en su propia introducción
     const card = STATE.cards[cardId];
-    if (card.due <= todayISO) dueCardEntries.push({ cardId, topicId, due: card.due });
+    if (card.due > todayISO) return;
+    // Una tarjeta que nunca se ha visto no se examina: primero se enseña.
+    if (isLearned(cardId)) dueCardEntries.push({ cardId, topicId, due: card.due });
+    else learnCardEntries.push({ cardId, topicId, due: card.due });
   });
   dueCardEntries.sort((a, b) => (a.due < b.due ? -1 : 1));
+  learnCardEntries.sort((a, b) => (a.due < b.due ? -1 : 1));
+  const learnCards = learnCardEntries.slice(0, MAX_APRENDER_POR_DIA);
 
   // Quiz de refuerzo: prioriza temas con menor precisión o pocos intentos.
   const eligibleForQuiz = getAllTopics().filter((t) => {
@@ -629,25 +751,31 @@ export function computeTodayPlan() {
     if (question) quizQuestions.push({ topic: t, question });
   });
 
-  const estMinutes = Math.round(dueCardEntries.length * 0.5 + newTopics.length * 6 + quizQuestions.length * 1.2);
+  const estMinutes = Math.round(
+    dueCardEntries.length * 0.5 + learnCards.length * 0.8 + newTopics.length * 6 + quizQuestions.length * 1.2
+  );
 
   return {
     phase,
     today: rawToday,
     daysToExam: daysBetween(rawToday, EXAM_DATE),
     reviewCards: dueCardEntries,
+    learnCards,
+    learnPending: learnCardEntries.length,
     newTopics,
     quizQuestions,
     estMinutes,
     behind: phase === "learning" && notIntroduced.length > 0 && daysBetween(today, LEARNING_END) <= 0,
     notIntroducedCount: notIntroduced.length,
-    get totalSteps() { return this.reviewCards.length + this.newTopics.length + this.quizQuestions.length; }
+    get totalSteps() {
+      return this.reviewCards.length + this.learnCards.length + this.newTopics.length + this.quizQuestions.length;
+    }
   };
 }
 
 export function logSessionProgress(patch) {
   const iso = toISO(todayDate());
-  const entry = STATE.sessionLog[iso] || { cardsReviewed: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 };
+  const entry = STATE.sessionLog[iso] || { cardsReviewed: 0, cardsLearned: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 };
   Object.keys(patch).forEach((k) => { entry[k] = (entry[k] || 0) + patch[k]; });
   STATE.sessionLog[iso] = entry;
   if (STATE.lastStudyDate !== iso) {
@@ -731,7 +859,7 @@ export function buildMockExam(areaNums, onlyIntroduced, limit) {
 }
 
 function puedeExaminar(t) {
-  return (t.quiz && t.quiz.length > 0) || hasGenerator(t.id);
+  return availableQuiz(t).length > 0 || hasGenerator(t.id);
 }
 
 /** Cuántas preguntas tendría un simulacro con esos filtros. */
@@ -748,7 +876,7 @@ export function countMockQuestions(areaNums, onlyIntroduced) {
 export function buildDrill(topicId, n = 10) {
   const t = topicsById()[topicId];
   if (!t) return [];
-  const bank = t.quiz || [];
+  const bank = availableQuiz(t);
   const out = [];
 
   if (hasGenerator(topicId)) {
@@ -769,7 +897,7 @@ export function drillSize(topicId) {
   const t = topicsById()[topicId];
   if (!t) return 0;
   if (hasGenerator(topicId)) return Infinity;
-  return (t.quiz || []).length;
+  return availableQuiz(t).length;
 }
 
 export function topicHasGenerator(topicId) {
@@ -852,6 +980,7 @@ export function mergeStates(a, b) {
     const eb = (b.sessionLog || {})[d] || {};
     out.sessionLog[d] = {
       cardsReviewed: Math.max(ea.cardsReviewed || 0, eb.cardsReviewed || 0),
+      cardsLearned: Math.max(ea.cardsLearned || 0, eb.cardsLearned || 0),
       newTopics: Math.max(ea.newTopics || 0, eb.newTopics || 0),
       quizAnswered: Math.max(ea.quizAnswered || 0, eb.quizAnswered || 0),
       quizCorrect: Math.max(ea.quizCorrect || 0, eb.quizCorrect || 0)

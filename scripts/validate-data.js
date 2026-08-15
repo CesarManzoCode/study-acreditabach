@@ -21,6 +21,19 @@ const EXPECTED = [
 let totalErrors = 0;
 const allIds = new Set();
 
+/* Contenido acumulado por tema, para las revisiones que cruzan archivos.
+   La más importante: que ninguna tarjeta repita el frente de otra del mismo
+   tema. Dos tarjetas con la misma pregunta son dos tarjetas independientes en
+   el repaso espaciado, así que el mismo texto sale dos veces para siempre. */
+const porTema = new Map();
+
+function registrar(id, origen, entry) {
+  const acc = porTema.get(id) || { flashcards: [], quiz: [] };
+  (entry.flashcards || []).forEach((fc, i) => acc.flashcards.push({ origen, i, fc }));
+  (entry.quiz || []).forEach((q, i) => acc.quiz.push({ origen, i, q }));
+  porTema.set(id, acc);
+}
+
 for (const spec of EXPECTED) {
   const fp = path.join(__dirname, "..", "data", spec.file);
   const errors = [];
@@ -60,6 +73,7 @@ for (const spec of EXPECTED) {
         if (typeof q.correct !== "number" || q.correct < 0 || q.correct > 2) errors.push(`${pre}: quiz[${qi}].correct inválido (${q.correct})`);
         if (!q.explanation) errors.push(`${pre}: quiz[${qi}] sin explanation`);
       });
+      registrar(t.id, spec.file, t);
     });
   }
   if (errors.length) {
@@ -137,6 +151,7 @@ for (const spec of EXTRA_SPECS) {
     });
     extraFlashcards += fcs.length;
     extraQuiz += qs.length;
+    registrar(id, spec.file, entry);
   }
 
   if (errors.length) {
@@ -153,5 +168,57 @@ for (const spec of EXTRA_SPECS) {
 }
 
 console.log(`\nContenido adicional: ${temasConExtra} temas ampliados · +${extraFlashcards} tarjetas · +${extraQuiz} reactivos`);
+
+/* ---------------- Revisiones que cruzan los archivos ----------------
+
+   Un tema se arma con su archivo base más los paquetes de ampliación, y hasta
+   ahora nada comprobaba que las tres partes encajaran entre sí. Aquí se revisa
+   lo que solo se ve al juntarlas. */
+
+const cruzados = [];
+const norm = (s) => String(s).toLowerCase().replace(/\s+/g, " ").trim();
+
+for (const [id, acc] of porTema) {
+  const frentes = new Map();
+  acc.flashcards.forEach(({ origen, i, fc }) => {
+    if (!fc || !fc.front) return;
+    const k = norm(fc.front);
+    const prev = frentes.get(k);
+    if (prev) {
+      cruzados.push(
+        `${id}: la tarjeta "${fc.front}" está dos veces ` +
+        `(${prev.origen}[flashcards[${prev.i}]] y ${origen}[flashcards[${i}]]). ` +
+        `Cada copia es una tarjeta aparte en el repaso: cámbiale el enfoque a una de las dos.`
+      );
+    } else {
+      frentes.set(k, { origen, i });
+    }
+  });
+
+  const reactivos = new Map();
+  acc.quiz.forEach(({ origen, i, q }) => {
+    if (!q || !q.q || !Array.isArray(q.options)) return;
+    const k = norm(q.q) + "||" + q.options.map(norm).join("|");
+    const prev = reactivos.get(k);
+    if (prev) {
+      cruzados.push(
+        `${id}: el reactivo "${q.q}" está dos veces con las mismas opciones ` +
+        `(${prev.origen}[quiz[${prev.i}]] y ${origen}[quiz[${i}]]).`
+      );
+    } else {
+      reactivos.set(k, { origen, i });
+    }
+  });
+}
+
+if (cruzados.length) {
+  console.log(`\n[revisión entre archivos] ${cruzados.length} problema(s):`);
+  cruzados.slice(0, 60).forEach((e) => console.log("  - " + e));
+  if (cruzados.length > 60) console.log(`  ... y ${cruzados.length - 60} más`);
+  totalErrors += cruzados.length;
+} else {
+  console.log("[revisión entre archivos] OK — sin tarjetas ni reactivos repetidos dentro de un mismo tema");
+}
+
 console.log(totalErrors === 0 ? "\nTODO OK" : `\nTOTAL DE PROBLEMAS: ${totalErrors}`);
 process.exit(totalErrors === 0 ? 0 : 1);

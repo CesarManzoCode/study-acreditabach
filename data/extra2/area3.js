@@ -52,7 +52,7 @@ const AREA3_EXTRA2 = {
   "3.1.4": {
     flashcards: [
       { front: "¿Qué es el patrimonio cultural material e inmaterial?", back: "El **material** son bienes físicos: zonas arqueológicas, templos, códices, pinturas. El **inmaterial** son prácticas vivas: lenguas, fiestas, cocina, música y saberes tradicionales." },
-      { front: "¿Qué es el sincretismo cultural?", back: "La fusión de elementos indígenas y europeos en una nueva expresión: la fiesta patronal, el Día de Muertos o la arquitectura con motivos prehispánicos en templos católicos." },
+      { front: "¿Qué ejemplos mexicanos muestran sincretismo cultural?", back: "La fiesta patronal, el Día de Muertos o la arquitectura con motivos prehispánicos en templos católicos: la fusión de elementos indígenas y europeos en una expresión nueva." },
       { front: "¿Qué institución protege el patrimonio arqueológico en México?", back: "El INAH (Instituto Nacional de Antropología e Historia); el patrimonio artístico del siglo XX corresponde al INBAL." }
     ],
     quiz: [
@@ -202,7 +202,7 @@ const AREA3_EXTRA2 = {
   "3.2.9": {
     flashcards: [
       { front: "¿Qué proponía el Plan de Ayala (1911)?", back: "Restituir a los pueblos las tierras despojadas y expropiar un tercio de las haciendas con indemnización. Fue la bandera del zapatismo y desconoció a Madero por incumplir el reparto agrario." },
-      { front: "¿Qué fue la Decena Trágica?", back: "El golpe militar de febrero de 1913 que derrocó a Madero, con la participación de Victoriano Huerta y el apoyo del embajador estadounidense Henry Lane Wilson. Terminó con el asesinato de Madero y Pino Suárez." },
+      { front: "¿Quiénes participaron en el golpe contra Madero de 1913?", back: "Victoriano Huerta, con el apoyo del embajador estadounidense Henry Lane Wilson, durante la Decena Trágica de febrero de 1913. Terminó con el asesinato de Madero y Pino Suárez." },
       { front: "¿Qué se decidió en la Convención de Aguascalientes (1914)?", back: "Las facciones intentaron acordar un gobierno común. Al no aceptar Carranza la decisión de la Convención, la Revolución entró en la guerra entre constitucionalistas y convencionistas (villistas y zapatistas)." }
     ],
     quiz: [
@@ -247,7 +247,7 @@ const AREA3_EXTRA2 = {
   "3.3.2": {
     flashcards: [
       { front: "¿Cómo participó México en la Segunda Guerra Mundial?", back: "Declaró la guerra al Eje en 1942, tras el hundimiento de los buques Potrero del Llano y Faja de Oro, y envió al Escuadrón 201 al Pacífico. También firmó el Programa Bracero con Estados Unidos." },
-      { front: "¿Qué fue el Programa Bracero?", back: "El acuerdo (1942-1964) por el que México envió trabajadores agrícolas temporales a Estados Unidos para cubrir la falta de mano de obra durante y después de la guerra." },
+      { front: "¿Por qué Estados Unidos pidió trabajadores mexicanos entre 1942 y 1964?", back: "Por la falta de mano de obra durante y después de la Segunda Guerra Mundial: con el Programa Bracero México envió trabajadores agrícolas temporales." },
       { front: "¿Qué postura tuvo México ante la Guerra Civil Española?", back: "Apoyó a la República y recibió a miles de exiliados, entre ellos científicos, artistas e intelectuales que fortalecieron la vida académica y cultural del país." }
     ],
     quiz: [
@@ -261,7 +261,7 @@ const AREA3_EXTRA2 = {
 
   "3.3.3": {
     flashcards: [
-      { front: "¿Qué fue el modelo de sustitución de importaciones?", back: "La estrategia (1940-1970) de producir internamente lo que antes se importaba, protegiendo a la industria nacional con aranceles. Se le llamó «desarrollo estabilizador» o «milagro mexicano»." },
+      { front: "¿Con qué otros nombres se conoce la etapa de sustitución de importaciones?", back: "«Desarrollo estabilizador» o «milagro mexicano» (1940-1970): producir en el país lo que antes se importaba, protegiendo a la industria nacional con aranceles." },
       { front: "¿Qué provocó la crisis de la deuda de 1982?", back: "El endeudamiento externo con los ingresos petroleros como garantía, la caída del precio del petróleo y el alza de las tasas de interés internacionales. México declaró que no podía pagar." },
       { front: "¿Qué medidas caracterizan al giro neoliberal en México?", back: "Privatización de empresas estatales, apertura comercial (GATT en 1986 y TLCAN en 1994), reducción del gasto social, disciplina fiscal y desregulación." }
     ],

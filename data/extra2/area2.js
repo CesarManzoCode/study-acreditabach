@@ -52,8 +52,8 @@ const AREA2_EXTRA2 = {
 
   "2.1.4": {
     flashcards: [
-      { front: "¿Qué es el ransomware?", back: "Un programa malicioso que cifra los archivos del equipo y exige un pago para devolver el acceso. La mejor defensa son los respaldos frecuentes y desconectados." },
-      { front: "¿Qué es la ingeniería social?", back: "Manipular a la persona, no al sistema: engaños por llamada, mensaje o correo para que ella misma entregue contraseñas o datos bancarios." },
+      { front: "¿Cuál es la mejor defensa contra el ransomware?", back: "Los respaldos frecuentes y desconectados de la red: si el programa cifra los archivos y exige un pago, se restaura desde el respaldo sin pagar el rescate." },
+      { front: "¿Por qué la ingeniería social funciona aunque el sistema esté bien protegido?", back: "Porque ataca a la persona, no al sistema: engaños por llamada, mensaje o correo para que ella misma entregue contraseñas o datos bancarios." },
       { front: "¿Qué diferencia hay entre virus, gusano y troyano?", back: "El **virus** necesita un archivo anfitrión y que alguien lo ejecute; el **gusano** se propaga solo por la red; el **troyano** se disfraza de programa útil para abrir una puerta trasera." }
     ],
     quiz: [
@@ -83,7 +83,7 @@ const AREA2_EXTRA2 = {
   "2.2.1": {
     flashcards: [
       { front: "¿Qué diferencia hay entre internet, web y ciberespacio?", back: "**Internet** es la infraestructura física de redes; la **web** es uno de los servicios que corren sobre ella; el **ciberespacio** es el entorno social y simbólico donde ocurren las interacciones." },
-      { front: "¿Qué es la brecha digital?", back: "La desigualdad en el acceso, uso y aprovechamiento de las tecnologías digitales entre países, regiones, generaciones o niveles socioeconómicos." },
+      { front: "¿Entre quiénes se mide la brecha digital?", back: "Entre países, regiones, generaciones o niveles socioeconómicos: mide la desigualdad en el acceso, uso y aprovechamiento de las tecnologías digitales." },
       { front: "¿Qué caracteriza a la comunicación en el ciberespacio?", back: "Es deslocalizada (no depende del lugar), puede ser sincrónica o asincrónica, permite el anonimato y multiplica el alcance de cualquier mensaje." }
     ],
     quiz: [
@@ -187,7 +187,7 @@ const AREA2_EXTRA2 = {
 
   "2.3.4": {
     flashcards: [
-      { front: "¿Qué significan las siglas ADDIE?", back: "**A**nálisis, **D**iseño, **D**esarrollo, **I**mplementación y **E**valuación: las cinco fases del diseño instruccional de contenidos digitales." },
+      { front: "¿En qué orden van las fases del método ADDIE?", back: "**A**nálisis → **D**iseño → **D**esarrollo → **I**mplementación → **E**valuación. Son las cinco fases del diseño instruccional de contenidos digitales." },
       { front: "¿Qué se hace exactamente en la fase de análisis?", back: "Se identifican el problema, el perfil y las necesidades de los destinatarios, los objetivos de aprendizaje y los recursos disponibles. Es la fase que evita construir algo que nadie necesita." },
       { front: "¿En qué se diferencia diseño de desarrollo?", back: "El **diseño** planea (guion, estructura, actividades, criterios de evaluación); el **desarrollo** produce los materiales reales: videos, textos, ejercicios." }
     ],

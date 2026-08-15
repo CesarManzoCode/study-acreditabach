@@ -7,7 +7,7 @@ import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 import {
   areaNumbers, areaStats, topicsOfArea, topicsById, isIntroduced, topicMastery,
   introduceTopic, quizStatsFor, searchTopics, peekCard, cardsForTopic, fromISO, fmtDateShort,
-  todayDate, topicHasGenerator
+  todayDate, topicHasGenerator, isLearned, quizProgress
 } from "../lib/engine.js";
 
 export default function Browse({ route, onPractice, onCards, onDrill }) {
@@ -190,6 +190,7 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
   const mastery = introduced ? topicMastery(topic.id) : 0;
   const qs = quizStatsFor(topic.id);
   const infinito = topicHasGenerator(topic.id);
+  const banco = quizProgress(topic.id);
   const dues = introduced
     ? cardsForTopic(topic.id).map((cid) => (peekCard(cid) || {}).due).filter(Boolean).sort()
     : [];
@@ -286,6 +287,7 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
                   >
                     <div className="fc-item-front">
                       <span>{fc.front}</span>
+                      {!isLearned(`${topic.id}::fc${i}`) && <Badge tone="brand">por aprender</Badge>}
                       <Icon name="chevronDown" size={16} />
                     </div>
                     <div className="fc-reveal">
@@ -312,7 +314,7 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
               )}
               {infinito && (
                 <Button variant="solid" icon="target" onClick={() => onPractice(topic)}>
-                  Banco fijo ({topic.quiz.length})
+                  Banco fijo ({banco.disponibles})
                 </Button>
               )}
               <Button variant="solid" icon="cards" onClick={() => onCards(topic)}>
@@ -320,6 +322,15 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
               </Button>
             </div>
           </Reveal>
+
+          {banco.disponibles < banco.total && (
+            <Reveal delay={220}>
+              <p className="faint" style={{ margin: 0, textAlign: "center" }}>
+                {banco.total - banco.disponibles} de los {banco.total} reactivos de este tema todavía no se
+                preguntan: primero se enseñan sus tarjetas.
+              </p>
+            </Reveal>
+          )}
         </>
       )}
     </div>

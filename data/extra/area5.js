@@ -333,7 +333,7 @@ const AREA5_EXTRA = {
 
   "5.6.2": {
     flashcards: [
-      { front: "¿Cuál es la diferencia entre población y comunidad?", back: "La **población** son individuos de la **misma especie** en un área; la **comunidad** son todas las poblaciones de **distintas especies** que conviven ahí." },
+      { front: "¿Cuántas especies hay en una población y cuántas en una comunidad?", back: "En la **población**, una sola: son individuos de la **misma especie** en un área. En la **comunidad**, varias: reúne todas las poblaciones de **distintas especies** que conviven ahí." },
       { front: "¿Qué agrega el ecosistema respecto de la comunidad?", back: "Los factores abióticos: agua, suelo, temperatura, luz. Ecosistema = comunidad (biótico) + ambiente físico (abiótico)." }
     ],
     quiz: [

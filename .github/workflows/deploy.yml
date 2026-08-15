@@ -37,6 +37,9 @@ jobs:
       - name: Probar los generadores de reactivos
         run: npm run test:generadores
 
+      - name: Probar el motor de estudio
+        run: npm run test:motor
+
       - name: Compilar la app
         run: npm run build
 

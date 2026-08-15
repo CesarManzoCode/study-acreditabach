@@ -3,7 +3,10 @@ import Icon from "./ui/Icon.jsx";
 import { ToastProvider } from "./ui/kit.jsx";
 import { useEngine, useRoute, navigate, useAccounts, useCloud } from "./lib/hooks.js";
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
-import { computeTodayPlan, overallStats, cardsForTopic, buildDrill, shuffleOptions, subscribe } from "./lib/engine.js";
+import {
+  computeTodayPlan, overallStats, cardsForTopic, cardsOfBlock, buildDrill,
+  shuffleOptions, subscribe, isLearned, availableQuiz
+} from "./lib/engine.js";
 import { getActiveUser } from "./lib/accounts.js";
 import { startCloud, getCloudStatus } from "./lib/cloud.js";
 
@@ -57,12 +60,20 @@ function Shell() {
     window.scrollTo({ top: 0, behavior: "instant" in document.documentElement.style ? "instant" : "auto" });
   }, [route.name, route.params.join("/")]);
 
+  /* Orden de la sesión: primero se repasa lo ya sabido, luego se ENSEÑA el
+     material nuevo (frente y reverso a la vista, sin calificar), después los
+     temas nuevos y al final la práctica. La regla que sostiene todo esto es que
+     nada se pregunta antes de haberse mostrado. */
   const startStudy = useCallback(() => {
     const steps = [];
     plan.reviewCards.forEach((rc) => steps.push({ type: "review", cardId: rc.cardId, topicId: rc.topicId }));
+    plan.learnCards.forEach((lc) => steps.push({ type: "learn", cardId: lc.cardId, topicId: lc.topicId }));
     plan.newTopics.forEach((t) => {
       steps.push({ type: "intro", topic: t });
-      cardsForTopic(t.id).forEach((cid) => steps.push({ type: "review", cardId: cid, topicId: t.id, isNew: true }));
+      // Solo el bloque base: es lo que acaba de explicar la nota. Las
+      // ampliaciones del tema llegan escalonadas en los días siguientes.
+      const base = t.blocks && t.blocks.length ? cardsOfBlock(t.id, t.blocks[0]) : cardsForTopic(t.id);
+      base.forEach((cid) => steps.push({ type: "learn", cardId: cid, topicId: t.id, isNew: true }));
     });
     plan.quizQuestions.forEach((qq) => steps.push({ type: "quiz", topic: qq.topic, question: qq.question }));
     if (!steps.length) return;
@@ -71,7 +82,7 @@ function Shell() {
   }, [plan]);
 
   const startTopicPractice = useCallback((topic) => {
-    const steps = (topic.quiz || []).map((q, i) => ({
+    const steps = availableQuiz(topic).map((q, i) => ({
       type: "quiz",
       topic,
       question: shuffleOptions(q, topic.id + "|" + i + "|" + Date.now())
@@ -91,8 +102,14 @@ function Shell() {
     setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps, drillTopicId: topic.id });
   }, []);
 
+  /* Repasar las tarjetas de un tema a mano: las que nunca se han visto se
+     presentan (paso "aprender") en vez de pedir que las adivines. */
   const startTopicCards = useCallback((topic) => {
-    const steps = cardsForTopic(topic.id).map((cid) => ({ type: "review", cardId: cid, topicId: topic.id }));
+    const steps = cardsForTopic(topic.id).map((cid) => ({
+      type: isLearned(cid) ? "review" : "learn",
+      cardId: cid,
+      topicId: topic.id
+    }));
     if (!steps.length) return;
     steps.push({ type: "summary" });
     setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });
