@@ -1,22 +1,28 @@
 /* ============================================================
-   Cuentas locales (perfiles)
+   Sesión de la cuenta
 
-   Sistema deliberadamente simple: no hay contraseñas reales ni cifrado.
-   Sirve para dos cosas:
-     1. separar el progreso de varias personas en el mismo navegador;
-     2. darle una identidad al progreso para poder sincronizarlo entre
-        dispositivos (ver sync.js).
+   Aquí solo vive el estado de la sesión: quién entró, con qué token y a qué
+   servidor. Las llamadas al servidor y el manejo del progreso están en
+   cloud.js (este archivo no toca el motor, para evitar importaciones
+   circulares).
 
-   COMPATIBILIDAD CON EL PROGRESO EXISTENTE
-   ----------------------------------------
-   Sin ninguna cuenta creada, el motor sigue leyendo y escribiendo la llave
-   histórica `acreditabach_v1`, exactamente como antes. Al crear la primera
-   cuenta se COPIA ese contenido al espacio de la cuenta; la llave histórica
-   nunca se borra ni se reescribe, así que siempre queda como respaldo.
+   MODOS
+   -----
+   · Invitado  — sin cuenta. El progreso se guarda en este navegador, en la
+                 llave `acreditabach_v1`, igual que siempre.
+   · Con sesión— el progreso vive en la cuenta. Localmente se guarda una copia
+                 en `acreditabach_v1__<usuario>` para poder estudiar sin
+                 conexión; el servidor es la fuente de verdad al entrar.
    ============================================================ */
 
 export const LEGACY_KEY = "acreditabach_v1";
-const REG_KEY = "acreditabach_users";
+const SESSION_KEY = "acreditabach_sesion";
+const SERVER_KEY = "acreditabach_servidor";
+
+/* Dirección del servidor de cuentas (el Worker de server/cloudflare-worker.js).
+   Si se deja vacía, la app pide la dirección una vez en la pantalla de Cuenta
+   y la recuerda en este navegador. */
+export const SERVIDOR_POR_DEFECTO = "";
 
 const listeners = new Set();
 let revision = 0;
@@ -33,184 +39,79 @@ function emit() {
   listeners.forEach((fn) => fn());
 }
 
-function emptyRegistry() {
-  return { version: 1, active: null, users: [], space: null };
-}
+/* ---------------- Sesión ---------------- */
 
-let REG = read();
-
-function read() {
+function leerSesion() {
   try {
-    const raw = localStorage.getItem(REG_KEY);
-    if (!raw) return emptyRegistry();
-    const parsed = JSON.parse(raw);
-    const reg = Object.assign(emptyRegistry(), parsed);
-    if (!Array.isArray(reg.users)) reg.users = [];
-    if (reg.active && !reg.users.some((u) => u.slug === reg.active)) reg.active = null;
-    return reg;
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    return s && s.token && s.usuario ? s : null;
   } catch (e) {
-    return emptyRegistry();
+    return null;
   }
 }
 
-function write() {
+let SESION = leerSesion();
+
+/** { usuario, nombre, token } o null si estás en modo invitado. */
+export function getSession() {
+  return SESION;
+}
+export function getActiveUser() {
+  return SESION ? { usuario: SESION.usuario, nombre: SESION.nombre || SESION.usuario } : null;
+}
+/** Identificador de la cuenta activa (null en modo invitado). Lo usa el motor. */
+export function getActiveSlug() {
+  return SESION ? SESION.usuario : null;
+}
+export function isGuest() {
+  return !SESION;
+}
+
+export function setSession(sesion) {
+  SESION = sesion && sesion.token && sesion.usuario ? sesion : null;
   try {
-    localStorage.setItem(REG_KEY, JSON.stringify(REG));
+    if (SESION) localStorage.setItem(SESSION_KEY, JSON.stringify(SESION));
+    else localStorage.removeItem(SESSION_KEY);
   } catch (e) {
-    console.warn("No se pudo guardar la lista de cuentas.", e);
+    console.warn("No se pudo guardar la sesión.", e);
   }
   emit();
 }
 
-/** Llave de localStorage donde vive el progreso de una cuenta. */
-export function progressKeyFor(slug) {
-  return slug ? LEGACY_KEY + "__" + slug : LEGACY_KEY;
+/** Llave de localStorage donde vive la copia local del progreso. */
+export function progressKeyFor(usuario) {
+  return usuario ? LEGACY_KEY + "__" + usuario : LEGACY_KEY;
 }
 
-export function getUsers() {
-  return REG.users.slice();
-}
-export function getActiveSlug() {
-  return REG.active;
-}
-export function getActiveUser() {
-  return REG.users.find((u) => u.slug === REG.active) || null;
-}
-export function hasAccounts() {
-  return REG.users.length > 0;
-}
+/* ---------------- Servidor ---------------- */
 
-/* Quita acentos sin depender de un rango literal de marcas combinantes:
-   NFD separa la letra de su acento y aquí se descartan los códigos 0x300-0x36F. */
-function stripAccents(s) {
-  let out = "";
-  const nfd = String(s).normalize("NFD");
-  for (let i = 0; i < nfd.length; i++) {
-    const code = nfd.charCodeAt(i);
-    if (code < 0x300 || code > 0x36f) out += nfd[i];
-  }
-  return out;
-}
-
-function slugify(name) {
-  const base =
-    stripAccents(String(name).toLowerCase())
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 24) || "yo";
-  let slug = base;
-  let n = 2;
-  while (REG.users.some((u) => u.slug === slug)) slug = base + "-" + n++;
-  return slug;
-}
-
-const AVATARS = ["#6366f1", "#06b6d4", "#f59e0b", "#a855f7", "#10b981", "#f43f5e", "#84cc16"];
-
-/**
- * Crea una cuenta. La primera cuenta hereda el progreso que ya estaba
- * guardado en la llave histórica (sin borrarlo de ahí).
- */
-export function createUser(name, pin = "") {
-  const clean = String(name || "").trim().slice(0, 32) || "Yo";
-  const slug = slugify(clean);
-  const isFirst = REG.users.length === 0;
-  const user = {
-    slug,
-    name: clean,
-    pin: String(pin || "").slice(0, 12),
-    color: AVATARS[REG.users.length % AVATARS.length],
-    createdAt: new Date().toISOString()
-  };
-  REG.users.push(user);
-  REG.active = slug;
-
-  if (isFirst) {
-    try {
-      const legacy = localStorage.getItem(LEGACY_KEY);
-      if (legacy && !localStorage.getItem(progressKeyFor(slug))) {
-        localStorage.setItem(progressKeyFor(slug), legacy);
-      }
-    } catch (e) {
-      console.warn("No se pudo heredar el progreso previo.", e);
-    }
-  }
-  write();
-  return user;
-}
-
-/** Da de alta (o actualiza) una cuenta que llegó del espacio remoto. */
-export function upsertUser(user) {
-  if (!user || !user.slug) return null;
-  const existing = REG.users.find((u) => u.slug === user.slug);
-  if (existing) {
-    existing.name = user.name || existing.name;
-    existing.color = user.color || existing.color;
-    if (user.pin !== undefined) existing.pin = user.pin;
-  } else {
-    REG.users.push({
-      slug: user.slug,
-      name: user.name || user.slug,
-      pin: user.pin || "",
-      color: user.color || AVATARS[REG.users.length % AVATARS.length],
-      createdAt: user.createdAt || new Date().toISOString()
-    });
-  }
-  write();
-  return REG.users.find((u) => u.slug === user.slug);
-}
-
-export function switchUser(slug) {
-  if (slug !== null && !REG.users.some((u) => u.slug === slug)) return false;
-  REG.active = slug;
-  write();
-  return true;
-}
-
-export function renameUser(slug, name) {
-  const u = REG.users.find((x) => x.slug === slug);
-  if (!u) return false;
-  u.name = String(name || "").trim().slice(0, 32) || u.name;
-  write();
-  return true;
-}
-
-export function setUserPin(slug, pin) {
-  const u = REG.users.find((x) => x.slug === slug);
-  if (!u) return false;
-  u.pin = String(pin || "").slice(0, 12);
-  write();
-  return true;
-}
-
-/** Borra la cuenta y su progreso. La llave histórica nunca se toca. */
-export function deleteUser(slug) {
-  const i = REG.users.findIndex((u) => u.slug === slug);
-  if (i < 0) return false;
-  REG.users.splice(i, 1);
-  if (REG.active === slug) REG.active = REG.users.length ? REG.users[0].slug : null;
+export function getServerUrl() {
+  if (SERVIDOR_POR_DEFECTO) return SERVIDOR_POR_DEFECTO;
   try {
-    localStorage.removeItem(progressKeyFor(slug));
+    return localStorage.getItem(SERVER_KEY) || "";
+  } catch (e) {
+    return "";
+  }
+}
+
+export function setServerUrl(url) {
+  const limpio = String(url || "").trim().replace(/\/+$/, "");
+  try {
+    if (limpio) localStorage.setItem(SERVER_KEY, limpio);
+    else localStorage.removeItem(SERVER_KEY);
   } catch (e) {}
-  write();
-  return true;
+  emit();
+  return limpio;
 }
 
-/* ---------------- Espacio de sincronización ----------------
-   El "espacio" es el lugar remoto donde viven las cuentas y su progreso.
-   Aquí solo se guarda la configuración; la lógica está en sync.js. */
-
-export function getSpace() {
-  return REG.space;
+/** true cuando la app ya sabe a qué servidor hablarle. */
+export function hasServer() {
+  return !!getServerUrl();
 }
 
-export function setSpace(space) {
-  REG.space = space || null;
-  write();
-}
-
-/** Marca de la última sincronización correcta, para mostrarla en la interfaz. */
-export function markSynced(info) {
-  if (!REG.space) return;
-  REG.space = Object.assign({}, REG.space, { lastSync: new Date().toISOString() }, info || {});
-  write();
+/** El servidor está fijo en el código: no se puede cambiar desde la app. */
+export function servidorFijo() {
+  return !!SERVIDOR_POR_DEFECTO;
 }

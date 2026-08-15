@@ -1,233 +1,98 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import Icon from "../ui/Icon.jsx";
-import { Button, Card, Badge, SectionTitle, Reveal, Modal, EmptyState, useToast } from "../ui/kit.jsx";
-import { useAccounts, useSync, useEngine } from "../lib/hooks.js";
+import { Button, Card, SectionTitle, Reveal, useToast } from "../ui/kit.jsx";
+import { useAccounts, useCloud, useEngine } from "../lib/hooks.js";
+import { getActiveUser, isGuest, getServerUrl, setServerUrl, servidorFijo } from "../lib/accounts.js";
 import {
-  getUsers, getActiveUser, getActiveSlug, createUser, switchUser,
-  renameUser, deleteUser, setUserPin, getSpace
-} from "../lib/accounts.js";
-import { formatCode, createSpace, joinSpace, leaveSpace, syncNow, getSyncStatus, providerList } from "../lib/sync.js";
+  registrar, entrar, salir, cambiarPassword, guardarAhora, probarServidor,
+  getCloudStatus, problemaUsuario, problemaPassword
+} from "../lib/cloud.js";
 import { overallStats } from "../lib/engine.js";
 
 const ESTADO = {
-  off: { texto: "Sin sincronizar", tone: "neutral", icon: "cloudOff" },
-  sync: { texto: "Sincronizando…", tone: "brand", icon: "refresh" },
-  ok: { texto: "Al día", tone: "success", icon: "cloud" },
-  error: { texto: "Con problemas", tone: "danger", icon: "alert" }
+  invitado: { texto: "Modo invitado", tone: "off", icon: "cloudOff" },
+  guardando: { texto: "Guardando…", tone: "sync", icon: "refresh" },
+  listo: { texto: "Guardado en tu cuenta", tone: "ok", icon: "cloud" },
+  error: { texto: "Sin guardar", tone: "error", icon: "alert" }
 };
 
 export default function Account() {
   useAccounts();
-  useSync();
+  useCloud();
   const rev = useEngine();
   const toast = useToast();
 
-  const users = getUsers();
-  const active = getActiveUser();
-  const space = getSpace();
-  const status = getSyncStatus();
+  const user = getActiveUser();
+  const invitado = isGuest();
+  const estado = ESTADO[getCloudStatus().modo] || ESTADO.invitado;
   const stats = useMemo(() => overallStats(), [rev]);
-
-  const [nuevo, setNuevo] = useState("");
-  const [creando, setCreando] = useState(false);
-  const [porBorrar, setPorBorrar] = useState(null);
-  const [renombrando, setRenombrando] = useState(null);
-  const [nombreTmp, setNombreTmp] = useState("");
-
-  const crear = () => {
-    const nombre = nuevo.trim();
-    if (!nombre) return;
-    createUser(nombre);
-    setNuevo("");
-    setCreando(false);
-    toast(`Cuenta "${nombre}" creada`, { tone: "success", icon: "check" });
-  };
-
-  const cambiar = (slug) => {
-    if (slug === getActiveSlug()) return;
-    switchUser(slug);
-    const u = getUsers().find((x) => x.slug === slug);
-    toast(`Ahora estudias como ${u ? u.name : slug}`, { icon: "user" });
-  };
+  const servidor = getServerUrl();
 
   return (
     <div className="stack">
-      <SectionTitle hint="Tu progreso vive en este dispositivo. Con una cuenta y un espacio de sincronización, lo puedes seguir en cualquier otro.">
-        Cuenta y sincronización
+      <SectionTitle hint={
+        invitado
+          ? "Sin cuenta, tu avance se guarda solo en este dispositivo. Con una cuenta, te sigue a donde entres."
+          : "Tu avance se guarda en tu cuenta. Entra con el mismo usuario en cualquier dispositivo y ahí estará."
+      }>
+        Cuenta
       </SectionTitle>
 
-      {/* ---------------- Cuenta activa ---------------- */}
+      {/* ---------------- Quién eres ---------------- */}
       <Reveal>
         <Card className="account-hero">
           <div className="account-hero-main">
-            <span className="avatar avatar-lg" style={{ "--c": active ? active.color : "#6366f1" }}>
-              {active ? inicial(active.name) : <Icon name="user" size={22} />}
+            <span className={`avatar avatar-lg${invitado ? " avatar-guest" : ""}`}>
+              {invitado ? <Icon name="user" size={24} /> : inicial(user.nombre)}
             </span>
             <div style={{ minWidth: 0 }}>
-              <div className="account-name">{active ? active.name : "Sin cuenta"}</div>
+              <div className="account-name">{invitado ? "Invitado" : user.nombre}</div>
               <p className="muted" style={{ margin: "2px 0 0" }}>
-                {active
-                  ? `${stats.introducedCount} de ${stats.total} temas vistos · racha de ${stats.streak}`
-                  : "Estás usando el progreso guardado directamente en este navegador."}
+                {stats.introducedCount} de {stats.total} temas vistos · racha de {stats.streak}
+                {!invitado && <> · <span className="mono">@{user.usuario}</span></>}
               </p>
             </div>
           </div>
-          <span className={`sync-chip sync-${status.state}`}>
-            <Icon name={ESTADO[status.state].icon} size={15} />
-            {ESTADO[status.state].texto}
+          <span className={`sync-chip sync-${estado.tone}`}>
+            <Icon name={estado.icon} size={15} />
+            {estado.texto}
           </span>
         </Card>
       </Reveal>
 
-      {!active && (
+      {/* ---------------- Servidor (solo si falta configurarlo) ---------------- */}
+      {!servidor && (
         <Reveal delay={60}>
+          <ServidorCard toast={toast} />
+        </Reveal>
+      )}
+
+      {/* ---------------- Entrar / registrarse o sesión abierta ---------------- */}
+      {servidor && (
+        <Reveal delay={60}>
+          {invitado ? <AccesoCard toast={toast} /> : <SesionCard toast={toast} />}
+        </Reveal>
+      )}
+
+      {servidor && !servidorFijo() && (
+        <Reveal delay={120}>
           <Card tone="soft">
             <div className="note-row">
-              <span className="mock-icon"><Icon name="alert" size={18} /></span>
-              <p className="muted" style={{ margin: 0 }}>
-                Tu avance actual <strong>no se pierde</strong> al crear una cuenta: la primera cuenta que crees
-                se queda con todo lo que ya llevas, y la copia original sigue guardada en este navegador.
-              </p>
+              <span className="mock-icon"><Icon name="cloud" size={18} /></span>
+              <div style={{ minWidth: 0 }}>
+                <p className="muted" style={{ margin: 0 }}>
+                  Servidor de cuentas: <span className="mono">{servidor}</span>
+                </p>
+                {invitado && (
+                  <button className="link-btn" onClick={() => { setServerUrl(""); }}>
+                    Cambiar de servidor
+                  </button>
+                )}
+              </div>
             </div>
           </Card>
         </Reveal>
       )}
-
-      {/* ---------------- Lista de cuentas ---------------- */}
-      <Reveal delay={90}>
-        <Card>
-          <div className="card-head">
-            <h3 className="card-title">Cuentas en este dispositivo</h3>
-            <Button size="sm" variant="soft" icon="plus" onClick={() => setCreando(true)}>Nueva</Button>
-          </div>
-
-          {users.length === 0 ? (
-            <EmptyState icon="users" title="Todavía no hay cuentas">
-              Crea una para poder llevar tu progreso a otros dispositivos.
-            </EmptyState>
-          ) : (
-            <div className="account-list">
-              {users.map((u) => (
-                <div key={u.slug} className={`account-row${u.slug === getActiveSlug() ? " is-active" : ""}`}>
-                  <button className="account-pick" onClick={() => cambiar(u.slug)}>
-                    <span className="avatar" style={{ "--c": u.color }}>{inicial(u.name)}</span>
-                    <span className="account-row-body">
-                      <span className="account-row-name">{u.name}</span>
-                      <span className="account-row-meta">
-                        {u.slug === getActiveSlug() ? "Cuenta activa" : "Tocar para cambiar"}
-                      </span>
-                    </span>
-                  </button>
-                  <div className="account-row-actions">
-                    <button
-                      className="btn btn-ghost btn-icon"
-                      title="Cambiar el nombre"
-                      onClick={() => { setRenombrando(u.slug); setNombreTmp(u.name); }}
-                    >
-                      <Icon name="settings" size={16} />
-                    </button>
-                    <button
-                      className="btn btn-ghost btn-icon"
-                      title="Borrar esta cuenta"
-                      onClick={() => setPorBorrar(u)}
-                    >
-                      <Icon name="trash" size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      </Reveal>
-
-      {/* ---------------- Sincronización ---------------- */}
-      <Reveal delay={120}>
-        <SyncCard space={space} status={status} toast={toast} />
-      </Reveal>
-
-      {/* ---------------- Modales ---------------- */}
-
-      <Modal
-        open={creando}
-        title="Nueva cuenta"
-        description={
-          users.length === 0
-            ? "La primera cuenta se queda con el progreso que ya llevas en este navegador."
-            : "Cada cuenta guarda su propio avance por separado."
-        }
-        onClose={() => setCreando(false)}
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => setCreando(false)}>Cancelar</Button>
-            <Button variant="primary" icon="check" onClick={crear} disabled={!nuevo.trim()}>Crear</Button>
-          </>
-        }
-      >
-        <input
-          className="input"
-          placeholder="¿Cómo te llamas?"
-          value={nuevo}
-          onChange={(e) => setNuevo(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && nuevo.trim()) crear(); }}
-          autoFocus
-          maxLength={32}
-        />
-      </Modal>
-
-      <Modal
-        open={!!renombrando}
-        title="Cambiar el nombre"
-        onClose={() => setRenombrando(null)}
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => setRenombrando(null)}>Cancelar</Button>
-            <Button
-              variant="primary"
-              icon="check"
-              onClick={() => {
-                renameUser(renombrando, nombreTmp);
-                setRenombrando(null);
-                toast("Nombre actualizado", { tone: "success", icon: "check" });
-              }}
-            >
-              Guardar
-            </Button>
-          </>
-        }
-      >
-        <input
-          className="input"
-          value={nombreTmp}
-          onChange={(e) => setNombreTmp(e.target.value)}
-          maxLength={32}
-          autoFocus
-        />
-      </Modal>
-
-      <Modal
-        open={!!porBorrar}
-        tone="danger"
-        title={porBorrar ? `¿Borrar la cuenta de ${porBorrar.name}?` : ""}
-        description="Se borra el progreso de esa cuenta en este dispositivo. Si está en un espacio de sincronización, seguirá ahí hasta que la borres también desde el servidor."
-        onClose={() => setPorBorrar(null)}
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => setPorBorrar(null)}>Cancelar</Button>
-            <Button
-              variant="danger"
-              icon="trash"
-              onClick={() => {
-                deleteUser(porBorrar.slug);
-                setPorBorrar(null);
-                toast("Cuenta borrada", { tone: "danger", icon: "trash" });
-              }}
-            >
-              Borrar
-            </Button>
-          </>
-        }
-      />
     </div>
   );
 }
@@ -237,212 +102,326 @@ function inicial(nombre) {
 }
 
 /* ============================================================
-   Tarjeta de sincronización
+   Conectar el servidor de cuentas (una sola vez por dispositivo)
    ============================================================ */
 
-function SyncCard({ space, status, toast }) {
-  const [modo, setModo] = useState(null); // "crear" | "unir"
-  const [proveedor, setProveedor] = useState("jsonblob");
+function ServidorCard({ toast }) {
   const [url, setUrl] = useState("");
-  const [token, setToken] = useState("");
-  const [codigo, setCodigo] = useState("");
   const [ocupado, setOcupado] = useState(false);
-  const codeRef = useRef(null);
+  const [error, setError] = useState("");
 
-  const proveedores = providerList();
-  const code = space ? formatCode(space) : "";
-
-  const copiar = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast("Código copiado", { tone: "success", icon: "check" });
-    } catch (e) {
-      if (codeRef.current) {
-        codeRef.current.select();
-        toast("Selecciona y copia el código", { icon: "link" });
-      }
-    }
-  };
-
-  const crear = async () => {
+  const conectar = async (e) => {
+    e.preventDefault();
     setOcupado(true);
+    setError("");
     try {
-      await createSpace(proveedor, { url: url.trim(), token: token.trim() });
-      setModo(null);
-      toast("Espacio creado y sincronizado", { tone: "success", icon: "cloud" });
-    } catch (e) {
-      toast(e.message || "No se pudo crear el espacio", { tone: "danger", icon: "alert", duration: 6000 });
+      const base = await probarServidor(url);
+      setServerUrl(base);
+      toast("Servidor conectado", { tone: "success", icon: "check" });
+    } catch (err) {
+      setError(err.message || "No se pudo conectar");
     } finally {
       setOcupado(false);
     }
-  };
-
-  const unir = async () => {
-    setOcupado(true);
-    try {
-      await joinSpace(codigo);
-      setModo(null);
-      setCodigo("");
-      toast("Conectado: tu progreso se acaba de mezclar", { tone: "success", icon: "cloud" });
-    } catch (e) {
-      toast(e.message || "No se pudo conectar", { tone: "danger", icon: "alert", duration: 6000 });
-    } finally {
-      setOcupado(false);
-    }
-  };
-
-  const ahora = async () => {
-    setOcupado(true);
-    const r = await syncNow();
-    setOcupado(false);
-    toast(r.ok ? "Progreso sincronizado" : r.message, {
-      tone: r.ok ? "success" : "danger",
-      icon: r.ok ? "check" : "alert",
-      duration: r.ok ? 3000 : 6000
-    });
   };
 
   return (
     <Card>
       <div className="card-head">
-        <h3 className="card-title">Sincronización entre dispositivos</h3>
-        {space && <Badge tone="brand">{space.provider}</Badge>}
+        <h3 className="card-title">Conecta el servidor de cuentas</h3>
       </div>
+      <p className="muted" style={{ marginTop: 0 }}>
+        Esta página es un sitio estático: para tener cuentas de verdad hace falta un servidor
+        donde vivan los usuarios y su progreso. En el repositorio viene listo, en
+        <span className="mono"> server/cloudflare-worker.js</span>, con las instrucciones para
+        publicarlo gratis en Cloudflare en unos minutos. Cuando lo tengas, pega aquí su dirección.
+      </p>
 
-      {!space ? (
-        <>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Conecta este dispositivo a un <strong>espacio</strong>: un archivo JSON en internet donde viven tus
-            cuentas y su avance. Al entrar desde otro lugar, los dos progresos se mezclan sin perder nada.
-          </p>
+      <form className="stack" style={{ gap: 12 }} onSubmit={conectar}>
+        <label className="field">
+          <span>Dirección del servidor</span>
+          <input
+            className="input"
+            type="url"
+            inputMode="url"
+            autoComplete="off"
+            placeholder="https://acreditabach-cuentas.tu-usuario.workers.dev"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </label>
+        {error && <p className="hint-text hint-danger">{error}</p>}
+        <div className="row-gap">
+          <Button type="submit" variant="primary" icon="link" disabled={ocupado || !url.trim()}>
+            {ocupado ? "Comprobando…" : "Conectar"}
+          </Button>
+        </div>
+      </form>
 
-          {modo === null && (
-            <div className="row-gap">
-              <Button variant="primary" icon="cloud" onClick={() => setModo("crear")}>Crear un espacio</Button>
-              <Button variant="solid" icon="link" onClick={() => setModo("unir")}>Ya tengo un código</Button>
-            </div>
-          )}
-
-          {modo === "crear" && (
-            <div className="stack" style={{ gap: 12 }}>
-              <label className="field">
-                <span>¿Dónde se guarda?</span>
-                <select className="input" value={proveedor} onChange={(e) => setProveedor(e.target.value)}>
-                  {proveedores.map((p) => (
-                    <option key={p.id} value={p.id}>{p.label}</option>
-                  ))}
-                </select>
-              </label>
-
-              {proveedor === "rest" && (
-                <label className="field">
-                  <span>Dirección del servidor</span>
-                  <input
-                    className="input"
-                    placeholder="https://mi-worker.workers.dev/space"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                  />
-                </label>
-              )}
-
-              {proveedor === "gist" && (
-                <label className="field">
-                  <span>Token de GitHub con permiso de gist</span>
-                  <input
-                    className="input"
-                    placeholder="github_pat_…"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                  />
-                </label>
-              )}
-
-              <p className="hint-text">{ayuda(proveedor)}</p>
-
-              <div className="row-gap">
-                <Button variant="ghost" onClick={() => setModo(null)}>Cancelar</Button>
-                <Button variant="primary" icon="cloud" onClick={crear} disabled={ocupado}>
-                  {ocupado ? "Creando…" : "Crear"}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {modo === "unir" && (
-            <div className="stack" style={{ gap: 12 }}>
-              <label className="field">
-                <span>Código del espacio</span>
-                <input
-                  className="input"
-                  placeholder="jb:… · url:… · gh:…"
-                  value={codigo}
-                  onChange={(e) => setCodigo(e.target.value)}
-                  autoFocus
-                />
-              </label>
-              <p className="hint-text">Lo encuentras en el otro dispositivo, en esta misma pantalla.</p>
-              <div className="row-gap">
-                <Button variant="ghost" onClick={() => setModo(null)}>Cancelar</Button>
-                <Button variant="primary" icon="link" onClick={unir} disabled={ocupado || !codigo.trim()}>
-                  {ocupado ? "Conectando…" : "Conectar"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Escribe este código en tus otros dispositivos para que compartan el mismo avance.
-          </p>
-
-          <div className="code-box">
-            <input className="input code-input" ref={codeRef} value={code} readOnly onFocus={(e) => e.target.select()} />
-            <Button variant="soft" icon="link" onClick={copiar}>Copiar</Button>
-          </div>
-
-          {status.state === "error" && (
-            <p className="hint-text hint-danger">
-              Último intento: {status.message}. Tu progreso local está intacto; se vuelve a intentar solo.
-            </p>
-          )}
-          {space.lastSync && status.state !== "error" && (
-            <p className="hint-text">Última sincronización: {new Date(space.lastSync).toLocaleString("es-MX")}.</p>
-          )}
-
-          <div className="row-gap" style={{ marginTop: 14 }}>
-            <Button variant="primary" icon="refresh" onClick={ahora} disabled={ocupado}>
-              {ocupado ? "Sincronizando…" : "Sincronizar ahora"}
-            </Button>
-            <Button
-              variant="ghost"
-              icon="logout"
-              onClick={() => {
-                leaveSpace();
-                toast("Este dispositivo dejó el espacio. El progreso local se queda.", { icon: "cloudOff" });
-              }}
-            >
-              Desconectar
-            </Button>
-          </div>
-        </>
-      )}
+      <p className="hint-text">
+        Mientras tanto puedes seguir estudiando como invitado: tu avance se guarda en este
+        dispositivo y, cuando te registres, se queda en tu cuenta.
+      </p>
     </Card>
   );
 }
 
-function ayuda(proveedor) {
-  switch (proveedor) {
-    case "jsonblob":
-      return "No pide registro: se crea un archivo JSON público con una dirección difícil de adivinar. Lo más rápido para empezar.";
-    case "rest":
-      return "Cualquier servidor que responda GET y PUT con JSON. En la carpeta server/ del repositorio vienen dos listos: uno de Node y uno de Cloudflare Workers.";
-    case "gist":
-      return "Guarda el progreso en un Gist secreto de tu cuenta de GitHub. El token viaja dentro del código del espacio, así que trátalo como una contraseña.";
-    case "local":
-      return "Solo para probar: el espacio vive en este mismo navegador. Sirve para ver cómo se mezcla el progreso, no para cambiar de dispositivo.";
-    default:
-      return "";
-  }
+/* ============================================================
+   Iniciar sesión / crear cuenta
+   ============================================================ */
+
+function AccesoCard({ toast }) {
+  const [modo, setModo] = useState("entrar"); // "entrar" | "registro"
+  const [usuario, setUsuario] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [verPass, setVerPass] = useState(false);
+  const [ocupado, setOcupado] = useState(false);
+  const [error, setError] = useState("");
+
+  const registro = modo === "registro";
+
+  const cambiarModo = (nuevo) => {
+    setModo(nuevo);
+    setError("");
+    setPassword2("");
+  };
+
+  const enviar = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (registro) {
+      const problema = problemaUsuario(usuario) || problemaPassword(password);
+      if (problema) return setError(problema);
+      if (password !== password2) return setError("Las dos contraseñas no coinciden");
+    } else if (!usuario.trim() || !password) {
+      return setError("Escribe tu usuario y tu contraseña");
+    }
+
+    setOcupado(true);
+    try {
+      if (registro) {
+        const perfil = await registrar(usuario, password);
+        toast(`Cuenta creada. Hola, ${perfil.nombre}`, { tone: "success", icon: "check" });
+      } else {
+        const perfil = await entrar(usuario, password);
+        toast(`Hola de nuevo, ${perfil.nombre}`, { tone: "success", icon: "check" });
+      }
+      setUsuario("");
+      setPassword("");
+      setPassword2("");
+    } catch (err) {
+      setError(err.message || "No se pudo completar");
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  return (
+    <Card>
+      <div className="auth-tabs" role="tablist" aria-label="Acceso">
+        <button
+          role="tab"
+          aria-selected={!registro}
+          className={`auth-tab${!registro ? " is-active" : ""}`}
+          onClick={() => cambiarModo("entrar")}
+        >
+          Iniciar sesión
+        </button>
+        <button
+          role="tab"
+          aria-selected={registro}
+          className={`auth-tab${registro ? " is-active" : ""}`}
+          onClick={() => cambiarModo("registro")}
+        >
+          Crear cuenta
+        </button>
+      </div>
+
+      <form className="stack" style={{ gap: 14 }} onSubmit={enviar}>
+        <label className="field">
+          <span>Usuario</span>
+          <input
+            className="input"
+            name="username"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck="false"
+            placeholder="cesar"
+            value={usuario}
+            onChange={(e) => setUsuario(e.target.value)}
+            maxLength={24}
+          />
+        </label>
+
+        <label className="field">
+          <span>Contraseña</span>
+          <div className="input-pass">
+            <input
+              className="input"
+              type={verPass ? "text" : "password"}
+              name="password"
+              autoComplete={registro ? "new-password" : "current-password"}
+              placeholder={registro ? "Al menos 6 caracteres" : "Tu contraseña"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn btn-ghost btn-icon"
+              onClick={() => setVerPass((v) => !v)}
+              aria-label={verPass ? "Ocultar la contraseña" : "Mostrar la contraseña"}
+              title={verPass ? "Ocultar" : "Mostrar"}
+            >
+              <Icon name={verPass ? "eyeOff" : "eye"} size={17} />
+            </button>
+          </div>
+        </label>
+
+        {registro && (
+          <label className="field">
+            <span>Repite la contraseña</span>
+            <input
+              className="input"
+              type={verPass ? "text" : "password"}
+              name="password2"
+              autoComplete="new-password"
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+            />
+          </label>
+        )}
+
+        {error && <p className="hint-text hint-danger">{error}</p>}
+
+        <Button type="submit" variant="primary" icon={registro ? "check" : "user"} block disabled={ocupado}>
+          {ocupado ? (registro ? "Creando…" : "Entrando…") : registro ? "Crear mi cuenta" : "Entrar"}
+        </Button>
+
+        <p className="hint-text">
+          {registro
+            ? "Tu avance de invitado (los temas que ya viste y tus repasos) se queda en la cuenta nueva."
+            : "Al entrar, el progreso de esa cuenta reemplaza al que tengas ahora en este dispositivo."}
+        </p>
+      </form>
+    </Card>
+  );
+}
+
+/* ============================================================
+   Sesión abierta
+   ============================================================ */
+
+function SesionCard({ toast }) {
+  const user = getActiveUser();
+  const estado = getCloudStatus();
+  const [ocupado, setOcupado] = useState(false);
+  const [cambiando, setCambiando] = useState(false);
+
+  const guardar = async () => {
+    setOcupado(true);
+    const r = await guardarAhora();
+    setOcupado(false);
+    toast(r.ok ? "Progreso guardado" : r.message, {
+      tone: r.ok ? "success" : "danger",
+      icon: r.ok ? "check" : "alert",
+      duration: r.ok ? 2600 : 6000
+    });
+  };
+
+  const cerrar = async () => {
+    setOcupado(true);
+    await salir();
+    setOcupado(false);
+    toast("Sesión cerrada. Vuelves al modo invitado.", { icon: "logout" });
+  };
+
+  return (
+    <Card>
+      <div className="card-head">
+        <h3 className="card-title">Sesión de {user.nombre}</h3>
+      </div>
+
+      <p className="muted" style={{ marginTop: 0 }}>
+        Todo lo que estudies se guarda solo en tu cuenta. Para verlo en otro dispositivo, entra
+        ahí con <span className="mono">@{user.usuario}</span> y tu contraseña.
+      </p>
+
+      {estado.modo === "error" && (
+        <p className="hint-text hint-danger">
+          Último intento: {String(estado.mensaje).replace(/\.$/, "")}. Tu avance está a salvo en
+          este dispositivo; se vuelve a intentar solo.
+        </p>
+      )}
+
+      <div className="row-gap" style={{ marginTop: 14 }}>
+        <Button variant="primary" icon="refresh" onClick={guardar} disabled={ocupado}>
+          {ocupado ? "Guardando…" : "Guardar ahora"}
+        </Button>
+        <Button variant="ghost" icon="settings" onClick={() => setCambiando((v) => !v)}>
+          Cambiar contraseña
+        </Button>
+        <Button variant="ghost" icon="logout" onClick={cerrar} disabled={ocupado}>
+          Cerrar sesión
+        </Button>
+      </div>
+
+      {cambiando && <CambioPassword toast={toast} onListo={() => setCambiando(false)} />}
+    </Card>
+  );
+}
+
+function CambioPassword({ toast, onListo }) {
+  const [actual, setActual] = useState("");
+  const [nueva, setNueva] = useState("");
+  const [ocupado, setOcupado] = useState(false);
+  const [error, setError] = useState("");
+
+  const enviar = async (e) => {
+    e.preventDefault();
+    setError("");
+    setOcupado(true);
+    try {
+      await cambiarPassword(actual, nueva);
+      toast("Contraseña cambiada", { tone: "success", icon: "check" });
+      onListo();
+    } catch (err) {
+      setError(err.message || "No se pudo cambiar");
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  return (
+    <form className="stack pass-form" style={{ gap: 12 }} onSubmit={enviar}>
+      <label className="field">
+        <span>Contraseña actual</span>
+        <input
+          className="input"
+          type="password"
+          autoComplete="current-password"
+          value={actual}
+          onChange={(e) => setActual(e.target.value)}
+        />
+      </label>
+      <label className="field">
+        <span>Contraseña nueva</span>
+        <input
+          className="input"
+          type="password"
+          autoComplete="new-password"
+          value={nueva}
+          onChange={(e) => setNueva(e.target.value)}
+        />
+      </label>
+      {error && <p className="hint-text hint-danger">{error}</p>}
+      <div className="row-gap">
+        <Button type="submit" variant="primary" icon="check" disabled={ocupado || !actual || !nueva}>
+          {ocupado ? "Cambiando…" : "Guardar contraseña"}
+        </Button>
+        <Button type="button" variant="ghost" onClick={onListo}>Cancelar</Button>
+      </div>
+    </form>
+  );
 }

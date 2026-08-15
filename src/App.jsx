@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Icon from "./ui/Icon.jsx";
 import { ToastProvider } from "./ui/kit.jsx";
-import { useEngine, useRoute, navigate, useAccounts, useSync } from "./lib/hooks.js";
+import { useEngine, useRoute, navigate, useAccounts, useCloud } from "./lib/hooks.js";
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
 import { computeTodayPlan, overallStats, cardsForTopic, buildDrill, shuffleOptions, subscribe } from "./lib/engine.js";
 import { getActiveUser } from "./lib/accounts.js";
-import { startAutoSync, getSyncStatus } from "./lib/sync.js";
+import { startCloud, getCloudStatus } from "./lib/cloud.js";
 
 import Today from "./screens/Today.jsx";
 import Browse from "./screens/Browse.jsx";
@@ -38,7 +38,7 @@ export default function App() {
 function Shell() {
   const rev = useEngine();
   useAccounts();
-  useSync();
+  useCloud();
   const route = useRoute();
   const [runner, setRunner] = useState(null);
   const [theme, setTheme] = useState(getStoredTheme);
@@ -48,9 +48,9 @@ function Shell() {
 
   useEffect(() => { applyTheme(theme); }, [theme]);
 
-  // La sincronización se engancha una sola vez: baja al abrir y sube poco
-  // después de cada cambio. Si no hay espacio configurado, no hace nada.
-  useEffect(() => { startAutoSync(subscribe); }, []);
+  // El guardado en la nube se engancha una sola vez: al abrir baja el progreso
+  // de la cuenta y luego sube cada cambio. En modo invitado no hace nada.
+  useEffect(() => { startCloud(subscribe); }, []);
 
   // Al cambiar de pantalla, volvemos arriba (sin brincos bruscos).
   useEffect(() => {
@@ -165,12 +165,12 @@ function AccountButton({ active }) {
     <button
       className={`account-btn${active ? " is-active" : ""}`}
       onClick={() => navigate("cuenta")}
-      title={user ? `Cuenta: ${user.name}` : "Cuenta y sincronización"}
-      aria-label={user ? `Cuenta de ${user.name}` : "Cuenta y sincronización"}
+      title={user ? `Cuenta: ${user.nombre}` : "Iniciar sesión o crear cuenta"}
+      aria-label={user ? `Cuenta de ${user.nombre}` : "Iniciar sesión o crear cuenta"}
     >
       {user ? (
-        <span className="avatar avatar-sm" style={{ "--c": user.color }}>
-          {String(user.name).trim().charAt(0).toUpperCase()}
+        <span className="avatar avatar-sm">
+          {String(user.nombre).trim().charAt(0).toUpperCase()}
         </span>
       ) : (
         <Icon name="user" size={19} />
@@ -180,11 +180,11 @@ function AccountButton({ active }) {
   );
 }
 
-/* Punto de estado de la sincronización: solo aparece si hay algo que decir. */
+/* Punto de estado del guardado: solo aparece si hay algo que decir. */
 function SyncDot() {
-  const status = getSyncStatus();
-  if (status.state === "off") return null;
-  return <span className={`sync-dot sync-dot-${status.state}`} aria-hidden="true" />;
+  const { modo } = getCloudStatus();
+  if (modo === "invitado") return null;
+  return <span className={`sync-dot sync-dot-${modo}`} aria-hidden="true" />;
 }
 
 function Rail({ active, pending, streak, theme, onTheme }) {

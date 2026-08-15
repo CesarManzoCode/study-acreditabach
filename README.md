@@ -4,8 +4,9 @@ Plan de estudio diario para el **Examen para la Acreditación del Bachillerato G
 (ACREDITA-BACH, Ceneval)**: repetición espaciada, práctica activa y simulacros con el
 formato real del examen.
 
-Todo corre en el navegador. No hace falta servidor para estudiar; si quieres que tu
-avance te siga a otros dispositivos, hay un sistema de cuentas y sincronización opcional.
+Todo corre en el navegador. Sin cuenta se estudia igual (modo invitado, el avance se
+guarda en el dispositivo); con una cuenta, el avance vive en el servidor y te sigue a
+cualquier dispositivo donde inicies sesión.
 
 ---
 
@@ -18,10 +19,12 @@ formato desde la primera versión del sitio. Reglas que el código respeta siemp
 - Las tarjetas se identifican por `tema::fcN`. **El contenido nuevo siempre se agrega al
   final**, así que `fc0` y `fc1` siguen siendo las mismas tarjetas de antes, con su
   intervalo, sus repeticiones y sus fechas intactos.
-- Al crear la primera cuenta, esa cuenta **hereda** el progreso que ya había y la llave
-  histórica se queda como respaldo: nunca se borra.
-- La sincronización **mezcla**, no sustituye: ante la duda conserva el dato más avanzado
-  de cada lado (ver `mergeStates` en `src/lib/engine.js`).
+- Al registrarte, la cuenta nueva **hereda** el progreso del modo invitado, y la llave del
+  invitado se queda como estaba: nunca se borra.
+- Iniciar sesión **reemplaza** el progreso visible por el de esa cuenta (es lo que se
+  espera de un login). Ya con la sesión abierta, lo que se baja del servidor se **mezcla**
+  con lo local, para no perder lo estudiado sin conexión (ver `mergeStates` en
+  `src/lib/engine.js`).
 
 Las preferencias de interfaz (tema claro/oscuro) se guardan aparte, en
 `acreditabach_theme`, para no mezclarlas con el progreso.
@@ -50,39 +53,47 @@ publicar (ver más abajo).
 
 ---
 
-## Cuentas y sincronización
+## Cuentas
 
-Un sistema deliberadamente simple, pensado para una sola persona con varios dispositivos.
-No hay contraseñas reales ni cifrado: el código del espacio es la única credencial.
+Login de verdad: usuario y contraseña, con el progreso guardado en un servidor propio.
 
-1. **Crea una cuenta** en *Cuenta y sincronización*. La primera cuenta se queda con todo
-   el avance que ya llevabas en ese navegador.
-2. **Crea un espacio**: un documento JSON en internet donde viven tus cuentas y su
-   progreso.
-3. En el otro dispositivo, entra a la misma pantalla, elige **"Ya tengo un código"** y
-   pega el código del espacio. Los dos progresos se mezclan sin perder nada.
+- **Sin cuenta** estás en *modo invitado*: el avance se guarda en este navegador y punto.
+- **Al registrarte**, tu avance de invitado se sube y queda como progreso inicial de la
+  cuenta nueva.
+- **Al iniciar sesión**, el progreso de la cuenta reemplaza al que hubiera en ese
+  dispositivo.
+- Con la sesión abierta, cada cambio se guarda solo en el servidor unos segundos después.
+  Si el servidor no responde, se sigue estudiando en local y el error se muestra en
+  pantalla; nada se pierde.
+- **Al cerrar sesión** vuelves al progreso de invitado, que nunca se toca.
 
-A partir de ahí la app sincroniza sola: baja al abrir, sube unos segundos después de cada
-cambio y vuelve a bajar cuando regresas a la pestaña. Si el servidor no responde, todo
-sigue funcionando en local y el error se muestra en pantalla.
+### Publicar el servidor de cuentas
 
-### Dónde se guarda el espacio
+GitHub Pages solo sirve archivos estáticos: no ejecuta código ni guarda datos. Por eso las
+cuentas necesitan un servidor aparte. En `server/cloudflare-worker.js` está completo y
+comentado paso a paso; es gratis y no pide tarjeta:
 
-| Proveedor | Qué necesitas | Nota |
+1. Crea una cuenta en [Cloudflare](https://dash.cloudflare.com).
+2. **Compute (Workers) → Create → Deploy**, y en *Edit code* pega el archivo entero.
+3. **Storage & Databases → KV → Create instance**, llámalo `acreditabach`.
+4. En el Worker, **Bindings → Add binding → KV namespace**, con el nombre de variable `DB`.
+5. Abre `https://…workers.dev/salud`: debe responder `{"ok":true,"kv":true}`.
+6. Pega esa dirección en la app, en la pantalla **Cuenta**.
+
+Para dejarla fija y que ningún dispositivo tenga que pegarla, pon la URL en
+`SERVIDOR_POR_DEFECTO`, en `src/lib/accounts.js`, y reconstruye.
+
+### Qué guarda y cómo
+
+| Dato | Dónde | Cómo |
 | --- | --- | --- |
-| **jsonblob.com** | Nada | Lo más rápido para empezar; el archivo es público, pero con una dirección difícil de adivinar. |
-| **Servidor propio (URL)** | Una URL que responda `GET` y `PUT` con JSON | En `server/` vienen dos listos: uno de Node y uno de Cloudflare Workers. También funciona con una Realtime Database de Firebase (URL terminada en `.json`). |
-| **Gist de GitHub** | Un token con permiso `gist` | El token viaja dentro del código del espacio: trátalo como una contraseña. |
-| **Este navegador** | Nada | Solo para probar cómo se mezcla el progreso. |
+| Contraseña | KV del Worker | Nunca en claro: huella PBKDF2-SHA256, 210 000 vueltas, sal distinta por usuario. |
+| Sesión | KV del Worker | Token aleatorio de 256 bits, caduca a los 180 días. |
+| Progreso | KV del Worker | Un JSON por cuenta, con copia local para poder estudiar sin conexión. |
 
-```bash
-# Servidor propio, en tu computadora o en un VPS
-npm run sync-server                       # http://localhost:8787
-PORT=9000 DATA=/ruta/datos.json npm run sync-server
-```
-
-Para Cloudflare Workers, pega `server/cloudflare-worker.js` en un Worker nuevo, enlaza un
-KV namespace llamado `ACREDITA` y usa la URL que te dé.
+Además: comparación en tiempo constante al validar la contraseña, mismo mensaje y mismo
+tiempo de respuesta cuando el usuario no existe (para no revelar qué cuentas hay), y
+bloqueo de 15 minutos tras 10 intentos fallidos seguidos.
 
 ---
 
@@ -111,13 +122,13 @@ siguientes siete días, y la pantalla de inicio avisa cuántas se agregaron.
 | `src/lib/generators/` | Generadores de problemas de matemáticas y ciencias. |
 | `src/lib/calc.js` · `src/ui/Calculator.jsx` | Calculadora científica integrada (motor de evaluación + panel). |
 | `src/lib/calcNeed.js` | Decide en qué reactivos aparece la calculadora. |
-| `src/lib/accounts.js` · `sync.js` | Cuentas locales y sincronización con el espacio remoto. |
+| `src/lib/accounts.js` · `cloud.js` | Sesión de la cuenta y diálogo con el servidor (registro, login, guardado). |
 | `src/screens/` | Las pantallas: Hoy, Repasar, Simulacro, Progreso, Guía y Cuenta. |
 | `src/ui/` | Sistema de componentes (botones, tarjetas, anillos, modal, toasts, iconos). |
 | `src/styles.css` | Tokens de diseño y estilos. Tema oscuro y claro completos. |
 | `data/` | El temario base (177 temas) y el contenido de la guía oficial. |
 | `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales, que se suman al temario base. |
-| `server/` | Dos servidores de sincronización listos para usar (Node y Cloudflare). |
+| `server/cloudflare-worker.js` | El servidor de cuentas, listo para pegar en Cloudflare Workers. |
 | `fonts/` | Inter y Plus Jakarta Sans (subconjunto latino), servidas desde el repo. |
 | `assets/` · `index.html` | **Generados por el build.** No se editan a mano. |
 
