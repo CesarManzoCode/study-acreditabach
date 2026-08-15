@@ -37,7 +37,7 @@ const AREA7_EXTRA2 = {
   "7.1.3": {
     flashcards: [
       { front: "¿Qué actividades incluye cada sector productivo?", back: "**Primario**: extracción de recursos naturales (agricultura, pesca, minería). **Secundario**: transformación (industria, construcción). **Terciario**: servicios (comercio, transporte, educación, salud, turismo)." },
-      { front: "¿Qué es el sector cuaternario?", back: "El vinculado al conocimiento: investigación, desarrollo tecnológico, información y servicios de alta especialización. Algunos autores lo separan del terciario." },
+      { front: "¿De qué sector se desprende el cuaternario?", back: "Del terciario: algunos autores separan de él las actividades vinculadas al conocimiento —investigación, desarrollo tecnológico, información y servicios de alta especialización." },
       { front: "¿Cómo se distribuye el empleo en México por sectores?", back: "El terciario concentra la mayor parte del empleo (alrededor del 60 %), seguido del secundario; el primario ocupa la proporción menor pese a su importancia alimentaria." }
     ],
     quiz: [
@@ -53,7 +53,7 @@ const AREA7_EXTRA2 = {
     flashcards: [
       { front: "¿Qué mide el coeficiente de Gini?", back: "La desigualdad en la distribución del ingreso. Va de 0 (igualdad perfecta) a 1 (un solo hogar concentra todo). México ronda el 0.45." },
       { front: "¿Qué es la curva de Lorenz?", back: "La gráfica que compara la distribución real del ingreso con la línea de igualdad perfecta: cuanto más se aleja de la diagonal, mayor es la desigualdad." },
-      { front: "¿Qué diferencia hay entre distribución primaria y secundaria del ingreso?", back: "La **primaria** es la que resulta del mercado (salarios, rentas, ganancias); la **secundaria** es la que queda después de impuestos y transferencias del Estado." }
+      { front: "¿En qué momento interviene el Estado en la distribución del ingreso?", back: "En la **secundaria**: después de impuestos y transferencias. La **primaria** es la que resulta del mercado (salarios, rentas, ganancias)." }
     ],
     quiz: [
       { q: "Un coeficiente de Gini cercano a 1 indica:", options: ["Una concentración extrema del ingreso en pocas manos", "Una distribución equitativa", "Que no hay datos disponibles"], correct: 0, explanation: "El valor 1 representa el caso extremo en que un solo hogar concentra todo el ingreso." },
@@ -81,7 +81,7 @@ const AREA7_EXTRA2 = {
 
   "7.1.6": {
     flashcards: [
-      { front: "¿Qué diferencia hay entre impuesto progresivo y regresivo?", back: "El **progresivo** cobra una tasa mayor a quien más gana (ISR); el **regresivo** aplica la misma tasa a todos y por eso pesa más sobre los ingresos bajos (IVA)." },
+      { front: "¿Por qué un impuesto de tasa única resulta regresivo?", back: "Porque aplica la misma tasa a todos y pesa más sobre los ingresos bajos (IVA). El **progresivo** cobra una tasa mayor a quien más gana (ISR)." },
       { front: "¿Qué son las transferencias condicionadas?", back: "Apoyos monetarios sujetos a una contraprestación, como mantener a los hijos en la escuela o asistir a revisiones médicas." },
       { front: "¿Qué es el gasto social?", back: "El destinado a educación, salud, vivienda, pensiones y programas de combate a la pobreza. Es el principal instrumento redistributivo del Estado junto con los impuestos." }
     ],
@@ -111,7 +111,7 @@ const AREA7_EXTRA2 = {
 
   "7.1.8": {
     flashcards: [
-      { front: "¿Qué fue el Consenso de Washington?", back: "El conjunto de recomendaciones de los años ochenta y noventa: disciplina fiscal, liberalización comercial y financiera, privatización, desregulación y garantía de los derechos de propiedad." },
+      { front: "¿Qué medidas concretas recomendaba el Consenso de Washington?", back: "Disciplina fiscal, liberalización comercial y financiera, privatización, desregulación y garantía de los derechos de propiedad, en los años ochenta y noventa." },
       { front: "¿Qué autores sustentan el neoliberalismo?", back: "Friedrich Hayek y Milton Friedman, quienes sostienen que el mercado asigna los recursos mejor que el Estado y que la intervención estatal genera distorsiones." },
       { front: "¿Qué se le critica al modelo neoliberal?", back: "El aumento de la desigualdad, la precarización del empleo, el debilitamiento de los servicios públicos y la vulnerabilidad ante las crisis financieras internacionales." }
     ],
@@ -126,8 +126,8 @@ const AREA7_EXTRA2 = {
 
   "7.1.9": {
     flashcards: [
-      { front: "¿Qué es la huella ecológica?", back: "La superficie de territorio productivo necesaria para sostener el consumo de una población y absorber sus residuos. Permite comparar países y estilos de vida." },
-      { front: "¿Qué es la obsolescencia programada?", back: "El diseño deliberado de productos con vida útil corta para forzar su reemplazo. Multiplica los residuos electrónicos y el consumo de materias primas." },
+      { front: "¿Para qué sirve comparar huellas ecológicas?", back: "Para contrastar países y estilos de vida: mide la superficie de territorio productivo necesaria para sostener el consumo de una población y absorber sus residuos." },
+      { front: "¿Qué efecto tiene la obsolescencia programada sobre los residuos?", back: "Los multiplica, junto con el consumo de materias primas: es el diseño deliberado de productos con vida útil corta para forzar su reemplazo." },
       { front: "¿Qué es la economía circular?", back: "El modelo que sustituye el esquema extraer-producir-desechar por uno de reducción, reutilización, reparación y reciclaje, manteniendo los materiales en uso el mayor tiempo posible." }
     ],
     quiz: [
@@ -156,7 +156,7 @@ const AREA7_EXTRA2 = {
 
   "7.2.2": {
     flashcards: [
-      { front: "¿Qué diferencia hay entre democracia directa y representativa?", back: "En la **directa** los ciudadanos deciden ellos mismos (asamblea, referéndum); en la **representativa** eligen a quienes deciden en su nombre." },
+      { front: "Una asamblea vecinal que vota sus propias decisiones, ¿qué tipo de democracia es?", back: "Directa: los ciudadanos deciden ellos mismos, como en un referéndum. En la **representativa** eligen a quienes deciden en su nombre." },
       { front: "¿Qué características debe tener el voto en una democracia?", back: "Universal, libre, secreto, directo, personal e intransferible. Son los principios que garantizan la autenticidad del sufragio." },
       { front: "¿Qué son la consulta popular y la revocación de mandato?", back: "Mecanismos de democracia participativa: la **consulta** somete un tema a votación ciudadana; la **revocación** permite decidir si un gobernante concluye o no su periodo." }
     ],
@@ -203,7 +203,7 @@ const AREA7_EXTRA2 = {
     flashcards: [
       { front: "¿Qué son los poderes fácticos?", back: "Actores que influyen de manera decisiva en las decisiones públicas sin haber sido electos ni tener facultades legales para ello: grandes empresas, medios, iglesias, sindicatos y crimen organizado." },
       { front: "¿Por qué los poderes fácticos son un problema democrático?", back: "Porque ejercen poder sin mandato ciudadano ni rendición de cuentas, y pueden imponer intereses privados sobre el interés público." },
-      { front: "¿Qué es la captura del Estado?", back: "La situación en que grupos privados logran que las leyes y las políticas públicas se diseñen a su medida, convirtiendo la regulación en un privilegio." }
+      { front: "¿En qué se convierte la regulación cuando hay captura del Estado?", back: "En un privilegio: grupos privados logran que las leyes y las políticas públicas se diseñen a su medida, en vez de servir al interés general." }
     ],
     quiz: [
       { q: "Los poderes fácticos se caracterizan porque:", options: ["Influyen en las decisiones públicas sin mandato electoral ni rendición de cuentas", "Están regulados por la Constitución", "Son electos cada seis años"], correct: 0, explanation: "Su poder es real pero carece de legitimidad democrática." },
@@ -262,7 +262,7 @@ const AREA7_EXTRA2 = {
   "7.3.1": {
     flashcards: [
       { front: "¿Qué diferencia hay entre grupo primario y secundario?", back: "El **primario** es pequeño, con vínculos afectivos y contacto cara a cara (familia, amigos); el **secundario** es más amplio, impersonal y orientado a un fin (empresa, escuela, sindicato)." },
-      { front: "¿Qué es una institución social?", back: "Un conjunto estable de normas, papeles y prácticas que organiza un aspecto de la vida colectiva: la familia, la escuela, el Estado, la religión, el mercado." },
+      { front: "Además de la familia y la escuela, ¿qué otras instituciones sociales hay?", back: "El Estado, la religión y el mercado: cada una es un conjunto estable de normas, papeles y prácticas que organiza un aspecto de la vida colectiva." },
       { front: "¿Qué son las organizaciones de la sociedad civil?", back: "Asociaciones voluntarias, sin fines de lucro y autónomas del Estado y del mercado, que persiguen fines colectivos: derechos humanos, medio ambiente, cultura, asistencia." }
     ],
     quiz: [
@@ -306,7 +306,7 @@ const AREA7_EXTRA2 = {
 
   "7.3.4": {
     flashcards: [
-      { front: "¿Qué es la segregación residencial?", back: "La separación física de los grupos sociales en el espacio urbano: fraccionamientos cerrados frente a colonias sin servicios. Reduce el contacto entre clases y refuerza la desigualdad." },
+      { front: "¿Qué efecto social tiene la segregación residencial?", back: "Reduce el contacto entre clases y refuerza la desigualdad: separa físicamente a los grupos en el espacio urbano, con fraccionamientos cerrados frente a colonias sin servicios." },
       { front: "¿Qué diferencia hay entre estigma y discriminación?", back: "El **estigma** es la marca social negativa que se atribuye a un grupo; la **discriminación** es el trato desigual concreto que se deriva de ella." },
       { front: "¿Qué es la discriminación estructural?", back: "La que no depende de la intención de una persona, sino de reglas, prácticas e instituciones que reproducen desventajas para ciertos grupos de forma sistemática." }
     ],

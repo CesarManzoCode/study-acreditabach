@@ -52,7 +52,14 @@ const DATA_SCRIPTS = [
   "data/extra2/area4.js",
   "data/extra2/area5.js",
   "data/extra2/area6.js",
-  "data/extra2/area7.js"
+  "data/extra2/area7.js",
+  /* Reactivos con los formatos de relación de elementos y de jerarquización
+     que la guía oficial marca para ciertos temas (data/formato). */
+  "data/formato/area2.js",
+  "data/formato/area3.js",
+  "data/formato/area4.js",
+  "data/formato/area6.js",
+  "data/formato/area7.js"
 ];
 
 function cleanOutdir() {

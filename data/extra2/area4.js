@@ -52,8 +52,8 @@ const AREA4_EXTRA2 = {
 
   "4.1.4": {
     flashcards: [
-      { front: "¿Qué es la doxa?", back: "La opinión: un parecer basado en la costumbre, la impresión o lo que se dice, sin fundamento demostrado. Puede resultar verdadera, pero no está justificada." },
-      { front: "¿Qué es la episteme?", back: "El conocimiento fundamentado: creencia verdadera acompañada de razones o pruebas que la justifican. Es el conocimiento en sentido estricto." },
+      { front: "¿Una doxa puede ser verdadera?", back: "Sí, pero no está justificada: es una opinión basada en la costumbre o la impresión, sin razones que la respalden. Por eso no cuenta como conocimiento." },
+      { front: "¿Qué le falta a una creencia verdadera para ser episteme?", back: "Las razones o pruebas que la justifiquen. La episteme es creencia verdadera **y** fundamentada: el conocimiento en sentido estricto." },
       { front: "¿Qué ilustra la alegoría de la caverna de Platón?", back: "El paso de la doxa a la episteme: los prisioneros toman las sombras por la realidad, y solo al salir (la educación) acceden al conocimiento verdadero." }
     ],
     quiz: [
@@ -69,7 +69,7 @@ const AREA4_EXTRA2 = {
     flashcards: [
       { front: "¿Cuál es la función poética del lenguaje?", back: "La que centra la atención en la forma del mensaje: rimas, metáforas, juegos de palabras. Aparece en la literatura, pero también en eslóganes y refranes." },
       { front: "¿Qué es la función fática?", back: "La que sirve para abrir, mantener o cerrar el canal de comunicación, sin transmitir contenido: «¿bueno?», «¿me escuchas?», «ajá»." },
-      { front: "¿Qué es la función metalingüística?", back: "Aquella en la que el lenguaje habla del lenguaje mismo: definir una palabra, corregir una conjugación o explicar una regla ortográfica." }
+      { front: "¿Qué función de la lengua se usa al corregir una conjugación?", back: "La metalingüística: el lenguaje habla del lenguaje mismo, como al definir una palabra o explicar una regla ortográfica." }
     ],
     quiz: [
       { q: "«Cierra la puerta, por favor» corresponde a la función:", options: ["Apelativa o conativa", "Referencial", "Poética"], correct: 0, explanation: "Busca influir en la conducta del receptor." },
@@ -83,7 +83,7 @@ const AREA4_EXTRA2 = {
   "4.2.2": {
     flashcards: [
       { front: "¿Qué son los indicadores de premisa y de conclusión?", back: "**Premisa**: porque, ya que, dado que, puesto que. **Conclusión**: por lo tanto, en consecuencia, así que, se sigue que. Sirven para desarmar un argumento rápidamente." },
-      { front: "¿Qué es una premisa implícita?", back: "Un supuesto que no se enuncia pero que el argumento necesita para funcionar. Detectarla es clave, porque suele ser justo el punto discutible." },
+      { front: "¿Por qué conviene detectar las premisas implícitas de un argumento?", back: "Porque suelen ser justo el punto discutible: son supuestos que no se enuncian pero que el argumento necesita para sostenerse." },
       { front: "¿Qué diferencia hay entre validez y verdad?", back: "La **validez** se refiere a la forma: si las premisas fueran verdaderas, la conclusión se seguiría. La **verdad** se refiere al contenido. Un argumento puede ser válido con premisas falsas." }
     ],
     quiz: [
@@ -173,7 +173,7 @@ const AREA4_EXTRA2 = {
   "4.4.1": {
     flashcards: [
       { front: "¿Qué es la autonomía moral según Kant?", back: "La capacidad de darse leyes a sí mismo mediante la razón y actuar por deber, no por miedo al castigo ni por conveniencia." },
-      { front: "¿Qué es la heteronomía?", back: "Actuar conforme a normas impuestas desde fuera: la autoridad, la costumbre o la amenaza de sanción, sin haberlas examinado ni asumido." },
+      { front: "Obedecer una norma por miedo a la sanción, ¿es autonomía o heteronomía?", back: "Heteronomía: se actúa conforme a normas impuestas desde fuera —la autoridad, la costumbre o la amenaza de sanción— sin haberlas examinado ni asumido." },
       { front: "¿Por qué la educación busca pasar de la heteronomía a la autonomía?", back: "Porque un niño obedece al principio por la autoridad, pero el objetivo formativo es que llegue a actuar por convicción razonada, capaz de sostener su decisión sin vigilancia." }
     ],
     quiz: [
@@ -188,7 +188,7 @@ const AREA4_EXTRA2 = {
   "4.4.2": {
     flashcards: [
       { front: "¿Qué recursos retóricos son típicos del discurso político?", back: "El uso del «nosotros» inclusivo, la construcción de un adversario, la repetición de consignas, las metáforas bélicas o familiares y la apelación emocional." },
-      { front: "¿Qué es la demagogia?", back: "El discurso que halaga y promete lo que la audiencia quiere oír, apelando a las emociones y prescindiendo de la verdad y de la factibilidad de lo prometido." },
+      { front: "¿Qué distingue a la demagogia de un discurso político legítimo?", back: "Que halaga y promete lo que la audiencia quiere oír, apelando a las emociones y prescindiendo de la verdad y de la factibilidad de lo prometido." },
       { front: "¿Qué son ethos, pathos y logos?", back: "Las tres formas de persuasión de Aristóteles: **ethos** (credibilidad de quien habla), **pathos** (emociones del público) y **logos** (razones y evidencia del argumento)." }
     ],
     quiz: [
@@ -203,7 +203,7 @@ const AREA4_EXTRA2 = {
   "4.5.1": {
     flashcards: [
       { front: "¿Cuáles son los cuatro principios clásicos de la bioética?", back: "**Autonomía** (respetar la decisión informada del paciente), **beneficencia** (buscar su bien), **no maleficencia** (no dañar) y **justicia** (repartir equitativamente los recursos)." },
-      { front: "¿Qué es el consentimiento informado?", back: "La aceptación de un procedimiento tras recibir información comprensible sobre riesgos, beneficios y alternativas. Es la aplicación práctica del principio de autonomía." },
+      { front: "¿De qué principio bioético es aplicación práctica el consentimiento informado?", back: "De la autonomía: el paciente acepta un procedimiento tras recibir información comprensible sobre riesgos, beneficios y alternativas." },
       { front: "¿Qué es el principio de precaución?", back: "Ante un riesgo grave o irreversible, la falta de certeza científica plena no justifica posponer las medidas de protección." }
     ],
     quiz: [
@@ -232,7 +232,7 @@ const AREA4_EXTRA2 = {
 
   "4.5.3": {
     flashcards: [
-      { front: "¿Qué diferencia hay entre sexo y género?", back: "El **sexo** alude a características biológicas; el **género** a los roles, expectativas y atributos que cada cultura asigna a esas categorías y que varían histórica y socialmente." },
+      { front: "¿Por qué se dice que el género varía histórica y socialmente?", back: "Porque son roles, expectativas y atributos que cada cultura asigna, a diferencia del **sexo**, que alude a características biológicas." },
       { front: "¿Qué es la división sexual del trabajo?", back: "La asignación cultural de tareas según el género: el trabajo doméstico y de cuidados no remunerado recae mayoritariamente en las mujeres, lo que limita su participación económica y política." },
       { front: "¿Qué son las acciones afirmativas?", back: "Medidas temporales que compensan una desigualdad histórica, como la paridad en las candidaturas o las cuotas de representación." }
     ],
@@ -262,7 +262,7 @@ const AREA4_EXTRA2 = {
 
   "4.5.5": {
     flashcards: [
-      { front: "¿Qué es el especismo?", back: "La discriminación basada en la pertenencia a una especie: considerar irrelevante el sufrimiento de otros animales solo por no ser humanos, según el planteamiento de Peter Singer." },
+      { front: "¿Con qué otra forma de discriminación compara Peter Singer al especismo?", back: "Con el racismo y el sexismo: considerar irrelevante el sufrimiento de otros animales solo por no ser humanos es discriminar por pertenencia a una especie." },
       { front: "¿Qué es el bienestar animal según las cinco libertades?", back: "Libre de hambre y sed, de incomodidad, de dolor y enfermedad, de miedo y angustia, y libertad para expresar un comportamiento natural." },
       { front: "¿Qué es la ética ambiental ecocéntrica?", back: "La que atribuye valor moral al ecosistema en su conjunto (especies, suelos, aguas), no solo a los individuos sintientes." }
     ],
@@ -292,7 +292,7 @@ const AREA4_EXTRA2 = {
 
   "4.6.2": {
     flashcards: [
-      { front: "¿Qué es el círculo hermenéutico?", back: "La idea de que para entender el todo hay que comprender las partes y viceversa: la interpretación avanza en espiral, revisando el sentido global con cada detalle nuevo." },
+      { front: "¿Por qué se dice que la interpretación avanza en espiral?", back: "Porque para entender el todo hay que comprender las partes y viceversa: cada detalle nuevo obliga a revisar el sentido global. Eso es el círculo hermenéutico." },
       { front: "¿Qué son los prejuicios en la hermenéutica de Gadamer?", back: "Los supuestos previos desde los que se interpreta. No son un defecto que se pueda eliminar: son la condición misma de la comprensión, aunque deben someterse a revisión." },
       { front: "¿Qué es la fusión de horizontes?", back: "El encuentro entre el horizonte de sentido del texto (o del otro) y el del intérprete, del que surge una comprensión nueva que no coincide del todo con ninguno de los dos." }
     ],

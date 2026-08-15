@@ -84,7 +84,7 @@ const AREA1_EXTRA2 = {
 
   "1.2.2": {
     flashcards: [
-      { front: "¿Qué es la probabilidad complementaria?", back: "P(no A) = 1 − P(A). Sirve cuando es más fácil contar los casos que NO cumplen la condición, como en «al menos uno»." },
+      { front: "¿Cuándo conviene usar la probabilidad complementaria en vez de la directa?", back: "Cuando es más fácil contar los casos que NO cumplen la condición: P(A) = 1 − P(no A). Es el atajo de los problemas de «al menos uno»." },
       { front: "Regla de la suma para eventos mutuamente excluyentes", back: "Si dos eventos no pueden pasar a la vez, P(A o B) = P(A) + P(B). Si sí pueden coincidir, hay que restar: P(A) + P(B) − P(A y B)." },
       { front: "¿Qué es la probabilidad frecuencial?", back: "La que se estima repitiendo el experimento: casos observados entre número de repeticiones. Se acerca a la probabilidad teórica conforme aumentan los intentos (ley de los grandes números)." }
     ],
@@ -99,7 +99,7 @@ const AREA1_EXTRA2 = {
 
   "1.2.3": {
     flashcards: [
-      { front: "Fórmula de la probabilidad condicional", back: "P(A|B) = P(A y B) / P(B): la probabilidad de A sabiendo que B ya ocurrió. Se reduce el espacio muestral solo a los casos donde pasó B." },
+      { front: "¿Qué le pasa al espacio muestral al calcular P(A|B)?", back: "Se reduce solo a los casos donde ya ocurrió B: P(A|B) = P(A y B) / P(B) es la probabilidad de A sabiendo que B pasó." },
       { front: "¿Qué son eventos independientes?", back: "Aquellos donde saber que uno ocurrió no cambia la probabilidad del otro: P(A|B) = P(A) y, por lo tanto, P(A y B) = P(A) × P(B)." },
       { front: "¿Qué cambia entre extraer con y sin reemplazo?", back: "Con reemplazo el total y las proporciones se mantienen, así que los eventos son independientes. Sin reemplazo el total baja en cada extracción y hay que usar probabilidad condicional." }
     ],
@@ -251,7 +251,7 @@ const AREA1_EXTRA2 = {
     flashcards: [
       { front: "¿Cómo se calcula el MCD con factores primos?", back: "Se descomponen los números y se toman solo los factores primos **comunes**, cada uno con su **menor** exponente." },
       { front: "¿Qué tipo de problemas se resuelven con MCD?", back: "Los de repartir en grupos iguales lo más grandes posible, o cortar piezas del mayor tamaño posible sin que sobre material." },
-      { front: "¿Qué son dos números primos entre sí?", back: "Los que tienen MCD igual a 1, es decir, no comparten ningún factor primo, como 8 y 15." }
+      { front: "¿Dos números pueden ser primos entre sí sin que ninguno sea primo?", back: "Sí. Basta con que su MCD sea 1, es decir, que no compartan ningún factor primo: 8 y 15 no son primos y aun así son primos entre sí." }
     ],
     quiz: [
       { q: "¿Cuál es el MCD de 24 y 36?", options: ["12", "6", "72"], correct: 0, explanation: "24 = 2³·3 y 36 = 2²·3²; comunes con el menor exponente: 2²·3 = 12." },
@@ -354,7 +354,7 @@ const AREA1_EXTRA2 = {
 
   "1.5.4": {
     flashcards: [
-      { front: "¿Cómo se calcula la distancia entre dos puntos del plano?", back: "d = √((x₂ − x₁)² + (y₂ − y₁)²). Es Pitágoras aplicado a las diferencias de coordenadas." },
+      { front: "¿De qué teorema sale la fórmula de la distancia entre dos puntos?", back: "De Pitágoras: d = √((x₂ − x₁)² + (y₂ − y₁)²) es la hipotenusa del triángulo que forman las diferencias de coordenadas." },
       { front: "¿Cómo se obtiene el punto medio de un segmento?", back: "Se promedian las coordenadas: M = ((x₁ + x₂)/2, (y₁ + y₂)/2)." },
       { front: "¿Cómo se calcula el área de un triángulo con sus tres vértices?", back: "A = |x₁(y₂ − y₃) + x₂(y₃ − y₁) + x₃(y₁ − y₂)| / 2. Si el triángulo tiene un lado horizontal y uno vertical, basta con base × altura ÷ 2." }
     ],
@@ -430,8 +430,8 @@ const AREA1_EXTRA2 = {
   "1.6.5": {
     flashcards: [
       { front: "Derivadas de las funciones trascendentes básicas", back: "(sen x)' = cos x, (cos x)' = −sen x, (eˣ)' = eˣ, (ln x)' = 1/x. Con estas cuatro se resuelve casi todo el examen." },
-      { front: "¿Qué es la regla de la cadena?", back: "Para una función compuesta: se deriva la de afuera dejando el interior igual y se multiplica por la derivada del interior. (sen 3x)' = 3cos 3x." },
-      { front: "Regla del producto y del cociente", back: "Producto: (uv)' = u'v + uv'. Cociente: (u/v)' = (u'v − uv')/v²." }
+      { front: "¿Cómo se deriva sen 3x?", back: "Con la regla de la cadena: se deriva la de afuera dejando el interior igual y se multiplica por la derivada del interior. (sen 3x)' = 3cos 3x." },
+      { front: "En la derivada de un cociente, ¿qué va primero en el numerador?", back: "u'v, y de ahí se resta uv': (u/v)' = (u'v − uv')/v². El orden importa, a diferencia del producto: (uv)' = u'v + uv'." }
     ],
     quiz: [
       { q: "¿Cuál es la derivada de f(x) = sen x?", options: ["cos x", "−cos x", "−sen x"], correct: 0, explanation: "Es una derivada básica que conviene memorizar." },
@@ -445,7 +445,7 @@ const AREA1_EXTRA2 = {
   "1.6.6": {
     flashcards: [
       { front: "¿Cuáles son los pasos para resolver un problema de optimización?", back: "1) Escribir la función a maximizar o minimizar; 2) dejarla en una sola variable usando la condición del problema; 3) derivar e igualar a cero; 4) comprobar si es máximo o mínimo." },
-      { front: "¿Cómo se distingue un máximo de un mínimo?", back: "Con la segunda derivada: si f''(x) < 0 en el punto crítico es máximo; si f''(x) > 0 es mínimo. En una parábola, el signo del coeficiente de x² lo dice de inmediato." },
+      { front: "En una parábola, ¿cómo se sabe de inmediato si el punto crítico es máximo o mínimo?", back: "Por el signo del coeficiente de x²: negativo abre hacia abajo (máximo), positivo abre hacia arriba (mínimo). En general se usa la segunda derivada: f''(x) < 0 es máximo, f''(x) > 0 es mínimo." },
       { front: "¿Dónde está el vértice de una parábola sin derivar?", back: "En x = −b/(2a). Coincide exactamente con el punto crítico que se obtiene al derivar e igualar a cero." }
     ],
     quiz: [

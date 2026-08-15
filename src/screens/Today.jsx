@@ -32,6 +32,16 @@ export default function Today({ plan, stats, onStart }) {
       count: plan.reviewCards.length
     },
     {
+      key: "learn",
+      icon: "cards",
+      color: "var(--brand-2, var(--brand))",
+      title: "Material nuevo",
+      desc: plan.learnPending > plan.learnCards.length
+        ? `Se enseña con la respuesta a la vista · quedan ${plan.learnPending - plan.learnCards.length} para después`
+        : "Tarjetas que se enseñan con la respuesta a la vista",
+      count: plan.learnCards.length
+    },
+    {
       key: "new",
       icon: "sparkles",
       color: "var(--success)",
@@ -256,8 +266,9 @@ function ContentUpdateNote({ update }) {
         <h3 style={{ margin: "0 0 4px" }}>El temario creció</h3>
         <p className="muted" style={{ margin: 0 }}>
           Se agregaron <strong>{update.newCards} tarjetas nuevas</strong> a temas que ya habías visto, repartidas
-          entre los próximos {update.dias || 7} días. Tu porcentaje de dominio bajó a propósito: vuelve a subir
-          conforme repases el material nuevo. Nada de lo que ya llevabas se borró.
+          entre los próximos {update.dias || 21} días. Cada una se te enseña con la respuesta a la vista antes de
+          entrar al repaso, y sus reactivos no aparecen hasta entonces. Tu porcentaje de dominio bajó a propósito:
+          vuelve a subir conforme estudies el material nuevo. Nada de lo que ya llevabas se borró.
         </p>
       </div>
       <button

@@ -38,8 +38,8 @@ En **Progreso → Tus datos** puedes descargar un respaldo `.json` y restaurarlo
 | | |
 | --- | --- |
 | Temas | 177 |
-| Tarjetas de repaso | 726 |
-| Reactivos escritos | 1,011 |
+| Tarjetas de repaso | 1,257 |
+| Reactivos escritos | 1,915 |
 | Temas con **problemas generados** | 45 |
 
 Los 45 temas con generador (todo Pensamiento matemático y la parte de física, química y
@@ -103,6 +103,61 @@ bloqueo de 15 minutos tras 10 intentos fallidos seguidos.
 
 ---
 
+## Fiel a la guía oficial
+
+El temario está cotejado tema por tema contra la *Guía para el sustentante* (Ceneval,
+junio de 2026):
+
+- **Los 177 temas coinciden uno a uno** con los de la guía: mismos identificadores,
+  mismos nombres, mismas subáreas y el mismo reparto de reactivos por área.
+- De los **173 términos concretos** que las orientaciones oficiales nombran —desde
+  *freeware* y *grooming* hasta Cenapred, el Consenso de Washington o el ciclo de
+  Krebs—, el contenido cubre los 173.
+- **Tres opciones por reactivo, A/B/C.** No son cuatro: la guía (p. 25 y p. 26) indica
+  «una respuesta correcta y dos distractores». El validador lo exige.
+- **Los cuatro formatos de reactivo** que define la guía: cuestionamiento directo,
+  relación de elementos, jerarquización u ordenamiento y completamiento. Los dos de en
+  medio viven en `data/formato/`, en los diez temas cuya orientación oficial los pide
+  por nombre («Relación de…», «Organización de los pasos…», «Identificación del
+  orden…»).
+
+Recuerda que la guía se revisa de forma periódica: antes del examen conviene
+confirmar fechas, costos y temario en el portal del Ceneval.
+
+---
+
+## Nada se pregunta antes de enseñarse
+
+Es la regla que ordena todo lo demás, y hay código y pruebas que la sostienen.
+
+Cada tema se arma con **bloques**: el `base` (lo que explica su nota), hasta dos paquetes
+de ampliación y, en algunos temas, el de formato. Un bloque se comporta como una unidad:
+primero sus tarjetas, después sus reactivos.
+
+- **Tarjeta nueva → se enseña, no se examina.** La primera vez que una tarjeta aparece
+  se muestra con la respuesta a la vista y un solo botón, *Entendido*. Recién al día
+  siguiente entra al repaso espaciado y se te pide recordarla. En el motor esto es
+  `learnCard()` y el paso `learn` del ejecutor de sesiones.
+- **Los reactivos de un bloque están cerrados hasta que sus tarjetas se enseñaron.**
+  Lo decide `availableQuiz()`, y lo respetan el repaso diario, los simulacros y la
+  práctica por tema. El bloque `base` es la excepción: su contenido es justo el de la
+  nota, que se puede leer en cualquier momento desde **Repasar**.
+- **Al conocer un tema nuevo solo entra su bloque base.** Las ampliaciones llegan
+  escalonadas cada dos días, cada una con su propio paso de aprendizaje.
+- **Tope de material nuevo por día:** 12 tarjetas. Lo que sobra espera su turno.
+
+Hay un bloque que no se cierra nunca: el de `data/formato/`. No trae tarjetas porque no
+agrega conceptos —replantea con el formato del examen lo que la nota base ya explica—,
+así que no hay nada que desbloquear.
+
+El progreso guardado desde antes de esta versión no se re-enseña: cualquier tarjeta con
+repasos o con fecha de último repaso ya cuenta como aprendida (`isLearned()`).
+
+`npm run test:motor` comprueba justamente esto: que ninguna pregunta salga de un bloque
+cerrado, que «aprender» y «repasar» no se mezclen y que el simulacro completo no se vacíe.
+
+---
+
 ## Cómo se calcula el dominio (y por qué a veces baja)
 
 El porcentaje de dominio de un tema combina dos cosas:
@@ -115,7 +170,8 @@ Cuando el temario crece, los temas que ya habías visto ganan tarjetas sin repas
 cuentan como cero. **El dominio baja a propósito**: hay que estudiar el material nuevo
 para recuperar el porcentaje anterior. Nada del avance previo se borra; solo cambia la
 vara de medir. Las tarjetas nuevas no llegan todas de golpe: se reparten entre los
-siguientes siete días, y la pantalla de inicio avisa cuántas se agregaron.
+siguientes 21 días, cada una se enseña antes de entrar al repaso, y la pantalla de inicio
+avisa cuántas se agregaron.
 
 ---
 
@@ -133,7 +189,9 @@ siguientes siete días, y la pantalla de inicio avisa cuántas se agregaron.
 | `src/ui/` | Sistema de componentes (botones, tarjetas, anillos, modal, toasts, iconos). |
 | `src/styles.css` | Tokens de diseño y estilos. Tema oscuro y claro completos. |
 | `data/` | El temario base (177 temas) y el contenido de la guía oficial. |
-| `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales, que se suman al temario base. |
+| `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales. Cada uno forma un **bloque** dentro del tema. |
+| `data/formato/` | Reactivos de relación de elementos y de ordenamiento, para los temas donde la guía marca esos formatos. |
+| `scripts/` | El validador del temario y las pruebas de los generadores y del motor. |
 | `server/cloudflare-worker.js` | El servidor de cuentas, listo para pegar en Cloudflare Workers. |
 | `fonts/` | Inter y Plus Jakarta Sans (subconjunto latino), servidas desde el repo. |
 | `assets/` · `index.html` | **Generados por el build.** No se editan a mano. |
@@ -149,9 +207,10 @@ corregir o ampliar el temario sin tocar nada del código de la app.
 npm install               # una sola vez
 npm run dev               # servidor local con recarga en http://localhost:5173
 npm run build             # compila a assets/ y regenera index.html
-npm run validate          # revisa que data/*.js, data/extra/*.js y data/extra2/*.js tengan la forma correcta
+npm run validate          # forma de data/*.js y sus paquetes, y que no haya tarjetas repetidas dentro de un tema
 npm run test:generadores  # genera miles de reactivos y verifica que todos sean válidos
-npm run check             # validate + generadores + build
+npm run test:motor        # comprueba que nada se pregunte antes de haberse enseñado
+npm run check             # validate + generadores + motor + build
 ```
 
 Después de cambiar algo en `src/`, corre `npm run build` y **commitea también
@@ -170,7 +229,7 @@ node scripts/test-generators.js --muestra --tema 1.3.5
 `.github/workflows/deploy.yml` se encarga de todo:
 
 - **En cada push** (a cualquier rama): instala, valida el temario, prueba los generadores
-  y compila. Si algo se rompe, el push queda marcado en rojo.
+  y el motor, y compila. Si algo se rompe, el push queda marcado en rojo.
 - **En la rama por defecto**: además publica en GitHub Pages con `actions/deploy-pages`.
 
 No hay que tocar ninguna configuración: el workflow habilita Pages en modo *GitHub
@@ -185,7 +244,7 @@ Durante una sesión de estudio o un simulacro:
 
 | Tecla | Acción |
 | --- | --- |
-| `espacio` / `Enter` | Mostrar la respuesta · continuar |
+| `espacio` / `Enter` | Mostrar la respuesta · marcar como entendida · continuar |
 | `1` `2` `3` | Calificar la tarjeta (otra vez / costó / bien) o elegir opción |
 | `C` | Abrir la calculadora científica (en los reactivos que la ofrecen) |
 | `Esc` | Salir de la sesión |

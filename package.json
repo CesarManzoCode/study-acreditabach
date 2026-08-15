@@ -9,7 +9,8 @@
     "dev": "node build.mjs --watch --serve",
     "validate": "node scripts/validate-data.js",
     "test:generadores": "node scripts/test-generators.js",
-    "check": "npm run validate && npm run test:generadores && npm run build"
+    "test:motor": "node scripts/test-engine.js",
+    "check": "npm run validate && npm run test:generadores && npm run test:motor && npm run build"
   },
   "dependencies": {
     "react": "^19.2.0",

@@ -10,7 +10,7 @@ const AREA5_EXTRA2 = {
     flashcards: [
       { front: "¿Cómo se predice el tipo de enlace con la electronegatividad?", back: "Con la diferencia entre los dos átomos: mayor a 1.7 el enlace es **iónico**; entre 0.4 y 1.7 es **covalente polar**; menor a 0.4 es **covalente no polar**." },
       { front: "¿Qué es un enlace covalente coordinado o dativo?", back: "Aquel en el que los dos electrones compartidos los aporta un solo átomo, como ocurre en el ion amonio (NH₄⁺)." },
-      { front: "¿Por qué los metales conducen la electricidad?", back: "Porque sus electrones de valencia están deslocalizados en un «mar de electrones» que se mueve libremente por toda la red de cationes metálicos." }
+      { front: "¿Qué es el «mar de electrones» del enlace metálico?", back: "Los electrones de valencia deslocalizados que se mueven libremente por toda la red de cationes metálicos. Es lo que hace que los metales conduzcan electricidad y calor." }
     ],
     quiz: [
       { q: "El cloruro de sodio (NaCl) conduce electricidad disuelto en agua pero no en estado sólido porque:", options: ["Al disolverse los iones quedan libres para moverse", "El agua es un metal", "Los enlaces se vuelven covalentes"], correct: 0, explanation: "La conducción iónica requiere iones con movilidad, algo imposible en la red cristalina rígida." },
@@ -23,9 +23,9 @@ const AREA5_EXTRA2 = {
 
   "5.1.2": {
     flashcards: [
-      { front: "¿Qué es la sublimación y qué es la deposición?", back: "**Sublimación**: paso directo de sólido a gas (hielo seco, naftalina). **Deposición** o sublimación inversa: de gas a sólido sin pasar por líquido (escarcha)." },
+      { front: "¿Qué cambio de estado ocurre al formarse la escarcha?", back: "**Deposición** o sublimación inversa: el vapor pasa a sólido sin pasar por líquido. El camino contrario, de sólido a gas, es la **sublimación** (hielo seco, naftalina)." },
       { front: "¿Qué ocurre con la temperatura durante un cambio de estado?", back: "Se mantiene constante: toda la energía suministrada se emplea en romper las fuerzas entre partículas (calor latente), no en aumentar la temperatura." },
-      { front: "¿Qué es el plasma?", back: "El cuarto estado de agregación: gas ionizado con electrones libres, buen conductor eléctrico. Se encuentra en el Sol, los relámpagos y las lámparas fluorescentes." }
+      { front: "¿Por qué el plasma conduce la electricidad?", back: "Porque es un gas ionizado con electrones libres. Es el cuarto estado de agregación y se encuentra en el Sol, los relámpagos y las lámparas fluorescentes." }
     ],
     quiz: [
       { q: "El hielo seco (CO₂ sólido) pasa directamente a gas. Ese cambio de estado se llama:", options: ["Sublimación", "Evaporación", "Condensación"], correct: 0, explanation: "Va de sólido a gaseoso sin pasar por el estado líquido." },
@@ -113,8 +113,8 @@ const AREA5_EXTRA2 = {
 
   "5.2.3": {
     flashcards: [
-      { front: "¿Qué diferencia hay entre energía renovable y no renovable?", back: "La **renovable** se repone a escala humana (solar, eólica, hidráulica, geotérmica, biomasa); la **no renovable** se agota (carbón, petróleo, gas, uranio)." },
-      { front: "¿Qué es la energía química?", back: "La almacenada en los enlaces de las moléculas. Se libera en la combustión, en las pilas y en la respiración celular." },
+      { front: "¿El uranio es una fuente de energía renovable?", back: "No: se agota, igual que el carbón, el petróleo y el gas. **Renovable** es la que se repone a escala humana: solar, eólica, hidráulica, geotérmica y biomasa." },
+      { front: "¿Qué tipo de energía se libera en la respiración celular?", back: "Química: la almacenada en los enlaces de las moléculas. También se libera en la combustión y en las pilas." },
       { front: "¿Qué es la eficiencia energética de un dispositivo?", back: "La proporción de energía útil obtenida respecto de la suministrada. Nunca llega al 100 %: siempre hay pérdidas, casi siempre como calor." }
     ],
     quiz: [
@@ -129,7 +129,7 @@ const AREA5_EXTRA2 = {
   "5.2.4": {
     flashcards: [
       { front: "Fórmulas de energía cinética y potencial gravitatoria", back: "Ec = ½mv² y Ep = mgh, con g = 9.8 m/s². La cinética depende del **cuadrado** de la velocidad." },
-      { front: "¿Qué es la energía mecánica total?", back: "La suma Em = Ec + Ep. Si no hay fricción, permanece constante: lo que se pierde de potencial se gana de cinética y viceversa." },
+      { front: "Si un cuerpo cae sin fricción, ¿qué pasa con su energía mecánica?", back: "Permanece constante: Em = Ec + Ep, y lo que se pierde de potencial se gana de cinética." },
       { front: "¿Qué pasa con la energía cinética si la velocidad se duplica?", back: "Se cuadruplica, porque depende de v². Por eso la distancia de frenado de un auto crece mucho más rápido que su velocidad." }
     ],
     quiz: [
@@ -143,9 +143,9 @@ const AREA5_EXTRA2 = {
 
   "5.2.5": {
     flashcards: [
-      { front: "¿Qué dice la primera ley de la termodinámica?", back: "La energía no se crea ni se destruye, solo se transforma: ΔU = Q − W. Es la conservación de la energía aplicada a los sistemas térmicos." },
+      { front: "¿Qué expresa la ecuación ΔU = Q − W?", back: "La primera ley de la termodinámica: el cambio de energía interna es el calor que entra menos el trabajo que hace el sistema. Es la conservación de la energía aplicada al calor." },
       { front: "¿Qué dice la segunda ley de la termodinámica?", back: "El calor fluye espontáneamente del cuerpo caliente al frío y nunca al revés sin trabajo externo. La entropía del universo siempre aumenta." },
-      { front: "¿Qué es la entropía?", back: "La medida del desorden o de la energía no disponible para hacer trabajo. Todo proceso natural aumenta la entropía total del sistema y su entorno." }
+      { front: "¿Qué le pasa a la entropía total en cualquier proceso natural?", back: "Aumenta. La entropía mide el desorden o la energía no disponible para hacer trabajo, y todo proceso espontáneo la incrementa en el sistema y su entorno." }
     ],
     quiz: [
       { q: "Que el calor no pase espontáneamente de un cuerpo frío a uno caliente es consecuencia de:", options: ["La segunda ley de la termodinámica", "La primera ley", "La ley cero"], correct: 0, explanation: "La segunda ley establece la dirección de los procesos térmicos." },
@@ -189,7 +189,7 @@ const AREA5_EXTRA2 = {
   "5.3.3": {
     flashcards: [
       { front: "¿Qué es la regla del 10 % en las cadenas tróficas?", back: "Solo alrededor del 10 % de la energía de un nivel pasa al siguiente; el resto se pierde como calor y en procesos metabólicos. Por eso hay pocos niveles tróficos." },
-      { front: "¿Qué diferencia hay entre cadena y red trófica?", back: "La **cadena** es una secuencia lineal; la **red** integra todas las cadenas de un ecosistema, mostrando que la mayoría de los organismos se alimenta de varias fuentes." },
+      { front: "¿Por qué una red trófica representa mejor un ecosistema que una cadena?", back: "Porque la mayoría de los organismos se alimenta de varias fuentes: la cadena es una secuencia lineal, la red integra todas las cadenas del ecosistema." },
       { front: "¿Qué papel juegan los descomponedores?", back: "Devuelven al suelo los nutrientes de la materia orgánica muerta, cerrando los ciclos biogeoquímicos. Sin ellos, la materia quedaría inmovilizada." }
     ],
     quiz: [
@@ -220,7 +220,7 @@ const AREA5_EXTRA2 = {
     flashcards: [
       { front: "¿Qué diferencia hay entre productividad primaria bruta y neta?", back: "La **bruta (PPB)** es toda la energía fijada por los productores; la **neta (PPN)** es lo que queda tras descontar su respiración: PPN = PPB − R. La neta es la disponible para los consumidores." },
       { front: "¿Qué es la productividad secundaria?", back: "La biomasa generada por los consumidores a partir del alimento que ingieren. Siempre es mucho menor que la primaria." },
-      { front: "¿Qué ecosistemas tienen mayor productividad primaria?", back: "Los arrecifes de coral, los estuarios y las selvas húmedas. Los desiertos y el océano abierto están entre los menos productivos por unidad de superficie." }
+      { front: "¿Qué ecosistemas tienen la MENOR productividad primaria?", back: "Los desiertos y el océano abierto, por unidad de superficie. En el otro extremo están los arrecifes de coral, los estuarios y las selvas húmedas." }
     ],
     quiz: [
       { q: "Un ecosistema fija 5,000 kcal/m² al año y sus productores gastan 2,000 en respiración. ¿Cuál es la productividad primaria neta?", options: ["3,000 kcal/m²", "7,000 kcal/m²", "2,000 kcal/m²"], correct: 0, explanation: "PPN = PPB − R = 5,000 − 2,000 = 3,000 kcal/m² al año." },
@@ -234,7 +234,7 @@ const AREA5_EXTRA2 = {
   "5.3.6": {
     flashcards: [
       { front: "¿Cuáles son los cuatro tipos de servicios ambientales?", back: "**Provisión** (alimentos, agua, madera), **regulación** (clima, polinización, control de inundaciones), **culturales** (recreación, valor espiritual) y **soporte** (formación de suelo, ciclo de nutrientes)." },
-      { front: "¿Qué es el pago por servicios ambientales?", back: "Un esquema en el que quien se beneficia de un servicio (agua limpia, captura de carbono) retribuye a quienes conservan el ecosistema que lo produce." },
+      { front: "En un esquema de pago por servicios ambientales, ¿quién paga y quién cobra?", back: "Paga quien se beneficia del servicio (agua limpia, captura de carbono) y cobra quien conserva el ecosistema que lo produce." },
       { front: "¿Por qué la polinización es un servicio crítico?", back: "Porque cerca del 75 % de los cultivos alimentarios del mundo dependen en algún grado de polinizadores animales, sobre todo insectos." }
     ],
     quiz: [
@@ -264,7 +264,7 @@ const AREA5_EXTRA2 = {
   "5.4.1": {
     flashcards: [
       { front: "¿Qué es un mol y cuánto vale el número de Avogadro?", back: "Un mol es la cantidad de sustancia que contiene 6.022×10²³ partículas. La masa de un mol en gramos coincide con la masa molar." },
-      { front: "¿Cómo se calcula la masa molar de un compuesto?", back: "Sumando las masas atómicas de todos los átomos de la fórmula. En el H₂SO₄: 2(1) + 32 + 4(16) = 98 g/mol." },
+      { front: "¿Cuál es la masa molar del H₂SO₄?", back: "98 g/mol: 2(1) + 32 + 4(16), sumando las masas atómicas de todos los átomos de la fórmula." },
       { front: "Fórmula para convertir gramos en moles", back: "n = m / M (masa entre masa molar). Y para obtener partículas: N = n × 6.022×10²³." }
     ],
     quiz: [
@@ -310,7 +310,7 @@ const AREA5_EXTRA2 = {
     flashcards: [
       { front: "¿Qué se conserva en cada tipo de choque?", back: "En **ambos** se conserva el momento lineal. La energía cinética solo se conserva en el choque **elástico**; en el inelástico parte se convierte en calor, sonido y deformación." },
       { front: "¿Qué es un choque perfectamente inelástico?", back: "Aquel en que los cuerpos quedan unidos después del impacto y se mueven con una sola velocidad común. Es donde más energía cinética se pierde." },
-      { front: "¿Por qué las zonas de deformación de un auto salvan vidas?", back: "Porque hacen que el choque sea más inelástico: al deformarse absorben energía y alargan el tiempo del impacto, reduciendo la fuerza sobre los ocupantes." }
+      { front: "Un choque con zonas de deformación, ¿es más elástico o más inelástico?", back: "Más inelástico: al deformarse absorben energía y alargan el tiempo del impacto, lo que reduce la fuerza sobre los ocupantes." }
     ],
     quiz: [
       { q: "En un choque perfectamente inelástico, los cuerpos:", options: ["Quedan unidos y se mueven con una velocidad común", "Rebotan conservando toda su energía cinética", "Se detienen siempre por completo"], correct: 0, explanation: "La unión tras el impacto es la característica que lo define." },
@@ -324,7 +324,7 @@ const AREA5_EXTRA2 = {
   "5.5.2": {
     flashcards: [
       { front: "¿Qué es el momento lineal y en qué unidades se mide?", back: "p = m·v, el producto de la masa por la velocidad. Se mide en kg·m/s y es una magnitud vectorial: tiene la misma dirección que la velocidad." },
-      { front: "¿Qué es el impulso y cómo se relaciona con el momento?", back: "I = F·Δt, y equivale al cambio de momento: F·Δt = Δp. Por eso alargar el tiempo del impacto (airbag, guantes acolchados) reduce la fuerza." },
+      { front: "¿Por qué un airbag reduce la fuerza del impacto?", back: "Porque alarga el tiempo de contacto. Como I = F·Δt = Δp, si el cambio de momento es el mismo y Δt crece, la fuerza baja." },
       { front: "¿Cuándo se conserva el momento lineal de un sistema?", back: "Siempre que la suma de las fuerzas externas sea cero. Por eso funciona en choques y explosiones aisladas." }
     ],
     quiz: [
@@ -384,7 +384,7 @@ const AREA5_EXTRA2 = {
   "5.6.2": {
     flashcards: [
       { front: "¿Cuál es el orden de los niveles de organización biológica?", back: "Átomo → molécula → organelo → célula → tejido → órgano → sistema → organismo → población → comunidad → ecosistema → bioma → biosfera." },
-      { front: "¿Cuál es la diferencia entre población y comunidad?", back: "La **población** son los individuos de una misma especie en un área; la **comunidad** reúne a todas las poblaciones de distintas especies que conviven allí." },
+      { front: "¿Qué nivel sigue a la comunidad en la organización ecológica?", back: "El **ecosistema**: la comunidad —todas las poblaciones de distintas especies que conviven en un área— más el ambiente físico que las rodea." },
       { front: "¿Qué añade el ecosistema respecto de la comunidad?", back: "Los factores abióticos: suelo, agua, temperatura, luz. Ecosistema = comunidad (bióticos) + medio físico (abióticos)." }
     ],
     quiz: [
@@ -430,7 +430,7 @@ const AREA5_EXTRA2 = {
     flashcards: [
       { front: "¿Cómo se clasifican los cromosomas por la posición del centrómero?", back: "**Metacéntrico** (al centro, brazos iguales), **submetacéntrico** (ligeramente desplazado), **acrocéntrico** (cerca de un extremo) y **telocéntrico** (en el extremo)." },
       { front: "¿Cuántos cromosomas tiene la especie humana?", back: "46 en total: 23 pares. De ellos, 22 pares son autosomas y un par son cromosomas sexuales (XX en mujeres, XY en hombres)." },
-      { front: "¿Qué es un cariotipo?", back: "El conjunto ordenado de los cromosomas de una célula por tamaño y forma. Permite detectar alteraciones numéricas o estructurales como la trisomía 21." }
+      { front: "¿Qué alteraciones permite detectar un cariotipo?", back: "Alteraciones numéricas o estructurales, como la trisomía 21. Es el conjunto ordenado de los cromosomas de una célula por tamaño y forma." }
     ],
     quiz: [
       { q: "Un cromosoma con el centrómero exactamente en el centro se clasifica como:", options: ["Metacéntrico", "Acrocéntrico", "Telocéntrico"], correct: 0, explanation: "Los dos brazos resultan de igual longitud." },
@@ -443,9 +443,9 @@ const AREA5_EXTRA2 = {
 
   "5.7.3": {
     flashcards: [
-      { front: "¿Qué diferencia hay entre genotipo y fenotipo?", back: "El **genotipo** es la combinación de alelos (AA, Aa, aa); el **fenotipo** es la característica que se observa. Aa y AA tienen distinto genotipo pero el mismo fenotipo dominante." },
+      { front: "Un individuo AA y uno Aa, ¿se ven igual?", back: "Sí, si A es dominante: tienen distinto **genotipo** (la combinación de alelos) pero el mismo **fenotipo**, que es la característica observable." },
       { front: "¿Qué proporciones da el cruce Aa × Aa?", back: "Genotípica 1:2:1 (25 % AA, 50 % Aa, 25 % aa) y fenotípica 3:1 (75 % dominante, 25 % recesivo)." },
-      { front: "¿Qué es un cruce de prueba?", back: "Cruzar un individuo de fenotipo dominante con uno homocigoto recesivo (aa) para averiguar si es AA o Aa: si aparece descendencia recesiva, era heterocigoto." }
+      { front: "¿Cómo se averigua si un individuo de fenotipo dominante es AA o Aa?", back: "Con un cruce de prueba: se cruza con un homocigoto recesivo (aa). Si aparece descendencia recesiva, era heterocigoto." }
     ],
     quiz: [
       { q: "En el cruce Aa × Aa, ¿qué porcentaje de la descendencia presenta el fenotipo recesivo?", options: ["25 %", "50 %", "75 %"], correct: 0, explanation: "Solo el genotipo aa expresa el carácter recesivo: 1 de cada 4." },

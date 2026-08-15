@@ -269,7 +269,7 @@ const AREA6_ES_TOPICS = [
     lang: "es",
     subarea: "6.3 Procesos de composición de textos",
     tema: "Etapas para la composición de un ensayo",
-    note: "Escribir un ensayo sigue un orden lógico: 1) **selección del tema** (elegir de qué se hablará), 2) **propósito** (definir qué se quiere lograr: persuadir, informar, analizar), 3) **consulta de fuentes** (investigar información confiable), 4) **organización de ideas** (hacer un esquema o borrador de puntos clave), 5) **estructura** (introducción, desarrollo y conclusión) y 6) **redacción** (escribir el texto final aplicando todo lo anterior). Saltarse pasos (por ejemplo, redactar sin organizar ideas antes) produce ensayos desordenados.",
+    note: "Escribir un ensayo sigue un orden lógico: 1) **selección del tema** (elegir de qué se hablará), 2) **propósito** (definir qué se quiere lograr: persuadir, informar, analizar), 3) **consulta de fuentes** (investigar información confiable), 4) **organización de las ideas** (hacer un esquema o borrador de puntos clave), 5) **estructura** (introducción, desarrollo y conclusión) y 6) **redacción** (escribir el texto final aplicando todo lo anterior). Saltarse pasos (por ejemplo, redactar sin organizar ideas antes) produce ensayos desordenados.",
     flashcards: [
       { front: "¿Cuál es el orden correcto de las etapas de un ensayo?", back: "Selección del tema, propósito, consulta de fuentes, organización de ideas, estructura y redacción." },
       { front: "¿Qué ocurre si se redacta un ensayo sin organizar ideas antes?", back: "El texto resulta desordenado, sin coherencia clara entre introducción, desarrollo y conclusión." }
