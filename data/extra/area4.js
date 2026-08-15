@@ -44,6 +44,7 @@ const AREA4_EXTRA = {
   },
 
   "4.1.4": {
+    leccion: "Dos precisiones sobre doxa y episteme. La **alegoría de la caverna de Platón** es la imagen con la que se explica la diferencia: unos prisioneros encadenados toman las sombras proyectadas en el muro por la realidad, y salir de la caverna representa pasar de la **doxa** (las apariencias) a la **episteme** (el conocimiento verdadero). Y ojo con un error frecuente: **no toda doxa es falsa**. La doxa puede ser cierta, pero es una creencia sin fundamento demostrado; lo que le falta no es verdad, sino justificación: quien la sostiene no puede explicar por qué es verdadera.",
     flashcards: [
       { front: "¿Qué era la alegoría de la caverna de Platón?", back: "La imagen de unos prisioneros que toman las sombras por la realidad. Salir de la caverna representa pasar de la doxa (apariencias) a la episteme (conocimiento verdadero)." },
       { front: "¿Toda doxa es falsa?", back: "No. La doxa puede ser cierta, pero es una creencia sin fundamento demostrado: quien la sostiene no puede justificar por qué es verdadera." }

@@ -83,6 +83,7 @@ const AREA7_EXTRA = {
   },
 
   "7.1.7": {
+    leccion: "Dos nociones que completan el Estado de bienestar. El **Informe Beveridge** fue el documento británico de 1942 que propuso un sistema de seguridad social «de la cuna a la tumba» y sirvió de base al Estado de bienestar europeo de posguerra: es el origen histórico del modelo. Y la **universalidad** de un derecho social significa que el servicio se garantiza a toda la población por su condición de ciudadana, sin depender de su capacidad de pago ni de su situación laboral; es lo que distingue un derecho de una ayuda focalizada.",
     flashcards: [
       { front: "¿Qué fue el Informe Beveridge?", back: "El documento británico de 1942 que propuso un sistema de seguridad social 'de la cuna a la tumba' y sirvió de base al Estado de bienestar europeo de posguerra." },
       { front: "¿Qué es la universalidad de un derecho social?", back: "Que el servicio se garantiza a toda la población por su condición de ciudadana, sin depender de su capacidad de pago ni de su situación laboral." }
@@ -96,6 +97,7 @@ const AREA7_EXTRA = {
   },
 
   "7.1.8": {
+    leccion: "Dos conceptos centrales del modelo neoliberal. El **Consenso de Washington** fue el paquete de recomendaciones de los años ochenta —disciplina fiscal, privatización, apertura comercial, desregulación— que guió las reformas neoliberales en América Latina; el examen lo usa como nombre del programa completo. Y la **desregulación** es la eliminación o reducción de las reglas que el Estado impone a los mercados, bajo el supuesto de que la competencia asigna mejor los recursos que la norma.",
     flashcards: [
       { front: "¿Qué fue el Consenso de Washington?", back: "El paquete de recomendaciones de los años ochenta (disciplina fiscal, privatización, apertura comercial, desregulación) que guió las reformas neoliberales en América Latina." },
       { front: "¿Qué es la desregulación?", back: "La eliminación o reducción de las reglas que el Estado impone a los mercados, bajo el supuesto de que la competencia asigna mejor los recursos." }
@@ -189,6 +191,7 @@ const AREA7_EXTRA = {
   },
 
   "7.2.6": {
+    leccion: "Dos aplicaciones concretas de los principios del artículo 89. La **Doctrina Estrada**, formulada en 1930, es el principio de no pronunciarse sobre la legitimidad de los gobiernos extranjeros: México mantiene o retira embajadores, pero no otorga ni niega reconocimientos; es la no intervención llevada a la práctica diplomática. Y el **derecho de asilo** se ha aplicado recibiendo a perseguidos políticos: republicanos españoles, sudamericanos que huían de las dictaduras de los años setenta y refugiados centroamericanos.",
     flashcards: [
       { front: "¿Qué fue la Doctrina Estrada?", back: "El principio mexicano (1930) de no pronunciarse sobre la legitimidad de los gobiernos extranjeros: México mantiene o retira embajadores, pero no otorga ni niega reconocimientos." },
       { front: "¿Cómo se ha aplicado el derecho de asilo en México?", back: "Recibiendo a perseguidos políticos: republicanos españoles, sudamericanos que huían de dictaduras en los años setenta y refugiados centroamericanos." }
