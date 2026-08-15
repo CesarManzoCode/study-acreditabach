@@ -27,11 +27,12 @@ for (const f of fs.readdirSync(path.join(ROOT, "data")).filter((f) => f.endsWith
 for (const f of fs.readdirSync(path.join(ROOT, "data/extra"))) src += fs.readFileSync(path.join(ROOT, "data/extra") + "/" + f, "utf8") + "\n";
 for (const f of fs.readdirSync(path.join(ROOT, "data/extra2"))) src += fs.readFileSync(path.join(ROOT, "data/extra2") + "/" + f, "utf8") + "\n";
 for (const f of fs.readdirSync(path.join(ROOT, "data/formato"))) src += fs.readFileSync(path.join(ROOT, "data/formato") + "/" + f, "utf8") + "\n";
+for (const f of fs.readdirSync(path.join(ROOT, "data/refuerzo"))) src += fs.readFileSync(path.join(ROOT, "data/refuerzo") + "/" + f, "utf8") + "\n";
 const NOMBRES = [
   "AREA_META", "SESSION_META", "INFO_SECTIONS", "BIBLIOGRAFIA", "TOTAL_REACTIVOS",
   "AREA1_TOPICS", "AREA2_TOPICS", "AREA3_TOPICS", "AREA4_TOPICS", "AREA5_TOPICS",
   "AREA6_ES_TOPICS", "AREA6_EN_TOPICS", "AREA7_TOPICS",
-  ...[1, 2, 3, 4, 5, 6, 7].flatMap((n) => [`AREA${n}_EXTRA`, `AREA${n}_EXTRA2`, `AREA${n}_FORMATO`])
+  ...[1, 2, 3, 4, 5, 6, 7].flatMap((n) => [`AREA${n}_EXTRA`, `AREA${n}_EXTRA2`, `AREA${n}_FORMATO`, `AREA${n}_REFUERZO`])
 ];
 src += ";" + NOMBRES.map((n) => `try{globalThis.${n}=${n}}catch(e){}`).join(";");
 const ctx = { console, globalThis };
@@ -52,7 +53,11 @@ const topic = E.topicsById()[ID];
 
 console.log("\n1) Bloques del tema " + ID + " (" + topic.tema + ")");
 console.log("   " + topic.blocks.map((b) => `${b.nombre}: fc${b.fcFrom}-${b.fcTo - 1}, quiz ${b.qFrom}-${b.qTo - 1}`).join(" | "));
-check(topic.blocks.length === 3, "tiene los tres bloques (base + dos ampliaciones)");
+check(topic.blocks[0].nombre === "base", "el primer bloque es siempre el base");
+check(
+  topic.blocks.every((b) => E.BLOQUES.includes(b.nombre)),
+  "y todos los bloques son de un tipo conocido (" + topic.blocks.map((b) => b.nombre).join(", ") + ")"
+);
 check(topic.blocks[0].fcFrom === 0 && topic.blocks[0].fcTo === 2, "el bloque base sigue siendo fc0 y fc1 (los índices no se movieron)");
 
 console.log("\n2) Al conocer el tema solo se programa el bloque base para hoy");
@@ -111,8 +116,17 @@ console.log("\n2c) La sesión nunca pone una tarjeta antes de la lección de su 
 }
 
 console.log("\n3) La compuerta del banco de reactivos");
+// Abiertos desde el principio: el bloque base y los que no traen tarjetas ni
+// lección propia (formato y refuerzo replantean con otro formato lo que la nota
+// base ya explicó, así que no hay nada que enseñar antes).
+const abiertosDeInicio = topic.blocks
+  .filter((b, i) => i === 0 || (!b.leccion && b.fcTo === b.fcFrom))
+  .reduce((n, b) => n + (b.qTo - b.qFrom), 0);
 const antes = E.availableQuiz(topic).length;
-check(antes === topic.blocks[0].qTo, `solo ${antes} de ${topic.quiz.length} reactivos disponibles (el resto espera a su lección)`);
+check(
+  antes === abiertosDeInicio,
+  `${antes} de ${topic.quiz.length} reactivos disponibles: base y formatos abiertos, ampliaciones esperando su lección`
+);
 
 console.log("\n4) Ninguna pregunta sale de un bloque bloqueado");
 const permitidas = new Set(E.availableQuiz(topic).map((q) => q.q));
@@ -127,7 +141,10 @@ console.log("\n5) Al aprender las tarjetas de un bloque, se abren sus reactivos"
 E.cardsOfBlock(ID, topic.blocks[1]).forEach((c) => E.learnCard(c));
 const despues = E.availableQuiz(topic).length;
 check(despues > antes, `el banco pasó de ${antes} a ${despues} reactivos`);
-check(despues === topic.blocks[1].qTo, "se abrió exactamente el bloque cuya lección se dio");
+check(
+  despues === antes + (topic.blocks[1].qTo - topic.blocks[1].qFrom),
+  "se abrió exactamente el bloque cuya lección se dio, ni uno más"
+);
 
 console.log("\n6) El plan del día separa aprender de repasar");
 const plan = E.computeTodayPlan();
@@ -170,6 +187,42 @@ check(
   bancoF.every((q) => Array.isArray(q.options) && q.options.length === 3),
   "todos los reactivos traen tres opciones, como el examen real (guía, p. 25)"
 );
+
+/* ------------------------------------------------------------------
+   El simulacro completo debe traer tantos reactivos como el examen real.
+
+   La guía lista 177 temas pero 180 reactivos: cultura digital tiene 18 temas
+   y 19 reactivos, y conciencia histórica 21 y 23. Cuando el simulacro tomaba
+   uno por tema salía de 89 en la sesión uno, aunque la pantalla prometía 92.
+   ------------------------------------------------------------------ */
+console.log("\n11) El simulacro completo tiene el número real de reactivos");
+{
+  const s1 = E.buildMockExam([1, 2, 3, 4], false);
+  const s2 = E.buildMockExam([5, 6, 7], false);
+  check(s1.length === 92, `la sesión 1 arma 92 reactivos (armó ${s1.length})`);
+  check(s2.length === 88, `la sesión 2 arma 88 reactivos (armó ${s2.length})`);
+  check(s1.length + s2.length === 180, "entre las dos sesiones suman los 180 del examen");
+
+  check(
+    E.countMockQuestions([1, 2, 3, 4], false) === 92 && E.countMockQuestions([5, 6, 7], false) === 88,
+    "y la pantalla anuncia exactamente esa cantidad"
+  );
+
+  /* Todo tema evaluado debe aparecer al menos una vez: los reactivos de más
+     se sortean encima, nunca sustituyen a un tema. */
+  const temas1 = new Set(s1.map((i) => i.topic.id));
+  check(temas1.size === 89, `los 89 temas de la sesión 1 aparecen todos (aparecieron ${temas1.size})`);
+}
+
+/* ------------------------------------------------------------------
+   La duración del simulacro sale de la guía, no de un número inventado.
+   ------------------------------------------------------------------ */
+console.log("\n12) El cronómetro usa la duración oficial de cada sesión");
+{
+  check(E.mockMinutes([1, 2, 3, 4]) === 270, "la sesión 1 dura 4 h 30 min (270 minutos)");
+  check(E.mockMinutes([5, 6, 7]) === 240, "la sesión 2 dura 4 h (240 minutos)");
+  check(E.mockMinutes([1, 5]) === 0, "y un simulacro que mezcla sesiones no lleva reloj del examen");
+}
 
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);
 process.exit(fallos === 0 ? 0 : 1);

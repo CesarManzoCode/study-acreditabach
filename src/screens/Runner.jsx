@@ -483,6 +483,56 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
    Simulacro (formato examen: sin retroalimentación inmediata)
    ============================================================ */
 
+/* ============================================================
+   Cronómetro del simulacro
+
+   El examen real son 4 h 30 min la sesión uno y 4 h la dos, con receso de hora
+   y media entre ambas (guía, p. 21). Ocho horas y media en un día son tanto un
+   problema de resistencia y de reparto del tiempo como de conocimiento, y sin
+   reloj el simulacro no entrenaba ninguno de los dos.
+
+   No interrumpe ni bloquea al llegar a cero: en el examen tampoco se responde
+   mejor por un aviso. Solo cambia de color en los últimos treinta minutos y
+   deja de contar en negativo para que se vea cuánto se pasó uno.
+   ============================================================ */
+
+function ExamTimer({ minutes, total, answered }) {
+  const [left, setLeft] = useState(minutes * 60);
+
+  useEffect(() => {
+    const id = setInterval(() => setLeft((s) => s - 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const over = left < 0;
+  const abs = Math.abs(left);
+  const hh = Math.floor(abs / 3600);
+  const mm = String(Math.floor((abs % 3600) / 60)).padStart(2, "0");
+  const ss = String(abs % 60).padStart(2, "0");
+  const reloj = (over ? "+" : "") + (hh ? hh + ":" : "") + mm + ":" + ss;
+
+  /* Ritmo: cuántos reactivos deberías llevar a estas alturas. */
+  const usados = minutes * 60 - left;
+  const esperados = Math.min(total, Math.floor((usados / (minutes * 60)) * total));
+  const atrasado = answered < esperados - 2;
+
+  const tono = over || left < 1800 ? "danger" : atrasado ? "warn" : "";
+
+  return (
+    <div className={"exam-timer " + tono} aria-live="off">
+      <Icon name="clock" size={15} />
+      <strong>{reloj}</strong>
+      <span className="exam-timer-pace">
+        {over
+          ? "tiempo cumplido"
+          : atrasado
+            ? `vas ${esperados - answered} reactivos atrás del ritmo`
+            : `ritmo al día`}
+      </span>
+    </div>
+  );
+}
+
 export function MockRunner({ mock, onExit }) {
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -517,6 +567,9 @@ export function MockRunner({ mock, onExit }) {
       onExit={onExit}
       exitConfirm={idx > 0}
     >
+      {mock.minutes > 0 && (
+        <ExamTimer minutes={mock.minutes} total={questions.length} answered={answers.length} />
+      )}
       <div className="step-anim" key={idx}>
         <Card style={areaStyle(topic.area)}>
           <Badge tone="area">{v.short}</Badge>

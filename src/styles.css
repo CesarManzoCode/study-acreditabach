@@ -1839,3 +1839,44 @@ select.input {
 *::-webkit-scrollbar { width: 10px; height: 10px; }
 *::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
 *::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------- Cronómetro del simulacro ----------------
+   El examen real dura 4 h 30 min la primera sesión y 4 h la segunda. El reloj
+   va fijo arriba del reactivo, sin bloquear ni interrumpir: informa el tiempo
+   restante y si el ritmo alcanza para terminar. En los últimos 30 minutos, y
+   una vez cumplido el tiempo, cambia a rojo. */
+.exam-timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 14px;
+  padding: 9px 14px;
+  max-width: 640px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.exam-timer strong {
+  color: var(--text);
+  font-size: 16px;
+  letter-spacing: .01em;
+}
+.exam-timer-pace { margin-left: auto; font-size: 13px; }
+.exam-timer.warn {
+  border-color: color-mix(in srgb, var(--warn, #f59e0b) 45%, var(--line));
+  color: var(--warn, #f59e0b);
+}
+.exam-timer.warn strong { color: var(--warn, #f59e0b); }
+.exam-timer.danger {
+  border-color: color-mix(in srgb, var(--danger, #f43f5e) 50%, var(--line));
+  color: var(--danger, #f43f5e);
+}
+.exam-timer.danger strong { color: var(--danger, #f43f5e); }
+
+@media (max-width: 560px) {
+  .exam-timer { font-size: 13px; padding: 8px 12px; }
+  .exam-timer-pace { font-size: 12px; }
+}
