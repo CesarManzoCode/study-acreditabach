@@ -230,6 +230,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.3.1": {
+    leccion: "Tres piezas del presidencialismo mexicano que el examen nombra directamente. El **Maximato** fue el periodo de 1928 a 1934 en que Plutarco Elías Calles, como «Jefe Máximo», controló desde fuera a tres presidentes; terminó cuando Cárdenas lo expulsó del país en 1936. El **corporativismo** fue la incorporación de obreros, campesinos y clases medias al partido oficial a través de sus organizaciones (CTM, CNC, CNOP), lo que garantizaba apoyo político a cambio de prestaciones. Y el **«dedazo»** fue la práctica no escrita por la cual el presidente en funciones designaba a su sucesor como candidato del partido oficial, que después ganaba la elección sin competencia real.",
     flashcards: [
       { front: "¿Qué fue el Maximato?", back: "El periodo 1928-1934 en que Plutarco Elías Calles, como «Jefe Máximo», controló desde fuera a tres presidentes. Terminó cuando Cárdenas lo expulsó del país en 1936." },
       { front: "¿Qué es el corporativismo del sistema político mexicano?", back: "La incorporación de obreros, campesinos y clases medias al partido oficial mediante sus organizaciones (CTM, CNC, CNOP), lo que garantizaba apoyo político a cambio de prestaciones." },
@@ -275,6 +276,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.3.4": {
+    leccion: "La globalización se analiza en cuatro **dimensiones**: **económica** (comercio, inversión, cadenas de producción), **cultural** (circulación de símbolos y consumos), **política** (organismos internacionales) y **tecnológica** (redes y comunicación instantánea). Un fenómeno central de la dimensión económica es la **deslocalización productiva**: el traslado de fábricas a países con salarios más bajos y menores regulaciones, que explica el crecimiento de la industria maquiladora en el norte de México. Las **críticas** más frecuentes son que amplía la desigualdad entre países y dentro de ellos, que debilita la soberanía nacional frente a las corporaciones y que homogeneiza las culturas locales.",
     flashcards: [
       { front: "¿Qué dimensiones tiene la globalización?", back: "**Económica** (comercio, inversión, cadenas de producción), **cultural** (circulación de símbolos y consumos), **política** (organismos internacionales) y **tecnológica** (redes y comunicación instantánea)." },
       { front: "¿Qué es la deslocalización productiva?", back: "El traslado de fábricas a países con salarios más bajos y menores regulaciones. Explica el crecimiento de la industria maquiladora en el norte de México." },
@@ -305,6 +307,7 @@ const AREA3_EXTRA2 = {
   },
 
   "3.3.6": {
+    leccion: "Tres ideas para analizar el poder de los medios. La **agenda setting** es su capacidad para definir de qué se habla: no dicen qué pensar, pero sí sobre qué temas se piensa y se discute públicamente. En el México del siglo XX, **radio y televisión** unificaron el idioma, los referentes culturales y la identidad nacional, y al mismo tiempo funcionaron como aliados del régimen al difundir su versión de los hechos. Hoy el equivalente son las **cámaras de eco**: los algoritmos muestran contenido similar al que ya se consume, con lo que refuerzan las creencias previas y facilitan la circulación de noticias falsas sin contraste.",
     flashcards: [
       { front: "¿Qué es la agenda setting de los medios?", back: "La capacidad de los medios de comunicación para definir de qué se habla: no dicen qué pensar, pero sí sobre qué temas se piensa y se discute públicamente." },
       { front: "¿Qué papel tuvo la radio y la televisión en el México del siglo XX?", back: "Unificaron el idioma, los referentes culturales y la identidad nacional, y al mismo tiempo funcionaron como aliados del régimen al difundir su versión de los hechos." },

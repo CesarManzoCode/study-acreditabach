@@ -68,6 +68,7 @@ const AREA6_EXTRA = {
   },
 
   "6.2.3": {
+    leccion: "Dos precisiones sobre la trama. El **clímax** es el punto de máxima tensión de la narración, dentro del nudo, justo antes de que el conflicto empiece a resolverse: no es lo mismo que el nudo completo, sino su momento culminante. Y una trama **in medias res** es la que comienza en pleno conflicto, sin planteamiento previo, y luego recupera los antecedentes mediante recuerdos o diálogos; la expresión latina significa «en medio del asunto».",
     flashcards: [
       { front: "¿Qué es el clímax de una narración?", back: "El punto de máxima tensión, dentro del nudo, justo antes de que el conflicto empiece a resolverse." },
       { front: "¿Qué es una trama in medias res?", back: "La que comienza en pleno conflicto, sin planteamiento previo, y luego recupera los antecedentes mediante recuerdos o diálogos." }
@@ -80,6 +81,7 @@ const AREA6_EXTRA = {
   },
 
   "6.2.4": {
+    leccion: "Dos clasificaciones de personajes que el examen usa. Un personaje **redondo** es complejo y evoluciona a lo largo de la historia, mientras que uno **plano** se define por uno o dos rasgos fijos y no cambia. El **antagonista** es el personaje o la fuerza que se opone al protagonista, y conviene recordar que no siempre es una persona: puede ser la sociedad, la naturaleza o incluso un conflicto interno del propio protagonista.",
     flashcards: [
       { front: "¿Qué es un personaje redondo y uno plano?", back: "El **redondo** es complejo y evoluciona a lo largo de la historia; el **plano** se define por uno o dos rasgos fijos y no cambia." },
       { front: "¿Qué es el antagonista?", back: "El personaje o fuerza que se opone al protagonista. No siempre es una persona: puede ser la sociedad, la naturaleza o un conflicto interno." }
@@ -116,6 +118,7 @@ const AREA6_EXTRA = {
   },
 
   "6.2.7": {
+    leccion: "Dos conceptos del manejo del tiempo en la narración. La **prolepsis** o anticipación es un salto hacia el futuro de la historia: adelanta un hecho que ocurrirá después, y es lo contrario de la analepsis o flashback. Y hay que distinguir el **tiempo de la historia** —la duración real de los hechos narrados— del **tiempo del relato**, que es cuánto espacio les dedica la narración: un instante puede ocupar varias páginas y un año entero resolverse en una línea.",
     flashcards: [
       { front: "¿Qué es una prolepsis o anticipación?", back: "Un salto hacia el futuro de la historia: adelanta un hecho que ocurrirá después. Es lo contrario de la analepsis o flashback." },
       { front: "¿Qué es el tiempo del relato frente al tiempo de la historia?", back: "El **tiempo de la historia** es la duración real de los hechos; el **tiempo del relato** es cuánto espacio les dedica la narración. Un instante puede ocupar páginas y un año, una línea." }
@@ -142,6 +145,7 @@ const AREA6_EXTRA = {
   },
 
   "6.3.2": {
+    leccion: "Dos criterios para trabajar con fuentes. Para **evaluar la confiabilidad** de una fuente se revisa la autoría y sus credenciales, la fecha de publicación, si cita evidencia verificable, si tiene intereses en el tema y si otras fuentes independientes coinciden. El **plagio** es presentar ideas o palabras ajenas como propias, y se evita citando la fuente y entrecomillando lo textual; ojo: parafrasear no exime de citar, porque la idea sigue siendo de otro.",
     flashcards: [
       { front: "¿Cómo se evalúa la confiabilidad de una fuente?", back: "Revisando autoría y credenciales, fecha de publicación, si cita evidencia verificable, si tiene intereses en el tema y si otras fuentes independientes coinciden." },
       { front: "¿Qué es el plagio y cómo se evita?", back: "Presentar ideas o palabras ajenas como propias. Se evita citando la fuente y entrecomillando lo textual, aun cuando se parafrasee." }
@@ -206,6 +210,7 @@ const AREA6_EXTRA = {
   },
 
   "6.3.7": {
+    leccion: "Dos precisiones sobre la adecuación. El **registro adecuado** lo deciden tres elementos: el **destinatario** (a quién se escribe), el **propósito** (qué se busca) y el **canal o contexto** (un oficio, un chat, un examen). Y un **tecnicismo** es una palabra propia de una disciplina: es adecuado entre especialistas, pero ante público general hay que definirlo o sustituirlo, porque usarlo sin explicación rompe la adecuación aunque el término sea correcto.",
     flashcards: [
       { front: "¿Qué elementos definen el registro adecuado?", back: "El **destinatario** (a quién se escribe), el **propósito** (qué se busca) y el **canal o contexto** (oficio, chat, examen). Los tres deciden el nivel de formalidad." },
       { front: "¿Qué es un tecnicismo y cuándo conviene?", back: "Una palabra propia de una disciplina. Es adecuado entre especialistas, pero ante público general hay que definirlo o sustituirlo." }
@@ -232,6 +237,7 @@ const AREA6_EXTRA = {
   },
 
   "6.4.2": {
+    leccion: "Dos herramientas del diálogo. La **escucha activa** consiste en atender realmente lo que dice el otro: no interrumpir, hacer preguntas de seguimiento y parafrasear para confirmar que se entendió. Y una **pregunta abierta** es la que no se responde con sí o no y obliga a desarrollar («¿cómo lo resolviste?»), mientras que las **cerradas** sirven para confirmar datos puntuales; las detonadoras de las que habla la nota suelen ser abiertas.",
     flashcards: [
       { front: "¿Qué es la escucha activa?", back: "Atender realmente a lo que dice el otro: no interrumpir, hacer preguntas de seguimiento y parafrasear para confirmar que se entendió." },
       { front: "¿Qué es una pregunta abierta?", back: "La que no se responde con sí o no y obliga a desarrollar ('¿cómo lo resolviste?'). Las cerradas sirven para confirmar datos puntuales." }
@@ -256,6 +262,7 @@ const AREA6_EXTRA = {
   },
 
   "6.4.4": {
+    leccion: "Dos formas orales más, con funciones distintas de las del diálogo y el debate. La **entrevista** busca obtener información de una persona mediante preguntas planeadas: a diferencia del diálogo espontáneo, tiene un objetivo y una estructura previa. La **mesa redonda** es aquella en la que varios especialistas exponen sus puntos de vista sobre un tema ante un público, coordinados por un moderador y sin confrontación directa: eso último la distingue del debate.",
     flashcards: [
       { front: "¿Qué función cumple la entrevista como forma oral?", back: "Obtener información de una persona mediante preguntas planeadas. A diferencia del diálogo espontáneo, tiene un objetivo y una estructura previa." },
       { front: "¿Qué es la mesa redonda?", back: "Una forma oral en la que varios especialistas exponen sus puntos de vista sobre un tema ante un público, coordinados por un moderador, sin confrontación directa." }

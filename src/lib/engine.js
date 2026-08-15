@@ -66,6 +66,7 @@ function defaultState() {
     version: 1,
     cards: {},              // cardId -> {interval, repetitions, ef, due (ISO), lastReview (ISO)}
     topicsIntroduced: {},   // topicId -> ISO date first introduced
+    lessonsSeen: {},        // "topicId::bloque" -> ISO date en que se leyó la lección del bloque
     quizStats: {},          // topicId -> {seen, correct}
     learningOrder: null,    // array of topic ids, computed once
     sessionLog: {},         // ISO date -> {cardsReviewed, newTopics, quizAnswered, quizCorrect}
@@ -181,7 +182,22 @@ export {
    qué se enseña junto: los reactivos de un bloque no se preguntan hasta que sus
    tarjetas ya se estudiaron (ver availableQuiz). Antes no había bloques y el
    banco completo quedaba disponible desde el primer día, así que el repaso
-   preguntaba material que la app todavía no había mostrado. */
+   preguntaba material que la app todavía no había mostrado.
+
+   LECCIÓN POR BLOQUE
+   ------------------
+   Enseñar una tarjeta —mostrarla un momento con su reverso— no es lo mismo que
+   explicar el tema. La única explicación que da la app es la `note` del tema, y
+   los paquetes de ampliación le colgaron conceptos que esa nota nunca menciona:
+   la lección de 7.1.1 habla de necesidades vitales y el paquete pregunta por el
+   costo de oportunidad, la pirámide de Maslow o los bienes libres. Por eso
+   seguían apareciendo cosas «que nunca me enseñaron» aunque la tarjeta ya
+   hubiera pasado por el paso de aprendizaje.
+
+   Ahora cada bloque puede traer su propia `leccion`. Mientras esa lección no se
+   haya leído, el bloque entero está cerrado: ni sus tarjetas ni sus reactivos
+   entran a la sesión. El bloque base no necesita lección porque su lección es
+   la nota del tema. */
 
 export const BLOQUES = ["base", "ampliacion", "ampliacion2", "formato"];
 
@@ -226,11 +242,12 @@ function packGroups() {
 
 /** Lo que un grupo de paquetes aporta a un tema (un tema vive en un solo paquete por grupo). */
 function aporteDe(packs, id) {
-  const out = { flashcards: [], quiz: [] };
+  const out = { flashcards: [], quiz: [], leccion: "" };
   packs.forEach((p) => {
     if (!p || !p[id]) return;
     out.flashcards = out.flashcards.concat(p[id].flashcards || []);
     out.quiz = out.quiz.concat(p[id].quiz || []);
+    if (p[id].leccion) out.leccion = out.leccion ? out.leccion + "\n\n" + p[id].leccion : p[id].leccion;
   });
   return out;
 }
@@ -257,6 +274,7 @@ export function getAllTopics() {
     let quiz = (t.quiz || []).slice();
     const blocks = [{
       nombre: "base",
+      leccion: t.note || "",
       fcFrom: 0, fcTo: flashcards.length,
       qFrom: 0, qTo: quiz.length
     }];
@@ -266,6 +284,7 @@ export function getAllTopics() {
       if (!ap.flashcards.length && !ap.quiz.length) return;
       blocks.push({
         nombre: g.nombre,
+        leccion: ap.leccion || "",
         fcFrom: flashcards.length, fcTo: flashcards.length + ap.flashcards.length,
         qFrom: quiz.length, qTo: quiz.length + ap.quiz.length
       });
@@ -481,11 +500,47 @@ export function cardsOfBlock(topicId, block) {
   return out;
 }
 
-/* Un bloque de ampliación se abre cuando sus tarjetas ya se enseñaron. El bloque
-   base se abre al conocer el tema, porque su contenido es justo el de la nota
-   que se muestra en la introducción. */
+/* ---------------- Lección de cada bloque ----------------
+
+   Un bloque con `leccion` no se toca hasta haberla leído. Es la llave nueva
+   `lessonsSeen`, aditiva como las demás: un progreso guardado antes de esta
+   versión simplemente no tiene ninguna lección marcada, así que la app se las
+   presenta antes de volver a preguntar ese material. Nada se borra ni se
+   reinicia; las tarjetas conservan su intervalo y sus repasos. */
+
+export function lessonKey(topicId, nombreBloque) { return topicId + "::" + nombreBloque; }
+
+/** ¿Un bloque tiene una lección propia que leer? El base no: su lección es la nota. */
+export function blockHasLesson(block, index) {
+  return index !== 0 && !!(block && block.leccion);
+}
+
+export function isLessonSeen(topicId, block, index) {
+  if (!blockHasLesson(block, index)) return true;
+  return !!STATE.lessonsSeen[lessonKey(topicId, block.nombre)];
+}
+
+export function markLessonSeen(topicId, nombreBloque) {
+  STATE.lessonsSeen[lessonKey(topicId, nombreBloque)] = toISO(todayDate());
+  saveState();
+}
+
+/** El bloque al que pertenece una tarjeta, con su índice dentro del tema. */
+export function blockOfCard(cardId) {
+  const [topicId, tail] = String(cardId).split("::");
+  const t = topicsById()[topicId];
+  if (!t || !t.blocks) return null;
+  const idx = Number(String(tail).replace("fc", ""));
+  const i = t.blocks.findIndex((b) => idx >= b.fcFrom && idx < b.fcTo);
+  return i < 0 ? null : { topic: t, block: t.blocks[i], index: i };
+}
+
+/* Un bloque de ampliación se abre cuando su lección ya se leyó y sus tarjetas ya
+   se enseñaron. El bloque base se abre al conocer el tema, porque su contenido
+   es justo el de la nota que se muestra en la introducción. */
 export function blockUnlocked(topic, block, index) {
   if (index === 0) return true; // lo cubre la nota del tema, que siempre se puede leer
+  if (!isLessonSeen(topic.id, block, index)) return false;
   const cards = cardsOfBlock(topic.id, block);
   if (!cards.length) return true;
   return cards.every(isLearned);
@@ -704,6 +759,11 @@ function saltDelDia(topicId) {
    de contenido recién agregado convertiría la sesión en una lectura larguísima. */
 const MAX_APRENDER_POR_DIA = 12;
 
+/* Tope de lecciones de ampliación por día. Un progreso que viene de antes de
+   que existieran tiene todas pendientes de golpe; sin tope, la primera sesión
+   se convertiría en una lectura interminable. */
+const MAX_LECCIONES_POR_DIA = 4;
+
 export function planPhase(today) {
   if (today < STUDY_START) return "before";
   if (today > LAST_STUDY_DAY) return "after";
@@ -731,20 +791,48 @@ export function computeTodayPlan() {
   const newTopics = notIntroduced.slice(0, quota).map((id) => topicsById()[id]).filter(Boolean);
 
   const todayISO = toISO(rawToday);
-  const dueCardEntries = [];
-  const learnCardEntries = [];
+  const vencidas = [];
   Object.keys(STATE.cards).forEach((cardId) => {
     const topicId = cardId.split("::")[0];
     if (!isIntroduced(topicId)) return;
     if (newTopics.some((t) => t.id === topicId)) return; // los nuevos se repasan en su propia introducción
     const card = STATE.cards[cardId];
     if (card.due > todayISO) return;
-    // Una tarjeta que nunca se ha visto no se examina: primero se enseña.
-    if (isLearned(cardId)) dueCardEntries.push({ cardId, topicId, due: card.due });
-    else learnCardEntries.push({ cardId, topicId, due: card.due });
+    vencidas.push({ cardId, topicId, due: card.due });
   });
-  dueCardEntries.sort((a, b) => (a.due < b.due ? -1 : 1));
-  learnCardEntries.sort((a, b) => (a.due < b.due ? -1 : 1));
+  vencidas.sort((a, b) => (a.due < b.due ? -1 : 1));
+
+  /* Las tarjetas de un bloque cuya lección todavía no se ha leído no pueden
+     salir hoy… salvo que hoy toque justamente esa lección. Se eligen las de las
+     tarjetas más atrasadas y el resto espera su turno: preguntar antes de
+     explicar es exactamente lo que se quiere evitar. */
+  const leccionesPendientes = [];
+  const vistaHoy = new Set();
+  vencidas.forEach((e) => {
+    const bc = blockOfCard(e.cardId);
+    if (!bc || isLessonSeen(e.topicId, bc.block, bc.index)) return;
+    const key = lessonKey(e.topicId, bc.block.nombre);
+    if (vistaHoy.has(key)) return;
+    vistaHoy.add(key);
+    if (leccionesPendientes.length < MAX_LECCIONES_POR_DIA) {
+      leccionesPendientes.push({ topicId: e.topicId, topic: bc.topic, bloque: bc.block.nombre, leccion: bc.block.leccion });
+    }
+  });
+  const seEnseñaHoy = new Set(leccionesPendientes.map((l) => lessonKey(l.topicId, l.bloque)));
+  const conLeccion = (e) => {
+    const bc = blockOfCard(e.cardId);
+    if (!bc || isLessonSeen(e.topicId, bc.block, bc.index)) return true;
+    return seEnseñaHoy.has(lessonKey(e.topicId, bc.block.nombre));
+  };
+
+  const dueCardEntries = [];
+  const learnCardEntries = [];
+  vencidas.forEach((e) => {
+    if (!conLeccion(e)) return;
+    // Una tarjeta que nunca se ha visto no se examina: primero se enseña.
+    if (isLearned(e.cardId)) dueCardEntries.push(e);
+    else learnCardEntries.push(e);
+  });
   const learnCards = learnCardEntries.slice(0, MAX_APRENDER_POR_DIA);
 
   // Quiz de refuerzo: prioriza temas con menor precisión o pocos intentos.
@@ -767,7 +855,8 @@ export function computeTodayPlan() {
   });
 
   const estMinutes = Math.round(
-    dueCardEntries.length * 0.5 + learnCards.length * 0.8 + newTopics.length * 6 + quizQuestions.length * 1.2
+    dueCardEntries.length * 0.5 + learnCards.length * 0.8 + newTopics.length * 6 +
+    leccionesPendientes.length * 2 + quizQuestions.length * 1.2
   );
 
   return {
@@ -777,20 +866,22 @@ export function computeTodayPlan() {
     reviewCards: dueCardEntries,
     learnCards,
     learnPending: learnCardEntries.length,
+    blockLessons: leccionesPendientes,
     newTopics,
     quizQuestions,
     estMinutes,
     behind: phase === "learning" && notIntroduced.length > 0 && daysBetween(today, LEARNING_END) <= 0,
     notIntroducedCount: notIntroduced.length,
     get totalSteps() {
-      return this.reviewCards.length + this.learnCards.length + this.newTopics.length + this.quizQuestions.length;
+      return this.reviewCards.length + this.learnCards.length + this.blockLessons.length +
+        this.newTopics.length + this.quizQuestions.length;
     }
   };
 }
 
 export function logSessionProgress(patch) {
   const iso = toISO(todayDate());
-  const entry = STATE.sessionLog[iso] || { cardsReviewed: 0, cardsLearned: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 };
+  const entry = STATE.sessionLog[iso] || { cardsReviewed: 0, cardsLearned: 0, lessons: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 };
   Object.keys(patch).forEach((k) => { entry[k] = (entry[k] || 0) + patch[k]; });
   STATE.sessionLog[iso] = entry;
   if (STATE.lastStudyDate !== iso) {
@@ -979,6 +1070,14 @@ export function mergeStates(a, b) {
     out.topicsIntroduced[id] = !prev || next < prev ? next : prev;
   });
 
+  // Lecciones de bloque leídas: unión, con la fecha más antigua.
+  out.lessonsSeen = Object.assign({}, a.lessonsSeen || {});
+  Object.keys(b.lessonsSeen || {}).forEach((k) => {
+    const prev = out.lessonsSeen[k];
+    const next = b.lessonsSeen[k];
+    out.lessonsSeen[k] = !prev || next < prev ? next : prev;
+  });
+
   // Quiz: se queda el lado con más intentos registrados.
   out.quizStats = Object.assign({}, a.quizStats || {});
   Object.keys(b.quizStats || {}).forEach((id) => {
@@ -996,6 +1095,7 @@ export function mergeStates(a, b) {
     out.sessionLog[d] = {
       cardsReviewed: Math.max(ea.cardsReviewed || 0, eb.cardsReviewed || 0),
       cardsLearned: Math.max(ea.cardsLearned || 0, eb.cardsLearned || 0),
+      lessons: Math.max(ea.lessons || 0, eb.lessons || 0),
       newTopics: Math.max(ea.newTopics || 0, eb.newTopics || 0),
       quizAnswered: Math.max(ea.quizAnswered || 0, eb.quizAnswered || 0),
       quizCorrect: Math.max(ea.quizCorrect || 0, eb.quizCorrect || 0)

@@ -5,6 +5,7 @@
 
 const AREA7_EXTRA2 = {
   "7.1.1": {
+    leccion: "Tres conceptos económicos que se construyen sobre la idea de necesidad. Los **bienes libres** son abundantes y no tienen precio, como el aire; los **bienes económicos** son escasos frente a las necesidades y por eso se les asigna un precio: la escasez es justamente lo que convierte a un bien en económico. El **costo de oportunidad** es el valor de la mejor alternativa a la que se renuncia al tomar una decisión —estudiar una carrera tiene como costo de oportunidad el sueldo que se dejó de ganar—, y es la forma en que la economía piensa toda elección. Y la **pirámide de Maslow** ordena las necesidades en cinco niveles: fisiológicas, de seguridad, de afiliación, de reconocimiento y de autorrealización; las de abajo se atienden primero, aunque el orden no es rígido.",
     flashcards: [
       { front: "¿Qué son los bienes libres y los bienes económicos?", back: "Los **libres** son abundantes y no tienen precio (el aire); los **económicos** son escasos frente a las necesidades y por eso se les asigna un precio." },
       { front: "¿Qué es el costo de oportunidad?", back: "El valor de la mejor alternativa a la que se renuncia al tomar una decisión. Estudiar una carrera tiene como costo de oportunidad el sueldo que se dejó de ganar." },
@@ -20,6 +21,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.1.2": {
+    leccion: "Tres puntos sobre los factores productivos. Son cuatro: **tierra** (recursos naturales), **trabajo** (esfuerzo humano), **capital** (maquinaria, instalaciones, dinero invertido) y **organización** o capacidad empresarial. Cada uno recibe una **retribución** distinta, y el examen la pregunta directamente: la tierra recibe **renta**; el trabajo, **salario**; el capital, **interés**; y la organización, **beneficio** o ganancia. La **productividad** es la relación entre lo producido y los recursos empleados: aumenta con tecnología, capacitación y mejor organización, no solo trabajando más horas.",
     flashcards: [
       { front: "¿Cuáles son los cuatro factores de la producción?", back: "**Tierra** (recursos naturales), **trabajo** (esfuerzo humano), **capital** (maquinaria, instalaciones, dinero invertido) y **organización** o capacidad empresarial." },
       { front: "¿Qué retribución recibe cada factor productivo?", back: "La tierra recibe **renta**; el trabajo, **salario**; el capital, **interés**; y la organización, **beneficio** o ganancia." },
@@ -50,6 +52,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.1.4": {
+    leccion: "Tres formas de leer la desigualdad. El **coeficiente de Gini** mide la desigualdad en la distribución del ingreso, de 0 (igualdad perfecta) a 1 (un solo hogar concentra todo); México ronda el 0.45. La **curva de Lorenz** es su representación gráfica: compara la distribución real del ingreso con la línea de igualdad perfecta, y cuanto más se aleja de esa diagonal, mayor es la desigualdad. Y el Estado interviene en la distribución **secundaria** —la que resulta después de impuestos y transferencias—, mientras que la **primaria** es la que produce el mercado por sí solo con salarios, rentas y ganancias.",
     flashcards: [
       { front: "¿Qué mide el coeficiente de Gini?", back: "La desigualdad en la distribución del ingreso. Va de 0 (igualdad perfecta) a 1 (un solo hogar concentra todo). México ronda el 0.45." },
       { front: "¿Qué es la curva de Lorenz?", back: "La gráfica que compara la distribución real del ingreso con la línea de igualdad perfecta: cuanto más se aleja de la diagonal, mayor es la desigualdad." },
@@ -65,6 +68,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.1.5": {
+    leccion: "Tres precisiones sobre el empleo. Lo que define al **empleo informal** es la ausencia de registro ante la seguridad social: sin IMSS, sin prestaciones de ley y sin contrato; no es lo mismo que trabajo ilegal ni que trabajar en la calle. Las **prestaciones mínimas de ley** en México son aguinaldo (15 días como mínimo), vacaciones pagadas con prima vacacional del 25 %, seguridad social (IMSS), Infonavit y participación en las utilidades. Y el **subempleo** es la situación de quien trabaja menos horas de las que quisiera o en actividades por debajo de su calificación: cuenta como ocupado en las estadísticas, pero refleja precariedad.",
     flashcards: [
       { front: "¿Qué define al empleo informal?", back: "La ausencia de registro ante la seguridad social: sin IMSS, sin prestaciones de ley y sin contrato. No es lo mismo que trabajo ilegal ni que trabajo en la calle." },
       { front: "¿Cuáles son las prestaciones mínimas de ley en México?", back: "Aguinaldo (15 días mínimo), vacaciones pagadas con prima vacacional del 25 %, seguridad social (IMSS), Infonavit y participación en las utilidades." },
@@ -125,6 +129,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.1.9": {
+    leccion: "Tres conceptos sobre producción y ambiente. Comparar **huellas ecológicas** sirve para contrastar países y estilos de vida: la huella mide la superficie de territorio productivo necesaria para sostener el consumo de una población y absorber sus residuos. La **obsolescencia programada** —el diseño deliberado de productos con vida útil corta para forzar su reemplazo— multiplica los residuos y el consumo de materias primas. Frente a eso, la **economía circular** sustituye el esquema extraer-producir-desechar por uno de reducción, reutilización, reparación y reciclaje, con la idea de mantener los materiales en uso el mayor tiempo posible.",
     flashcards: [
       { front: "¿Para qué sirve comparar huellas ecológicas?", back: "Para contrastar países y estilos de vida: mide la superficie de territorio productivo necesaria para sostener el consumo de una población y absorber sus residuos." },
       { front: "¿Qué efecto tiene la obsolescencia programada sobre los residuos?", back: "Los multiplica, junto con el consumo de materias primas: es el diseño deliberado de productos con vida útil corta para forzar su reemplazo." },
@@ -155,6 +160,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.2.2": {
+    leccion: "Tres puntos sobre las formas de la democracia. En la democracia **directa** los ciudadanos deciden ellos mismos, como en una asamblea vecinal o un referéndum; en la **representativa** eligen a quienes deciden en su nombre. El **voto** debe ser universal, libre, secreto, directo, personal e intransferible: son los principios que garantizan la autenticidad del sufragio. Y existen mecanismos de democracia **participativa** que se suman a las elecciones: la **consulta popular** somete un tema a votación ciudadana y la **revocación de mandato** permite decidir si un gobernante concluye o no su periodo.",
     flashcards: [
       { front: "Una asamblea vecinal que vota sus propias decisiones, ¿qué tipo de democracia es?", back: "Directa: los ciudadanos deciden ellos mismos, como en un referéndum. En la **representativa** eligen a quienes deciden en su nombre." },
       { front: "¿Qué características debe tener el voto en una democracia?", back: "Universal, libre, secreto, directo, personal e intransferible. Son los principios que garantizan la autenticidad del sufragio." },
@@ -185,6 +191,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.2.4": {
+    leccion: "Tres instituciones con un rango especial dentro del Estado mexicano. Los **organismos constitucionales autónomos** no dependen de ninguno de los tres poderes, precisamente para garantizar su imparcialidad: el INE, la CNDH, el Banco de México, el INEGI y la Fiscalía General, entre otros. El **Banco de México** procura la estabilidad del poder adquisitivo de la moneda: controla la inflación mediante la tasa de interés y regula el sistema de pagos; su autonomía data de 1994. Y la **Suprema Corte de Justicia de la Nación** es el máximo tribunal del país y funciona como tribunal constitucional: resuelve controversias entre poderes, acciones de inconstitucionalidad y fija jurisprudencia obligatoria.",
     flashcards: [
       { front: "¿Qué son los organismos constitucionales autónomos?", back: "Instituciones que no dependen de ninguno de los tres poderes para garantizar imparcialidad: INE, CNDH, Banco de México, INEGI y la Fiscalía General, entre otros." },
       { front: "¿Cuál es la función del Banco de México?", back: "Procurar la estabilidad del poder adquisitivo de la moneda: controla la inflación mediante la tasa de interés y regula el sistema de pagos. Su autonomía data de 1994." },
@@ -215,6 +222,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.2.6": {
+    leccion: "Los **principios de política exterior** del artículo 89 constitucional son ocho: autodeterminación de los pueblos, no intervención, solución pacífica de controversias, proscripción de la amenaza o el uso de la fuerza, igualdad jurídica de los Estados, cooperación internacional para el desarrollo, respeto a los derechos humanos y lucha por la paz y la seguridad internacionales. Junto a ellos, el examen pregunta por la **Doctrina Estrada**, formulada en 1930: el principio de que México no se pronuncia sobre la legitimidad de los gobiernos extranjeros, sino que se limita a mantener o retirar a sus representantes diplomáticos. Todo esto se explica por los **antecedentes históricos** del país: las intervenciones extranjeras del siglo XIX y principios del XX, la guerra con Estados Unidos, la intervención francesa y las ocupaciones de Veracruz.",
     flashcards: [
       { front: "¿Cuáles son los principios de política exterior del artículo 89 constitucional?", back: "Autodeterminación de los pueblos, no intervención, solución pacífica de controversias, proscripción de la amenaza o el uso de la fuerza, igualdad jurídica de los Estados, cooperación internacional para el desarrollo, respeto a los derechos humanos y lucha por la paz y la seguridad internacionales." },
       { front: "¿Qué es la Doctrina Estrada?", back: "El principio, formulado en 1930, de que México no se pronuncia sobre la legitimidad de los gobiernos extranjeros: se limita a mantener o retirar a sus representantes diplomáticos." },
@@ -290,6 +298,7 @@ const AREA7_EXTRA2 = {
   },
 
   "7.3.3": {
+    leccion: "Tres indicadores del bienestar en México. El **Coneval** mide la pobreza con un enfoque **multidimensional**: ingreso insuficiente más al menos una de seis carencias sociales (educación, salud, seguridad social, vivienda, servicios básicos y alimentación). La diferencia entre **pobreza** y **pobreza extrema** está en el grado: en la primera el ingreso no alcanza para cubrir las necesidades y hay carencias sociales; en la extrema el ingreso no cubre siquiera la canasta alimentaria y hay tres o más carencias. Y la **movilidad social** es la posibilidad de cambiar de posición socioeconómica respecto de la familia de origen: en México es baja, pues la mayoría de quienes nacen en el nivel más bajo permanece ahí.",
     flashcards: [
       { front: "¿Cómo mide el CONEVAL la pobreza en México?", back: "Con un enfoque multidimensional: ingreso insuficiente más al menos una de seis carencias sociales (educación, salud, seguridad social, vivienda, servicios básicos y alimentación)." },
       { front: "¿Qué diferencia hay entre pobreza y pobreza extrema?", back: "En la **pobreza** el ingreso no alcanza para cubrir las necesidades y hay carencias sociales; en la **extrema** el ingreso no cubre siquiera la canasta alimentaria y hay tres o más carencias." },

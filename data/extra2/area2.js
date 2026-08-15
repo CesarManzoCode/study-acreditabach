@@ -6,6 +6,7 @@
 
 const AREA2_EXTRA2 = {
   "2.1.1": {
+    leccion: "Tres nociones que el examen distingue con cuidado. La **identidad digital** es lo que uno decide mostrar: perfiles, publicaciones, nombre de usuario. La **huella digital** es todo el rastro que queda al navegar, incluido lo que uno no publicó a propósito: búsquedas, ubicaciones, cookies e historial. La **reputación digital** es la imagen que otros se forman a partir de lo que encuentran en línea, y la construyen tanto las publicaciones propias como los comentarios, etiquetas y fotos que suben terceros. A esto se suma el **derecho al olvido**: la posibilidad de solicitar que se retire o deje de indexarse información personal en los buscadores cuando ya es obsoleta, inexacta o irrelevante.",
     flashcards: [
       { front: "¿Qué es la huella digital y en qué se diferencia de la identidad digital?", back: "La **identidad digital** es lo que uno decide mostrar (perfiles, publicaciones, nombre de usuario). La **huella digital** es todo el rastro que queda al navegar, incluido lo que uno no publicó a propósito: búsquedas, ubicaciones, cookies e historial." },
       { front: "¿Qué es la reputación digital?", back: "La imagen que otros se forman de una persona a partir de lo que encuentran en línea. La construyen tanto las publicaciones propias como los comentarios, etiquetas y fotos que suben terceros." },
@@ -66,6 +67,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.1.5": {
+    leccion: "Tres medidas concretas que el examen plantea con casos. La **autenticación en dos pasos (2FA)** suma a la contraseña un segundo factor —un código temporal, una app autenticadora, la huella—, de modo que robar la contraseña no baste para entrar. Una **conexión segura** se reconoce porque la dirección empieza con **https://** y suele mostrar un candado, pero eso no garantiza que el sitio sea legítimo: los sitios falsos también usan https, así que hay que revisar además que el dominio esté bien escrito. Y la **regla 3-2-1 de respaldos** dice que conviene tener tres copias de los datos, en dos medios distintos, y una de ellas fuera del sitio o en la nube; es la defensa más efectiva frente al ransomware y a las fallas de disco.",
     flashcards: [
       { front: "¿Qué es la autenticación en dos pasos (2FA)?", back: "Sumar a la contraseña un segundo factor: un código temporal, una app autenticadora o la huella. Aunque roben la contraseña, no basta para entrar." },
       { front: "¿Cómo se reconoce una conexión segura en el navegador?", back: "La dirección empieza con **https://** y suele mostrarse un candado. Aun así, hay que revisar que el dominio sea el correcto: los sitios falsos también usan https." },
@@ -111,6 +113,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.2.3": {
+    leccion: "Dos ideas para elegir y usar herramientas digitales. Una **herramienta de trabajo colaborativo en línea** es la que permite que varias personas editen, comenten y versionen el mismo documento al mismo tiempo, con registro de quién cambió qué. Un **gestor de referencias bibliográficas** (Zotero, Mendeley) guarda las fuentes consultadas y genera automáticamente las citas y la bibliografía en el formato requerido: APA, MLA o Chicago. La regla para elegir cualquiera de ellas es partir de la tarea y no de la moda: primero se define el propósito (comunicar, organizar, analizar, crear), el público y los recursos disponibles, y solo entonces se elige el programa.",
     flashcards: [
       { front: "¿Qué es una herramienta de trabajo colaborativo en línea?", back: "La que permite que varias personas editen, comenten y versionen el mismo documento o proyecto al mismo tiempo, con registro de quién cambió qué." },
       { front: "¿Qué es un gestor de referencias bibliográficas?", back: "Una herramienta que guarda las fuentes consultadas y genera automáticamente citas y bibliografía en el formato requerido (APA, MLA, Chicago)." },
@@ -126,6 +129,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.2.4": {
+    leccion: "Para buscar y evaluar información en línea el examen pide tres cosas. Los **operadores booleanos** afinan una búsqueda: **AND** la acota exigiendo ambos términos, **OR** la amplía aceptando cualquiera de los dos y **NOT** excluye; además, las comillas buscan la frase exacta y el asterisco completa palabras. Los **criterios para evaluar una fuente digital** son autoría identificable, respaldo institucional, fecha de actualización, referencias verificables y ausencia de intención comercial o propagandística encubierta. Y una **base de datos académica** —SciELO, Redalyc, Google Académico— es un repositorio de artículos revisados por pares, más confiable que una búsqueda web general.",
     flashcards: [
       { front: "¿Qué son los operadores booleanos en una búsqueda?", back: "AND acota (ambos términos), OR amplía (cualquiera de los dos) y NOT excluye. Las comillas buscan la frase exacta y el asterisco completa palabras." },
       { front: "¿Qué criterios se usan para evaluar una fuente digital?", back: "Autoría identificable, respaldo institucional, fecha de actualización, referencias verificables y ausencia de intención comercial o propagandística encubierta." },
@@ -141,6 +145,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.3.1": {
+    leccion: "Tres cosas que el examen pregunta de la hoja de cálculo más allá de las funciones básicas. Una **referencia relativa** (A1) se ajusta sola al copiar la fórmula a otra celda, mientras que una **absoluta** ($A$1) se queda fija; el signo **$** es lo que ancla la columna, la fila o ambas. La función **BUSCARV** (o CONSULTAV) busca un valor en la primera columna de una tabla y devuelve el dato de otra columna de la misma fila: es la función típica para cruzar dos listas. Y conviene reconocer dos errores frecuentes: **#¡DIV/0!** aparece cuando se divide entre cero o entre una celda vacía, y **#¿NOMBRE?** cuando el nombre de la función está mal escrito o no existe.",
     flashcards: [
       { front: "¿Qué diferencia hay entre referencia relativa y absoluta?", back: "La **relativa** (A1) se ajusta al copiar la fórmula; la **absoluta** ($A$1) se queda fija. Se usa el signo $ para anclar columna, fila o ambas." },
       { front: "¿Qué hace la función BUSCARV (o CONSULTAV)?", back: "Busca un valor en la primera columna de una tabla y devuelve el dato de otra columna de la misma fila. Es la función típica para cruzar dos listas." },
@@ -201,6 +206,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.3.5": {
+    leccion: "Tres tecnologías que suelen confundirse entre sí. El **internet de las cosas (IoT)** son objetos cotidianos con sensores y conexión a internet que envían y reciben datos: relojes, termostatos, pulseras de actividad, semáforos inteligentes. El **big data** es el manejo de volúmenes enormes de datos que crecen a gran velocidad y en formatos variados, con el fin de encontrar patrones que no se ven en muestras pequeñas. Y la diferencia clave del par de realidades: la **realidad virtual** sustituye por completo el entorno con uno simulado, mientras que la **aumentada** superpone información digital sobre el entorno real.",
     flashcards: [
       { front: "¿Qué es el internet de las cosas (IoT)?", back: "Objetos cotidianos con sensores y conexión a internet que envían y reciben datos: relojes, termostatos, pulseras de actividad, semáforos inteligentes." },
       { front: "¿Qué es el big data?", back: "El manejo de volúmenes enormes de datos que crecen a gran velocidad y en formatos variados, para encontrar patrones que no se ven en muestras pequeñas." },
@@ -231,6 +237,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.4.2": {
+    leccion: "Además del orden entrada-proceso-salida, hay dos puntos que el examen pregunta. Las **características que debe cumplir todo algoritmo** son ser **preciso** (sin ambigüedad), **finito** (terminar en algún momento) y **definido** (que con las mismas entradas produzca siempre las mismas salidas). Y la **depuración** es probar el algoritmo con distintos datos, encontrar los errores de lógica y corregirlos: un algoritmo sin probar no está terminado. Sobre el orden, ten presente que intercambiar dos instrucciones puede producir un resultado distinto o hacer imposible la ejecución, como cobrar antes de calcular el total.",
     flashcards: [
       { front: "¿Cuáles son las características que debe cumplir todo algoritmo?", back: "Ser **preciso** (sin ambigüedad), **finito** (terminar en algún momento) y **definido** (con las mismas entradas produce siempre las mismas salidas)." },
       { front: "¿Qué es la depuración?", back: "Probar el algoritmo con distintos datos, encontrar los errores de lógica y corregirlos. Un algoritmo sin probar no está terminado." },
@@ -246,6 +253,7 @@ const AREA2_EXTRA2 = {
   },
 
   "2.4.3": {
+    leccion: "El **pensamiento computacional** se apoya en cuatro pilares que conviene saber de memoria: **descomposición** (partir el problema en partes menores), **reconocimiento de patrones** (notar lo que se repite entre problemas distintos), **abstracción** (quedarse con lo esencial e ignorar lo que no afecta la solución) y **diseño de algoritmos** (definir los pasos). La **abstracción** se entiende bien con el mapa del metro: abstrae las distancias reales y conserva solo el orden de las estaciones, que es lo único que importa para el viaje. La **generalización** es adaptar una solución ya conocida a un problema nuevo que tiene la misma estructura, en vez de empezar desde cero.",
     flashcards: [
       { front: "¿Cuáles son los cuatro pilares del pensamiento computacional?", back: "**Descomposición** (partir el problema), **reconocimiento de patrones** (ver lo que se repite), **abstracción** (quedarse con lo esencial) y **diseño de algoritmos** (definir los pasos)." },
       { front: "¿Qué es la abstracción?", back: "Ignorar los detalles que no afectan la solución para concentrarse en lo esencial. Un mapa del metro abstrae distancias reales y conserva solo el orden de las estaciones." },

@@ -38,6 +38,7 @@ const AREA1_EXTRA2 = {
   },
 
   "1.1.3": {
+    leccion: "Dos herramientas más para describir el centro de un conjunto de datos. La **media ponderada** se usa cuando los datos no pesan igual: se multiplica cada valor por su peso, se suman los productos y se divide entre la suma de los pesos (es la fórmula del promedio de calificaciones con porcentajes). Los **cuartiles** son los tres valores que parten los datos ordenados en cuatro partes iguales: **Q1** deja por debajo el 25 % de los datos, **Q2** es la mediana y **Q3** deja por debajo el 75 %. Y una propiedad útil: si a todos los datos se les multiplica por una constante, la media y la mediana quedan multiplicadas por esa misma constante.",
     flashcards: [
       { front: "¿Qué es la media ponderada y cuándo se usa?", back: "Cuando cada dato tiene un peso distinto: se multiplica cada valor por su peso, se suman los productos y se divide entre la suma de los pesos. Es la fórmula del promedio de calificaciones con porcentajes." },
       { front: "¿Qué es un cuartil?", back: "Cada uno de los tres valores que parten los datos ordenados en cuatro partes iguales. Q2 es la mediana; Q1 deja abajo el 25 % y Q3 el 75 %." },
@@ -53,6 +54,7 @@ const AREA1_EXTRA2 = {
   },
 
   "1.1.4": {
+    leccion: "Tres medidas de dispersión que el examen agrega a la varianza y la desviación estándar. El **coeficiente de variación** es la desviación estándar dividida entre la media, expresada en porcentaje: sirve para comparar la dispersión de dos conjuntos con unidades o promedios distintos (no es lo mismo variar 5 kg en pesos de 70 kg que en pesos de 5 kg). El **rango intercuartílico** es la diferencia **Q3 − Q1**, es decir el ancho del 50 % central de los datos; como ignora los extremos, resiste los valores atípicos mucho mejor que el rango total. Por último, la **varianza poblacional** divide entre n y la **muestral** entre n − 1, para no subestimar la dispersión real cuando solo se tiene una muestra.",
     flashcards: [
       { front: "¿Qué es el coeficiente de variación?", back: "La desviación estándar dividida entre la media, expresada en porcentaje. Sirve para comparar la dispersión de dos conjuntos con unidades o promedios distintos." },
       { front: "¿Qué es el rango intercuartílico?", back: "La diferencia Q3 − Q1: el ancho del 50 % central de los datos. Al ignorar los extremos, resiste mejor los valores atípicos que el rango total." },
@@ -113,6 +115,7 @@ const AREA1_EXTRA2 = {
   },
 
   "1.3.1": {
+    leccion: "Tres detalles del trabajo con expresiones algebraicas. Primero, el orden al traducir del español: «el doble de un número disminuido en 5» es **2x − 5**, mientras que «el doble de la diferencia de un número y 5» es **2(x − 5)**; el paréntesis cambia el resultado. Segundo, los **términos semejantes** son los que tienen exactamente las mismas letras con los mismos exponentes, y solo ellos se pueden sumar o restar: 3x²y y −7x²y sí se combinan, 3x² y 3x no. Reducir términos semejantes es sumar sus coeficientes y dejar la parte literal igual. Tercero, **evaluar** una expresión es sustituir cada letra por su valor —conviene escribirlo entre paréntesis, sobre todo si el valor es negativo— y resolver respetando la jerarquía de operaciones.",
     flashcards: [
       { front: "¿Cómo se traduce «el doble de un número disminuido en 5»?", back: "2x − 5. Ojo con el orden: «el doble de un número disminuido en 5» es 2x − 5, mientras que «el doble de la diferencia de un número y 5» es 2(x − 5)." },
       { front: "¿Qué son términos semejantes?", back: "Los que tienen exactamente las mismas letras con los mismos exponentes. Solo ellos se pueden sumar o restar: 3x²y y −7x²y sí; 3x² y 3x no." },
@@ -218,6 +221,7 @@ const AREA1_EXTRA2 = {
   },
 
   "1.3.8": {
+    leccion: "**Capitalizar** significa sumar los intereses al capital para que en el siguiente periodo ellos también generen intereses: eso es exactamente lo que distingue al interés compuesto del simple y lo que hace que crezca más rápido. Cuando la capitalización ocurre varias veces al año, la fórmula se ajusta a **M = C(1 + i/n)^(n·t)**, donde n es el número de capitalizaciones por año (12 si es mensual, 4 trimestral, 2 semestral) y t los años. Ojo con lo que pide el reactivo: la fórmula entrega el **monto** final; si preguntan solo por el interés ganado hay que restar el capital inicial, **I = M − C**.",
     flashcards: [
       { front: "¿Qué significa capitalizar?", back: "Sumar los intereses al capital para que en el siguiente periodo también generen intereses. Por eso el interés compuesto crece más rápido que el simple." },
       { front: "Fórmula del interés compuesto con capitalizaciones al año", back: "M = C(1 + i/n)^(n·t), donde n es el número de capitalizaciones por año (12 mensual, 4 trimestral, 2 semestral)." },
@@ -263,6 +267,7 @@ const AREA1_EXTRA2 = {
   },
 
   "1.4.3": {
+    leccion: "Conviene separar dos sentidos de la palabra «razón». La **razón aritmética** compara dos cantidades por resta (a − b: cuánto le falta a una para alcanzar a la otra); la **razón geométrica** las compara por división (a/b: cuántas veces cabe una en la otra). La igualdad entre dos razones geométricas es una **proporción**, a/b = c/d, cuya propiedad fundamental es que el producto de los extremos es igual al de los medios (a·d = b·c). Con eso se resuelve el reparto proporcional: para dividir una cantidad en una razón como 3:2, se suman las partes (3 + 2 = 5), se divide el total entre esa suma para saber cuánto vale una parte y se multiplica por cada número de la razón.",
     flashcards: [
       { front: "¿Qué diferencia hay entre razón aritmética y razón geométrica?", back: "La **aritmética** compara por resta (a − b: cuánto le falta a uno para el otro); la **geométrica** compara por división (a/b: cuántas veces cabe uno en el otro)." },
       { front: "¿Qué es una proporción?", back: "La igualdad entre dos razones: a/b = c/d. Su propiedad fundamental es que el producto de extremos es igual al producto de medios (a·d = b·c)." },

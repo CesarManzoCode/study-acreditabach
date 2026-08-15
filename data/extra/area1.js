@@ -55,6 +55,7 @@ const AREA1_EXTRA = {
   },
 
   "1.2.1": {
+    leccion: "Antes de las fórmulas de permutación y combinación está el **principio multiplicativo del conteo**: si una tarea se hace por etapas y cada etapa tiene su propio número de opciones, el total de resultados es el producto de esas opciones. Con 4 camisas y 3 pantalones hay 4 × 3 = 12 combinaciones distintas; con 4 camisas, 3 pantalones y 2 pares de zapatos, 4 × 3 × 2 = 24. Es la herramienta para los reactivos que describen un menú, una placa o una contraseña armada por partes. También conviene tener presente que **0! = 1** por definición: no es un capricho, es lo que hace que nPr y nCr sigan dando el resultado correcto en los casos extremos (por ejemplo, al elegir los n elementos de un grupo de n).",
     flashcards: [
       { front: "¿Qué es el principio multiplicativo del conteo?", back: "Si una tarea se hace en etapas con m y n opciones, el total de resultados es m × n. Ejemplo: 4 camisas y 3 pantalones dan 12 combinaciones." },
       { front: "¿Cuánto vale 0!?", back: "Por definición, 0! = 1. Sirve para que las fórmulas de permutaciones y combinaciones funcionen en los casos extremos." }
@@ -91,6 +92,7 @@ const AREA1_EXTRA = {
   },
 
   "1.3.1": {
+    leccion: "Dos precisiones sobre el vocabulario de una expresión algebraica, porque el examen pregunta por los nombres de sus partes. En **4x + 7**, el número que multiplica a la variable (el 4) es el **coeficiente**, y el número que va solo, sin variable (el 7), es el **término independiente**: es justo el valor fijo del que habla la nota. Además hay que distinguir **expresión** de **ecuación**: una expresión solo representa una cantidad (3x + 5) y no se resuelve; una ecuación afirma una igualdad entre dos expresiones (3x + 5 = 20) y por eso sí tiene solución.",
     flashcards: [
       { front: "¿Qué diferencia hay entre expresión y ecuación?", back: "La **expresión** solo representa una cantidad (3x + 5); la **ecuación** afirma una igualdad entre dos expresiones (3x + 5 = 20) y por eso se puede resolver." },
       { front: "¿Qué es el coeficiente y qué es el término independiente?", back: "En 4x + 7, el **coeficiente** es el 4 que multiplica a la variable, y el **término independiente** es el 7, que no depende de x." }
@@ -211,6 +213,7 @@ const AREA1_EXTRA = {
   },
 
   "1.4.3": {
+    leccion: "Junto a las sucesiones conviene tener claros dos términos que el examen usa mucho. Una **razón** compara dos cantidades (3:5, que se lee «3 es a 5»). Una **proporción** es la igualdad entre dos razones: 3/5 = 6/10. Su **propiedad fundamental** es que en a/b = c/d el producto de los extremos vale lo mismo que el de los medios, es decir **a·d = b·c**. De ahí sale la regla de tres: para despejar la incógnita se multiplica en cruz y se divide entre el número que la acompaña.",
     flashcards: [
       { front: "¿Qué diferencia hay entre razón y proporción?", back: "La **razón** compara dos cantidades (3:5). La **proporción** es la igualdad entre dos razones (3/5 = 6/10) y permite despejar el valor desconocido." },
       { front: "¿Qué es la propiedad fundamental de las proporciones?", back: "En a/b = c/d, el producto de los extremos es igual al de los medios: a·d = b·c. Es la base de la regla de tres." }

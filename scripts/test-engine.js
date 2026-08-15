@@ -62,6 +62,54 @@ const vencenHoy = E.cardsForTopic(ID).filter((c) => E.peekCard(c).due <= hoy);
 check(vencenHoy.length === 2, `hoy vencen ${vencenHoy.length} tarjetas (esperado 2, las de la nota)`);
 check(E.cardsForTopic(ID).length === topic.flashcards.length, "las demás quedan programadas, no perdidas");
 
+console.log("\n2b) Un bloque con lección propia no se toca hasta leerla");
+const conLeccion = E.getAllTopics().find((t) => (t.blocks || []).some((b, i) => i > 0 && b.leccion));
+const bIdx = conLeccion.blocks.findIndex((b, i) => i > 0 && b.leccion);
+const bLec = conLeccion.blocks[bIdx];
+E.introduceTopic(conLeccion.id);
+check(!E.isLessonSeen(conLeccion.id, bLec, bIdx), `${conLeccion.id}/${bLec.nombre}: la lección empieza sin leer`);
+check(!E.blockUnlocked(conLeccion, bLec, bIdx), "y el bloque arranca cerrado aunque tenga tarjetas pendientes");
+const bancoCerrado = E.availableQuiz(conLeccion).length;
+E.cardsOfBlock(conLeccion.id, bLec).forEach((c) => E.learnCard(c));
+check(
+  !E.blockUnlocked(conLeccion, bLec, bIdx),
+  "aprender las tarjetas NO basta: sin lección el bloque sigue cerrado"
+);
+check(E.availableQuiz(conLeccion).length === bancoCerrado, "y sus reactivos siguen fuera del banco");
+E.markLessonSeen(conLeccion.id, bLec.nombre);
+check(E.blockUnlocked(conLeccion, bLec, bIdx), "al leer la lección (y con las tarjetas vistas) el bloque se abre");
+check(E.availableQuiz(conLeccion).length > bancoCerrado, "y entonces sí entran sus reactivos");
+
+console.log("\n2c) La sesión nunca pone una tarjeta antes de la lección de su bloque");
+// Se reconstruye la sesión igual que App.jsx y se recorre en orden.
+{
+  const plan = E.computeTodayPlan();
+  const leccionDe = {};
+  plan.blockLessons.forEach((bl) => { leccionDe[bl.topicId + "::" + bl.bloque] = bl; });
+  const pasos = [];
+  const dadas = new Set();
+  const empujar = (entry, tipo) => {
+    const bc = E.blockOfCard(entry.cardId);
+    const key = bc ? bc.topic.id + "::" + bc.block.nombre : null;
+    if (key && !dadas.has(key) && leccionDe[key]) { dadas.add(key); pasos.push({ type: "lesson", key }); }
+    pasos.push({ type: tipo, cardId: entry.cardId, key });
+  };
+  plan.reviewCards.forEach((e) => empujar(e, "review"));
+  plan.learnCards.forEach((e) => empujar(e, "learn"));
+
+  const leidas = new Set();
+  let adelantadas = 0;
+  pasos.forEach((p) => {
+    if (p.type === "lesson") { leidas.add(p.key); return; }
+    const bc = E.blockOfCard(p.cardId);
+    if (!bc) return;
+    const necesita = !E.isLessonSeen(bc.topic.id, bc.block, bc.index);
+    if (necesita && !leidas.has(p.key)) adelantadas++;
+  });
+  check(adelantadas === 0, `${adelantadas} tarjetas saldrían antes de la lección de su bloque`);
+  check(plan.blockLessons.length <= 4, `las lecciones del día están topadas (${plan.blockLessons.length})`);
+}
+
 console.log("\n3) La compuerta del banco de reactivos");
 const antes = E.availableQuiz(topic).length;
 check(antes === topic.blocks[0].qTo, `solo ${antes} de ${topic.quiz.length} reactivos disponibles (el resto espera a su lección)`);

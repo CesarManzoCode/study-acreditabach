@@ -17,6 +17,7 @@ const AREA4_EXTRA = {
   },
 
   "4.1.2": {
+    leccion: "El principal obstáculo del pensamiento crítico tiene nombre: el **sesgo de confirmación**, la tendencia a buscar y aceptar solo la información que confirma lo que ya creemos, ignorando la que la contradice. Reconocerlo es parte del método. Para **evaluar la credibilidad de una fuente** se revisa quién la firma y con qué autoridad, si cita evidencia verificable, si tiene intereses en el tema y si otras fuentes independientes coinciden con ella.",
     flashcards: [
       { front: "¿Qué es el sesgo de confirmación?", back: "La tendencia a buscar y aceptar solo la información que confirma lo que ya creemos, ignorando la que la contradice. Es el principal enemigo del pensamiento crítico." },
       { front: "¿Cómo se evalúa la credibilidad de una fuente?", back: "Revisando quién la firma y con qué autoridad, si cita evidencia verificable, si tiene intereses en el tema y si otras fuentes independientes coinciden." }
@@ -109,6 +110,7 @@ const AREA4_EXTRA = {
   },
 
   "4.3.1": {
+    leccion: "Dos teorías éticas más que se suman al hedonismo y al estoicismo. La **ética deontológica de Kant** sostiene que una acción es buena por el deber que la motiva y no por sus consecuencias; su criterio es el **imperativo categórico**: actuar solo según aquello que quisieras que se convirtiera en ley universal. La **ética de la virtud de Aristóteles** desplaza la pregunta de la acción al carácter: lo importante es formar buenos hábitos, y cada virtud es el **punto medio** entre dos excesos (la valentía está entre la cobardía y la temeridad).",
     flashcards: [
       { front: "¿Qué propone la ética deontológica de Kant?", back: "Que una acción es buena por el deber que la motiva, no por sus consecuencias. Su criterio es el imperativo categórico: actuar solo según lo que quisieras que fuera ley universal." },
       { front: "¿Qué es la ética de la virtud de Aristóteles?", back: "Que lo importante es formar el carácter mediante hábitos buenos. La virtud es el punto medio entre dos excesos (la valentía entre la cobardía y la temeridad)." }
@@ -161,6 +163,7 @@ const AREA4_EXTRA = {
   },
 
   "4.4.2": {
+    leccion: "Dos deformaciones y precisiones del discurso político. La **demagogia** es el uso de promesas y apelaciones emocionales para ganar apoyo popular sin sustento real ni intención de cumplir: es una degradación del discurso político, no un sinónimo de él. Y conviene no confundir dos cosas que la ley trata distinto: la **propaganda** difunde ideas para ganar adhesión ideológica, mientras que la **publicidad política** promueve a un candidato o partido en campaña y está sujeta a reglas y tiempos regulados por la ley electoral.",
     flashcards: [
       { front: "¿Qué es la demagogia?", back: "El uso de promesas y apelaciones emocionales para ganar apoyo popular, sin sustento real ni intención de cumplir. Es una degradación del discurso político." },
       { front: "¿Qué son la propaganda y la publicidad política?", back: "La **propaganda** difunde ideas para ganar adhesión ideológica; la **publicidad política** promueve a un candidato o partido en campaña, con reglas y tiempos regulados por la ley electoral." }
@@ -174,6 +177,7 @@ const AREA4_EXTRA = {
   },
 
   "4.5.1": {
+    leccion: "El **consentimiento informado** es la aplicación práctica del principio de autonomía: la aceptación libre de un tratamiento después de haber recibido información clara sobre riesgos, beneficios y alternativas. Sin esa información previa, no hay consentimiento válido. Cuando un recurso médico escasea entra en juego el principio de **justicia**, que exige repartirlo con criterios claros y no discriminatorios —el pronóstico clínico, la urgencia— y nunca según la capacidad de pago o la posición social del paciente.",
     flashcards: [
       { front: "¿Qué es el consentimiento informado?", back: "La aceptación libre de un tratamiento después de recibir información clara sobre riesgos, beneficios y alternativas. Es la aplicación práctica del principio de autonomía." },
       { front: "¿Cómo se aplican los principios bioéticos cuando escasea un recurso médico?", back: "El principio de **justicia** exige criterios claros y no discriminatorios para repartirlo, como el pronóstico clínico y la urgencia, nunca la capacidad de pago o la posición social." }
@@ -200,6 +204,7 @@ const AREA4_EXTRA = {
   },
 
   "4.5.3": {
+    leccion: "Tres conceptos con los que el examen plantea casos de desigualdad. La distinción básica es entre **sexo**, que alude a características biológicas, y **género**, que es la construcción social de roles, expectativas y conductas que cada cultura asigna. La **brecha salarial de género** es la diferencia promedio de ingresos entre hombres y mujeres por trabajos de igual valor, resultado de la segregación ocupacional, del trabajo de cuidados no remunerado y de la discriminación. Y el **techo de cristal** es la barrera invisible que limita el ascenso de las mujeres a los puestos de mayor responsabilidad pese a tener la misma preparación: se llama «de cristal» porque no está escrita en ninguna regla.",
     flashcards: [
       { front: "¿Qué diferencia hay entre sexo y género?", back: "El **sexo** alude a características biológicas; el **género** es la construcción social de roles, expectativas y conductas que cada cultura asigna a esas categorías." },
       { front: "¿Qué es la brecha salarial de género?", back: "La diferencia promedio de ingresos entre hombres y mujeres por trabajos de igual valor, resultado de la segregación ocupacional, del trabajo de cuidados no remunerado y de la discriminación." },
@@ -227,6 +232,7 @@ const AREA4_EXTRA = {
   },
 
   "4.5.5": {
+    leccion: "Tres posturas sobre el trato a otros seres vivos. El **antropocentrismo** coloca al ser humano en el centro y considera a la naturaleza un recurso a su servicio; se le opone el **biocentrismo**, que reconoce valor propio a todos los seres vivos. El **especismo** es discriminar a un ser vivo solo por pertenecer a otra especie, del mismo modo que el racismo discrimina por origen; el término lo popularizó Peter Singer. En el terreno práctico están las **tres erres de la experimentación animal**: **reemplazar** a los animales por métodos alternativos cuando sea posible, **reducir** su número al mínimo y **refinar** los procedimientos para disminuir el sufrimiento.",
     flashcards: [
       { front: "¿Qué es el antropocentrismo?", back: "La postura que coloca al ser humano en el centro y considera a la naturaleza un recurso a su servicio. Se le opone el biocentrismo, que reconoce valor propio a todos los seres vivos." },
       { front: "¿Qué son las tres erres de la experimentación animal?", back: "**Reemplazar** los animales por métodos alternativos cuando sea posible, **reducir** su número al mínimo y **refinar** los procedimientos para disminuir el sufrimiento." },
@@ -254,6 +260,7 @@ const AREA4_EXTRA = {
   },
 
   "4.6.2": {
+    leccion: "Dos aportaciones que el examen asocia a la hermenéutica. El **círculo hermenéutico** es la idea de que para entender el todo hay que entender las partes y, a la vez, para entender las partes hace falta una idea del todo: la interpretación no avanza en línea recta, sino en espiral entre ambos niveles. Y a Gadamer se le atribuye la **fusión de horizontes**: comprender un texto no es recuperar en estado puro la intención del autor, sino el encuentro entre el horizonte de sentido del autor y el del lector.",
     flashcards: [
       { front: "¿Qué es el círculo hermenéutico?", back: "La idea de que para entender el todo hay que entender las partes, y para entender las partes hay que tener una idea del todo: la interpretación avanza en espiral entre ambos niveles." },
       { front: "¿Qué aportó Gadamer a la hermenéutica?", back: "La noción de **fusión de horizontes**: comprender un texto es un encuentro entre el horizonte del autor y el del lector, no la recuperación pura de la intención original." }

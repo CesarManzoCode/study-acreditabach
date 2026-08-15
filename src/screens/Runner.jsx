@@ -8,7 +8,7 @@ import { useKeys, useScrollLock, navigate } from "../lib/hooks.js";
 import { areaStyle, areaVisual } from "../lib/areas.js";
 import {
   topicsById, gradeCard, learnCard, nextIntervalPreview, introduceTopic, recordQuizAnswer,
-  logSessionProgress, computeTodayPlan, areaNumbers
+  logSessionProgress, computeTodayPlan, areaNumbers, markLessonSeen
 } from "../lib/engine.js";
 
 /* El examen real presenta tres opciones: A, B y C (guía del sustentante, p. 25). */
@@ -91,7 +91,7 @@ function RunnerShell({ title, step, total, onExit, children, footer, exitConfirm
 
 export function SessionRunner({ session, onExit, onAgain }) {
   const [idx, setIdx] = useState(0);
-  const [stats, setStats] = useState({ cardsReviewed: 0, cardsLearned: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
+  const [stats, setStats] = useState({ cardsReviewed: 0, cardsLearned: 0, lessons: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
   const steps = session.steps;
   const step = steps[Math.min(idx, steps.length - 1)];
 
@@ -126,6 +126,9 @@ export function SessionRunner({ session, onExit, onAgain }) {
             onLearned={() => { bump({ cardsLearned: 1 }); advance(); }}
           />
         )}
+        {step.type === "lesson" && (
+          <LessonStep step={step} onNext={() => { bump({ lessons: 1 }); advance(); }} />
+        )}
         {step.type === "intro" && (
           <IntroStep topic={step.topic} onNext={() => { bump({ newTopics: 1 }); advance(); }} />
         )}
@@ -143,6 +146,48 @@ export function SessionRunner({ session, onExit, onAgain }) {
         {isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} />}
       </div>
     </RunnerShell>
+  );
+}
+
+/* --- Paso: lección de un bloque de ampliación ---
+
+   La nota del tema explica el bloque base y nada más. Cuando un paquete de
+   ampliación agrega conceptos que esa nota no menciona —el costo de oportunidad
+   en un tema sobre necesidades, el coeficiente de Gini en uno sobre reparto de
+   la riqueza—, trae su propia lección y se lee aquí. Hasta que este paso pasa,
+   ni las tarjetas ni los reactivos de ese bloque entran a la sesión. */
+
+const TITULO_BLOQUE = {
+  ampliacion: "Ampliación del tema",
+  ampliacion2: "Más sobre este tema"
+};
+
+function LessonStep({ step, onNext }) {
+  const { topic } = step;
+  const v = areaVisual(topic.area);
+  const listo = () => { markLessonSeen(topic.id, step.bloque); onNext(); };
+  useKeys({ Enter: listo, " ": listo }, [topic.id, step.bloque]);
+
+  return (
+    <Stack>
+      <Card className="intro-card" style={areaStyle(topic.area)}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <Badge tone="area">{v.short}</Badge>
+          <Badge tone="brand" icon="sparkles">{TITULO_BLOQUE[step.bloque] || "Ampliación del tema"}</Badge>
+        </div>
+        <h2 className="intro-title">{topic.tema}</h2>
+        <p className="intro-sub">{topic.subarea}</p>
+        <div className="intro-note">
+          <RichText>{step.leccion}</RichText>
+        </div>
+        <p className="flash-hint">
+          Esto es lo que se te va a preguntar de aquí en adelante · <span className="kbd">espacio</span>
+        </p>
+      </Card>
+      <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={listo}>
+        Ya entendí
+      </Button>
+    </Stack>
   );
 }
 
@@ -392,7 +437,7 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
   useEffect(() => {
     if (loggedRef.current) return;
     loggedRef.current = true;
-    if (stats.cardsReviewed || stats.cardsLearned || stats.newTopics || stats.quizAnswered) logSessionProgress(stats);
+    if (stats.cardsReviewed || stats.cardsLearned || stats.lessons || stats.newTopics || stats.quizAnswered) logSessionProgress(stats);
   }, [stats]);
 
   const plan = useMemo(() => computeTodayPlan(), []);

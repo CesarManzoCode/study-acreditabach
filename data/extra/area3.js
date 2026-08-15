@@ -190,6 +190,7 @@ const AREA3_EXTRA = {
   },
 
   "3.2.10": {
+    leccion: "Dos consecuencias jurídicas de la Revolución que el examen pregunta por su nombre. El **ejido** es la forma de propiedad social de la tierra nacida del artículo 27: el Estado dota de tierra a un núcleo de campesinos, que la trabajan colectivamente y que no podían venderla hasta la reforma salinista de 1992. Es el instrumento concreto del reparto agrario. Y el **artículo 130** recoge la herencia de la Reforma liberal: establece la separación entre el Estado y las iglesias y regula el culto público.",
     flashcards: [
       { front: "¿Qué es el ejido?", back: "La forma de propiedad social de la tierra nacida del artículo 27: el Estado dota de tierra a un núcleo de campesinos, que la usan colectivamente y no podían venderla (hasta la reforma de 1992)." },
       { front: "¿Qué establece el artículo 130 constitucional?", back: "El principio histórico de separación entre el Estado y las iglesias, y la regulación del culto público. Recoge la herencia de la Reforma liberal." }
@@ -229,6 +230,7 @@ const AREA3_EXTRA = {
   },
 
   "3.3.3": {
+    leccion: "Para entender el giro neoliberal hay que conocer el modelo que lo precedió y la medida que lo caracterizó. El **modelo de sustitución de importaciones** fue la estrategia de 1940 a 1970: el Estado protegía a la industria nacional con aranceles para producir dentro del país lo que antes se compraba fuera. Las **privatizaciones** fueron el instrumento del cambio: la venta de empresas del Estado a particulares, que en México alcanzó a Teléfonos de México, la banca, aerolíneas y siderúrgicas entre finales de los ochenta y los noventa.",
     flashcards: [
       { front: "¿Qué fue el modelo de sustitución de importaciones?", back: "La estrategia previa al neoliberalismo (1940-1970): el Estado protegía con aranceles a la industria nacional para producir en el país lo que antes se importaba." },
       { front: "¿Qué son las privatizaciones?", back: "La venta de empresas del Estado a particulares. En México alcanzaron a Teléfonos de México, la banca, aerolíneas y siderúrgicas entre finales de los ochenta y los noventa." }
@@ -242,6 +244,7 @@ const AREA3_EXTRA = {
   },
 
   "3.3.4": {
+    leccion: "Dos conceptos para describir cómo opera hoy la globalización. Las **cadenas globales de valor** son la organización de la producción repartida entre varios países: un producto se diseña en uno, sus partes se fabrican en otros y se ensambla en un tercero para venderse en todo el mundo. La **glocalización** es la otra cara: la adaptación de productos y contenidos globales a los gustos y tradiciones locales, como las cadenas internacionales de comida que ajustan su menú a la cocina de cada país. Lo global no borra lo local del todo, lo negocia.",
     flashcards: [
       { front: "¿Qué son las cadenas globales de valor?", back: "La organización de la producción en varios países: un producto se diseña en uno, sus partes se fabrican en otros y se ensambla en un tercero para venderse en todo el mundo." },
       { front: "¿Qué es la glocalización?", back: "La adaptación de productos y contenidos globales a los gustos y tradiciones locales, como cadenas internacionales que ajustan su menú a la cocina de cada país." }

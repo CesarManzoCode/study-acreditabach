@@ -38,6 +38,7 @@ const AREA6_EXTRA2 = {
   },
 
   "6.1.3": {
+    leccion: "Tres ideas sobre los mapas conceptuales. Dos conceptos unidos por una **palabra de enlace** forman una **proposición** con sentido completo: «los mamíferos **son** vertebrados», «el agua **se compone de** hidrógeno y oxígeno». Un **mapa conceptual** es jerárquico, va de lo general a lo particular y usa palabras de enlace, mientras que un **mapa mental** parte de una idea central y se ramifica libremente, con colores e imágenes. Y un **enlace cruzado** es la conexión entre conceptos de ramas distintas del mapa: es la marca de una comprensión profunda, porque revela relaciones que no eran evidentes.",
     flashcards: [
       { front: "¿Qué forman dos conceptos unidos por una palabra de enlace?", back: "Una proposición con sentido: «los mamíferos **son** vertebrados», «el agua **se compone de** hidrógeno y oxígeno»." },
       { front: "¿Qué diferencia hay entre un mapa conceptual y un mapa mental?", back: "El **conceptual** es jerárquico, va de lo general a lo particular y usa palabras de enlace. El **mental** parte de una idea central y se ramifica libremente, con colores e imágenes." },
@@ -70,6 +71,7 @@ const AREA6_EXTRA2 = {
   /* ---------------- 6.2 Análisis literario ---------------- */
 
   "6.2.2": {
+    leccion: "Tres precisiones sobre el tema de una obra. El **tema** es la idea abstracta que atraviesa el relato (la venganza, el paso del tiempo), mientras que el **argumento** es la sucesión concreta de hechos que se cuentan. Para **identificar el tema central** hay que preguntarse de qué trata el conflicto en el fondo, más allá de la anécdota; suele expresarse con un sustantivo abstracto: la culpa, la libertad, la identidad. Y un **motivo literario** es un elemento recurrente —un objeto, una imagen, una situación— que refuerza el tema a lo largo de la obra, como el espejo, el viaje o la tormenta.",
     flashcards: [
       { front: "¿Qué diferencia hay entre tema y argumento de una obra?", back: "El **tema** es la idea abstracta que atraviesa el relato (la venganza, el paso del tiempo); el **argumento** es la sucesión concreta de hechos que se cuentan." },
       { front: "¿Cómo se identifica el tema central?", back: "Preguntando de qué trata el conflicto en el fondo, más allá de la anécdota. Suele expresarse con un sustantivo abstracto: la culpa, la libertad, la identidad." },
@@ -85,6 +87,7 @@ const AREA6_EXTRA2 = {
   },
 
   "6.2.3": {
+    leccion: "Tres puntos sobre la estructura del relato. Los **momentos de la trama clásica** son planteamiento (presentación de personajes y situación), nudo o desarrollo (aparece y crece el conflicto), **clímax** (punto de máxima tensión) y desenlace (resolución). **In medias res** es comenzar el relato en plena acción, sin presentación previa, revelando los antecedentes después. Y los dos saltos temporales que el examen nombra en griego: la **analepsis** o flashback retrocede a un hecho anterior, y la **prolepsis** o prefiguración adelanta algo que ocurrirá después.",
     flashcards: [
       { front: "¿Cuáles son los momentos de la trama clásica?", back: "Planteamiento (presentación de personajes y situación), nudo o desarrollo (aparece y crece el conflicto), clímax (punto de máxima tensión) y desenlace (resolución)." },
       { front: "¿Qué es in medias res?", back: "Comenzar el relato en plena acción, sin presentación previa; los antecedentes se revelan después mediante retrospecciones." },
@@ -145,6 +148,7 @@ const AREA6_EXTRA2 = {
   },
 
   "6.2.7": {
+    leccion: "Tres recursos del tiempo narrativo. La **elipsis narrativa** es el salto que omite un periodo de la historia («veinte años después»): acelera el relato y deja al lector completar lo omitido. El tiempo **lineal** presenta los hechos en orden cronológico, mientras que el **no lineal** los altera con saltos hacia atrás o hacia adelante. Y la **narración circular** es la que termina en el mismo punto donde comenzó, cerrando el relato sobre sí mismo y sugiriendo repetición o destino.",
     flashcards: [
       { front: "¿Qué es la elipsis narrativa?", back: "El salto que omite un periodo de la historia («veinte años después»). Acelera el relato y deja al lector completar lo omitido." },
       { front: "¿Qué diferencia hay entre tiempo lineal y no lineal?", back: "El **lineal** presenta los hechos en orden cronológico; el **no lineal** los altera con saltos hacia atrás o hacia adelante." },
@@ -237,6 +241,7 @@ const AREA6_EXTRA2 = {
   },
 
   "6.3.6": {
+    leccion: "Tres conceptos que el examen distingue con cuidado. Los conectores y los pronombres dan **cohesión**, no coherencia: son los recursos lingüísticos que enlazan las partes del texto, mientras que la **coherencia** es la unidad de sentido global. La **progresión temática** es el avance del texto sumando información nueva sobre lo ya dicho, sin saltos ni repeticiones vacías; sin ella, el texto da vueltas sobre sí mismo. Y la **anáfora textual** es el uso de un pronombre o una expresión que remite a algo mencionado antes: «Compré un libro. **Lo** leí en dos días».",
     flashcards: [
       { front: "Los conectores y los pronombres, ¿dan coherencia o cohesión?", back: "Cohesión: son los recursos lingüísticos que enlazan las partes del texto. La **coherencia** es la unidad de sentido global." },
       { front: "¿Qué es la progresión temática?", back: "El avance del texto sumando información nueva sobre lo ya dicho, sin saltos ni repeticiones vacías. Sin progresión, el texto da vueltas sobre sí mismo." },
