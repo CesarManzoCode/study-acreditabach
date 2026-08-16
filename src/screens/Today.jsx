@@ -4,7 +4,7 @@ import { Button, Card, Ring, Bar, Badge, Stat, Reveal } from "../ui/kit.jsx";
 import { navigate, useCountUp } from "../lib/hooks.js";
 import {
   STATE, saveState, fmtDateLong, fmtDateShort, daysBetween, todayDate,
-  STUDY_START, EXAM_DATE, weakestTopics, upcomingLoad, dismissContentUpdate
+  STUDY_START, EXAM_DATE, weakestTopics, upcomingLoad, dismissContentUpdate, dismissPoda
 } from "../lib/engine.js";
 import { areaStyle } from "../lib/areas.js";
 
@@ -111,6 +111,12 @@ export default function Today({ plan, stats, onStart }) {
       {STATE.contentUpdate && (
         <Reveal delay={60}>
           <ContentUpdateNote update={STATE.contentUpdate} />
+        </Reveal>
+      )}
+
+      {STATE.poda && (
+        <Reveal delay={60}>
+          <PodaNote poda={STATE.poda} />
         </Reveal>
       )}
 
@@ -316,6 +322,38 @@ function ContentUpdateNote({ update }) {
         className="btn btn-ghost btn-icon"
         aria-label="Entendido"
         onClick={() => dismissContentUpdate()}
+      >
+        <Icon name="x" size={17} />
+      </button>
+    </Card>
+  );
+}
+
+/* Aviso de la reconciliación: el temario cambió y las tarjetas guardadas se
+   movieron a su nueva posición (o se quitaron, si su contenido ya no existe).
+   Se explica porque el número de tarjetas y el porcentaje de dominio cambian
+   de un día para otro sin que el sustentante haya hecho nada. */
+function PodaNote({ poda }) {
+  return (
+    <Card className="update-note">
+      <span className="update-icon"><Icon name="check" size={20} /></span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <h3 style={{ margin: "0 0 4px" }}>Se ajustó tu progreso al temario</h3>
+        <p className="muted" style={{ margin: 0 }}>
+          {poda.movidas > 0 && (
+            <>Se reacomodaron <strong>{poda.movidas} tarjetas</strong> que cambiaron de lugar en el temario,
+            con sus repasos y sus intervalos intactos. </>
+          )}
+          {poda.quitadas > 0 && (
+            <>Se dieron de baja <strong>{poda.quitadas}</strong> que ya no forman parte del contenido. </>
+          )}
+          Nada de lo que estudiaste se perdió: solo dejó de aparecer lo que el temario ya no incluye.
+        </p>
+      </div>
+      <button
+        className="btn btn-ghost btn-icon"
+        aria-label="Entendido"
+        onClick={() => dismissPoda()}
       >
         <Icon name="x" size={17} />
       </button>

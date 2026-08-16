@@ -5,7 +5,8 @@ import { useEngine, useRoute, navigate, useAccounts, useCloud } from "./lib/hook
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
 import {
   computeTodayPlan, overallStats, cardsForTopic, cardsOfBlock, buildDrill,
-  shuffleOptions, subscribe, isLearned, availableQuiz, blockOfCard, isLessonSeen
+  shuffleOptions, subscribe, isLearned, availableQuiz, blockOfCard, isLessonSeen,
+  pasoConContenido
 } from "./lib/engine.js";
 import { getActiveUser } from "./lib/accounts.js";
 import { startCloud, getCloudStatus } from "./lib/cloud.js";
@@ -60,6 +61,16 @@ function Shell() {
     window.scrollTo({ top: 0, behavior: "instant" in document.documentElement.style ? "instant" : "auto" });
   }, [route.name, route.params.join("/")]);
 
+  /* Ningún paso sin contenido llega al ejecutor. Si el temario cambió debajo de
+     un identificador guardado, ese paso se cae de la sesión en vez de pintarse
+     en blanco y dejar la pantalla atorada. El resumen se agrega aquí, una sola
+     vez, cuando queda algo que hacer. */
+  const abrirSesion = useCallback((info) => {
+    const steps = (info.steps || []).filter(pasoConContenido);
+    if (!steps.length) return;
+    setRunner({ ...info, seq: ++sesionSeq, steps: steps.concat({ type: "summary" }) });
+  }, []);
+
   /* Orden de la sesión: primero se repasa lo ya sabido, luego se ENSEÑA el
      material nuevo (frente y reverso a la vista, sin calificar), después los
      temas nuevos y al final la práctica. La regla que sostiene todo esto es que
@@ -97,10 +108,8 @@ function Shell() {
       base.forEach((cid) => steps.push({ type: "learn", cardId: cid, topicId: t.id, isNew: true }));
     });
     plan.quizQuestions.forEach((qq) => steps.push({ type: "quiz", topic: qq.topic, question: qq.question }));
-    if (!steps.length) return;
-    steps.push({ type: "summary" });
-    setRunner({ seq: ++sesionSeq, kind: "study", title: "Sesión de hoy", steps });
-  }, [plan]);
+    abrirSesion({ kind: "study", title: "Sesión de hoy", steps });
+  }, [plan, abrirSesion]);
 
   const startTopicPractice = useCallback((topic) => {
     const steps = availableQuiz(topic).map((q, i) => ({
@@ -108,10 +117,8 @@ function Shell() {
       topic,
       question: shuffleOptions(q, topic.id + "|" + i + "|" + Date.now())
     }));
-    if (!steps.length) return;
-    steps.push({ type: "summary" });
-    setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });
-  }, []);
+    abrirSesion({ kind: "practice", title: topic.tema, steps });
+  }, [abrirSesion]);
 
   /* Práctica infinita: en los temas con generador, los números cambian en
      cada problema, así que se puede seguir practicando sin repetir. */
@@ -119,9 +126,8 @@ function Shell() {
     const items = buildDrill(topic.id, n);
     if (!items.length) return;
     const steps = items.map((it) => ({ type: "quiz", topic: it.topic, question: it.question }));
-    steps.push({ type: "summary" });
-    setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps, drillTopicId: topic.id });
-  }, []);
+    abrirSesion({ kind: "practice", title: topic.tema, steps, drillTopicId: topic.id });
+  }, [abrirSesion]);
 
   /* Repasar las tarjetas de un tema a mano: las que nunca se han visto se
      presentan (paso "aprender") en vez de pedir que las adivines, y las de un
@@ -137,10 +143,8 @@ function Shell() {
       }
       steps.push({ type: isLearned(cid) ? "review" : "learn", cardId: cid, topicId: topic.id });
     });
-    if (!steps.length) return;
-    steps.push({ type: "summary" });
-    setRunner({ seq: ++sesionSeq, kind: "practice", title: topic.tema, steps });
-  }, []);
+    abrirSesion({ kind: "practice", title: topic.tema, steps });
+  }, [abrirSesion]);
 
   const startMock = useCallback((mock) => setRunner({ seq: ++sesionSeq, kind: "mock", ...mock }), []);
   const closeRunner = useCallback(() => setRunner(null), []);

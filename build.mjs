@@ -72,8 +72,41 @@ const DATA_SCRIPTS = [
   "data/refuerzo/area4.js",
   "data/refuerzo/area5.js",
   "data/refuerzo/area6.js",
-  "data/refuerzo/area7.js"
+  "data/refuerzo/area7.js",
+  /* Mapa de migración de la poda (data/poda.js): el orden que tenían las
+     tarjetas de cada tema ANTES de podar el temario. El motor lo usa una sola
+     vez para mover el progreso guardado a su nueva posición. Sin este archivo
+     en la página, esa migración no corre: el progreso se queda apuntando a
+     tarjetas que ya no existen y la sesión pinta pasos en blanco. */
+  "data/poda.js"
 ];
+
+/* Un archivo de datos que existe pero que la página no carga es contenido
+   perdido en silencio: pasó con data/refuerzo y otra vez con data/poda.js.
+   El build no continúa si aparece uno nuevo sin dar de alta aquí. */
+function checkDataScripts() {
+  const encontrados = [];
+  const recorrer = (dir) => {
+    for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+      const rel = dir + "/" + e.name;
+      if (e.isDirectory()) recorrer(rel);
+      else if (e.name.endsWith(".js")) encontrados.push(rel);
+    }
+  };
+  recorrer("data");
+  const declarados = new Set(DATA_SCRIPTS);
+  const faltantes = encontrados.filter((f) => !declarados.has(f));
+  if (faltantes.length) {
+    throw new Error(
+      "Estos archivos de data/ no se cargan en el sitio (agrégalos a DATA_SCRIPTS en build.mjs):\n  " +
+      faltantes.join("\n  ")
+    );
+  }
+  const inexistentes = DATA_SCRIPTS.filter((f) => !fs.existsSync(path.join(ROOT, f)));
+  if (inexistentes.length) {
+    throw new Error("DATA_SCRIPTS apunta a archivos que no existen:\n  " + inexistentes.join("\n  "));
+  }
+}
 
 function cleanOutdir() {
   fs.rmSync(OUTDIR, { recursive: true, force: true });
@@ -135,6 +168,7 @@ const options = {
   plugins: [htmlPlugin]
 };
 
+checkDataScripts();
 cleanOutdir();
 
 if (WATCH || SERVE) {

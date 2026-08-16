@@ -30,6 +30,9 @@ for (const f of fs.readdirSync(path.join(ROOT, "data/formato"))) src += fs.readF
 for (const f of fs.readdirSync(path.join(ROOT, "data/refuerzo"))) src += fs.readFileSync(path.join(ROOT, "data/refuerzo") + "/" + f, "utf8") + "\n";
 const NOMBRES = [
   "AREA_META", "SESSION_META", "INFO_SECTIONS", "BIBLIOGRAFIA", "TOTAL_REACTIVOS",
+  // El mapa de la poda: sin él la migración del progreso no corre (ni aquí ni
+  // en el navegador, que fue justo el error que dejó pasos en blanco).
+  "PODA_FRONTS_PREVIOS",
   "AREA1_TOPICS", "AREA2_TOPICS", "AREA3_TOPICS", "AREA4_TOPICS", "AREA5_TOPICS",
   "AREA6_ES_TOPICS", "AREA6_EN_TOPICS", "AREA7_TOPICS",
   ...[1, 2, 3, 4, 5, 6, 7].flatMap((n) => [`AREA${n}_EXTRA`, `AREA${n}_EXTRA2`, `AREA${n}_FORMATO`, `AREA${n}_REFUERZO`])
@@ -345,6 +348,135 @@ console.log("\n14) El plan prioriza el área que va por debajo de la línea");
   const areasEnPractica = new Set(plan.quizQuestions.map((q) => q.topic.area)).size;
   check(areasEnPractica >= 3, `sin encerrarse en una sola área (aparecieron ${areasEnPractica})`);
 
+}
+
+
+/* ------------------------------------------------------------------
+   15) El progreso sobrevive a un temario que cambia
+
+   Este es el grupo que cubre la falla que dejó la sesión en blanco: al podar
+   el temario, las tarjetas de un tema se recorren y los identificadores
+   guardados (`tema::fcN`) quedan apuntando a otra tarjeta —o a ninguna—. Un
+   paso de la sesión sin contenido no pinta nada y la sesión se atora ahí.
+
+   Se comprueba lo mismo por los dos caminos: la migración de una sola vez con
+   el mapa de la poda, y la reconciliación permanente por huella del frente.
+   ------------------------------------------------------------------ */
+console.log("\n15) El progreso sobrevive a un temario que cambia");
+{
+  const previos = globalThis.PODA_FRONTS_PREVIOS;
+  check(!!previos, "el mapa de la poda llega al motor (data/poda.js cargado)");
+
+  /* Se buscan en el temario real los tres casos que importan. */
+  let fantasma = null;   // índice viejo que hoy se sale del arreglo
+  let movida = null;     // frente que hoy vive en otra posición
+  let sobrevive = null;  // frente que no se movió
+  Object.keys(previos || {}).forEach((id) => {
+    const t = E.topicsById()[id];
+    if (!t) return;
+    const fronts = (t.flashcards || []).map((f) => f.front);
+    previos[id].forEach((front, i) => {
+      const j = fronts.indexOf(front);
+      if (!fantasma && i >= fronts.length) fantasma = { id, i };
+      if (!movida && j >= 0 && j !== i) movida = { id, i, j, front };
+      if (!sobrevive && j >= 0 && j === i) sobrevive = { id, i, front };
+    });
+  });
+  check(!!fantasma, `la poda dejó identificadores fuera de rango (p. ej. ${fantasma && fantasma.id}::fc${fantasma && fantasma.i})`);
+  check(!!movida, `y tarjetas que cambiaron de posición (${movida && movida.id}: fc${movida && movida.i} → fc${movida && movida.j})`);
+
+  /* Progreso como el que tenía un sustentante ANTES de la poda. */
+  const antesDeLaPoda = {
+    createdAt: "2026-08-01",
+    topicsIntroduced: { [fantasma.id]: "2026-08-02", [movida.id]: "2026-08-02", [sobrevive.id]: "2026-08-02" },
+    sessionLog: { "2026-08-02": { cardsReviewed: 3 } },
+    cards: {
+      [fantasma.id + "::fc" + fantasma.i]: { interval: 7, repetitions: 3, ef: 2.5, due: "2026-08-10", lastReview: "2026-08-03" },
+      [movida.id + "::fc" + movida.i]: { interval: 21, repetitions: 5, ef: 2.6, due: "2026-08-24", lastReview: "2026-08-03" },
+      [sobrevive.id + "::fc" + sobrevive.i]: { interval: 4, repetitions: 2, ef: 2.4, due: "2026-08-07", lastReview: "2026-08-03" }
+    }
+  };
+  E.replaceState(antesDeLaPoda);
+
+  check(
+    !E.peekCard(fantasma.id + "::fc" + fantasma.i),
+    "la tarjeta que la poda quitó ya no queda guardada apuntando a la nada"
+  );
+  const destino = E.peekCard(movida.id + "::fc" + movida.j);
+  check(!!destino && destino.interval === 21, "la que cambió de posición se movió con su intervalo intacto (21 días)");
+  check(!E.peekCard(movida.id + "::fc" + movida.i), "y ya no queda una copia en la posición vieja");
+  const quieta = E.peekCard(sobrevive.id + "::fc" + sobrevive.i);
+  check(!!quieta && quieta.interval === 4, "la que no se movió se queda exactamente donde estaba");
+
+  /* Lo que de verdad se rompió: pasos de sesión sin nada que mostrar. */
+  const huerfanas = Object.keys(E.STATE.cards).filter((cid) => !E.flashcardOf(cid));
+  check(huerfanas.length === 0, `no queda ninguna tarjeta guardada sin contenido (quedaron ${huerfanas.length})`);
+
+  const planP = E.computeTodayPlan();
+  const pasos = planP.reviewCards.concat(planP.learnCards)
+    .map((c) => ({ type: "review", cardId: c.cardId }));
+  const vacios = pasos.filter((p) => !E.pasoConContenido(p)).length;
+  check(vacios === 0, `ningún paso del plan del día se queda en blanco (había ${vacios})`);
+
+  /* Y el aviso se lo cuenta al sustentante, en vez de que el número de
+     tarjetas cambie sin explicación. */
+  check(
+    !!E.STATE.poda && E.STATE.poda.quitadas > 0,
+    "se avisa cuántas tarjetas se dieron de baja al ajustar el temario"
+  );
+}
+
+/* ------------------------------------------------------------------
+   16) La red permanente: la huella del frente
+
+   La migración de la poda corre una sola vez. Lo que impide que la próxima
+   edición del temario vuelva a dejar pasos en blanco es que cada tarjeta
+   guarda la huella de su frente y se deja seguir hasta donde esté hoy.
+   ------------------------------------------------------------------ */
+console.log("\n16) Cada tarjeta guardada sigue a su contenido");
+{
+  const t = E.topicsById()["1.1.1"];
+  const fronts = (t.flashcards || []).map((f) => f.front);
+
+  E.replaceState({
+    createdAt: "2026-09-01",            // progreso posterior a la poda
+    podaAplicada: true,
+    topicsIntroduced: { "1.1.1": "2026-09-01" },
+    cards: {
+      // huella del frente que hoy vive en fc0, pero guardada en fc3
+      "1.1.1::fc3": { interval: 15, repetitions: 4, ef: 2.5, due: "2026-09-20", lastReview: "2026-09-05", h: E.huellaDeFrente(fronts[0]) },
+      // huella de un frente que ya no existe en el temario
+      "1.1.1::fc1": { interval: 9, repetitions: 3, ef: 2.5, due: "2026-09-15", lastReview: "2026-09-05", h: E.huellaDeFrente("Una tarjeta que ya no existe") },
+      // sin huella y fuera de rango: no hay forma de saber qué era
+      "1.1.1::fc99": { interval: 2, repetitions: 1, ef: 2.5, due: "2026-09-10", lastReview: "2026-09-05" }
+    }
+  });
+
+  const seguida = E.peekCard("1.1.1::fc0");
+  check(!!seguida && seguida.interval === 15, "una tarjeta se sigue por la huella de su frente hasta su posición actual");
+  /* La que perdió su contenido se da de baja; como el tema sigue visto, esa
+     posición se reprograma después como tarjeta nueva, sin heredar el
+     intervalo de la que se fue. */
+  const perdida = E.peekCard("1.1.1::fc1");
+  check(!perdida || perdida.interval !== 9, "la tarjeta cuyo frente desapareció del temario no hereda su intervalo");
+  check(!perdida || perdida.h === E.huellaDeFrente(fronts[1]), "y esa posición queda con la huella de lo que hay ahí ahora");
+  check(!E.peekCard("1.1.1::fc99"), "y un índice que ya no existe tampoco se queda guardado");
+
+  /* Las tarjetas nuevas nacen con huella, para que esto siga funcionando. */
+  E.introduceTopic("1.1.2");
+  const nueva = E.peekCard("1.1.2::fc0");
+  check(!!nueva && !!nueva.h, "las tarjetas que se dan de alta guardan la huella de su frente");
+
+  /* Un progreso viejo (sin huellas) no se toca: adopta la posición que tiene. */
+  E.replaceState({
+    createdAt: "2026-09-01",
+    podaAplicada: true,
+    topicsIntroduced: { "1.1.1": "2026-09-01" },
+    cards: { "1.1.1::fc1": { interval: 6, repetitions: 2, ef: 2.5, due: "2026-09-12", lastReview: "2026-09-06" } }
+  });
+  const adoptada = E.peekCard("1.1.1::fc1");
+  check(!!adoptada && adoptada.interval === 6, "un progreso sin huellas conserva su posición y su intervalo");
+  check(adoptada && adoptada.h === E.huellaDeFrente(fronts[1]), "y se le pone la huella de lo que hay en esa posición");
 }
 
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);

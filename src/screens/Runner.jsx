@@ -9,7 +9,7 @@ import { useKeys, useScrollLock, navigate } from "../lib/hooks.js";
 import { areaStyle, areaVisual } from "../lib/areas.js";
 import {
   topicsById, gradeCard, learnCard, nextIntervalPreview, introduceTopic, recordQuizAnswer,
-  logSessionProgress, computeTodayPlan, areaNumbers, markLessonSeen
+  logSessionProgress, computeTodayPlan, areaNumbers, markLessonSeen, pasoConContenido
 } from "../lib/engine.js";
 
 /* El examen real presenta tres opciones: A, B y C (guía del sustentante, p. 25). */
@@ -98,6 +98,15 @@ export function SessionRunner({ session, onExit, onAgain }) {
   const step = steps[Math.min(idx, steps.length - 1)];
 
   const advance = () => setIdx((i) => Math.min(i + 1, steps.length - 1));
+
+  /* Última red contra la pantalla en blanco: si un paso se quedó sin contenido
+     —el temario cambió debajo del identificador guardado— se salta solo en vez
+     de dejar la sesión atorada en un paso que no pinta nada. El resumen es
+     siempre el último paso, así que el salto siempre termina en algún lado. */
+  useEffect(() => {
+    if (!pasoConContenido(step)) advance();
+  }, [idx, step]);
+
   const bump = (patch) => setStats((s) => {
     const next = { ...s };
     Object.keys(patch).forEach((k) => { next[k] = (next[k] || 0) + patch[k]; });
@@ -105,6 +114,7 @@ export function SessionRunner({ session, onExit, onAgain }) {
   });
 
   const isSummary = step.type === "summary";
+  const vacio = !pasoConContenido(step);
 
   return (
     <RunnerShell
@@ -116,25 +126,26 @@ export function SessionRunner({ session, onExit, onAgain }) {
       footer={null}
     >
       <div className="step-anim" key={idx}>
-        {step.type === "review" && (
+        {vacio && <SkippedStep onNext={advance} />}
+        {!vacio && step.type === "review" && (
           <ReviewStep
             step={step}
             onGraded={() => { bump({ cardsReviewed: 1 }); advance(); }}
           />
         )}
-        {step.type === "learn" && (
+        {!vacio && step.type === "learn" && (
           <LearnStep
             step={step}
             onLearned={() => { bump({ cardsLearned: 1 }); advance(); }}
           />
         )}
-        {step.type === "lesson" && (
+        {!vacio && step.type === "lesson" && (
           <LessonStep step={step} onNext={() => { bump({ lessons: 1 }); advance(); }} />
         )}
-        {step.type === "intro" && (
+        {!vacio && step.type === "intro" && (
           <IntroStep topic={step.topic} onNext={() => { bump({ newTopics: 1 }); advance(); }} />
         )}
-        {step.type === "quiz" && (
+        {!vacio && step.type === "quiz" && (
           <QuizStep
             topic={step.topic}
             question={step.question}
@@ -145,9 +156,33 @@ export function SessionRunner({ session, onExit, onAgain }) {
             onNext={advance}
           />
         )}
-        {isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} />}
+        {!vacio && isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} />}
       </div>
     </RunnerShell>
+  );
+}
+
+/* --- Paso sin contenido ---
+
+   No debería verse nunca: el efecto de arriba lo salta en cuanto se pinta. Está
+   por si el salto no puede darse (por ejemplo, si fuera el último paso), para
+   que quede un botón en pantalla en vez de un hueco en blanco. */
+
+function SkippedStep({ onNext }) {
+  useKeys({ Enter: onNext, " ": onNext }, []);
+  return (
+    <Stack>
+      <Card>
+        <h2 className="intro-title">Este paso ya no está en el temario</h2>
+        <p className="muted" style={{ margin: 0 }}>
+          La tarjeta que tocaba aquí se quitó al ajustar el contenido. Tu progreso no se perdió:
+          sigue con lo que falta de la sesión.
+        </p>
+      </Card>
+      <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={onNext}>
+        Continuar
+      </Button>
+    </Stack>
   );
 }
 

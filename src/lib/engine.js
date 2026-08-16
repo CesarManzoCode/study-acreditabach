@@ -11,8 +11,14 @@
      · Las tarjetas se identifican por `temaId::fcN`, donde N es la posición
        de la flashcard. Por eso el contenido nuevo SIEMPRE se agrega al final
        del arreglo: fc0 y fc1 siguen siendo las mismas tarjetas de antes.
-     · Las llaves nuevas (contentRevision, contentUpdate, lastQuiz) son
-       aditivas; una versión vieja del sitio las ignoraría sin romperse.
+     · Cuando el temario SÍ tiene que perder tarjetas, el progreso no se deja
+       apuntando a un índice que ya no existe: cada tarjeta guarda la huella
+       de su frente (`h`) y se la sigue hasta su nueva posición, o se da de
+       baja si su contenido desapareció (ver "El progreso contra un temario
+       que cambia"). Sin eso, la sesión pinta pasos en blanco.
+     · Las llaves nuevas (contentRevision, contentUpdate, lastQuiz, y la `h`
+       de cada tarjeta) son aditivas; una versión vieja del sitio las
+       ignoraría sin romperse.
      · Con cuentas creadas, cada una guarda en `acreditabach_v1__<cuenta>`
        y la llave histórica se queda intacta como respaldo.
    ============================================================ */
@@ -267,13 +273,7 @@ function programarTarjetasFaltantes() {
     (t.flashcards || []).forEach((fc, i) => {
       const cid = topicId + "::fc" + i;
       if (STATE.cards[cid]) return;
-      STATE.cards[cid] = {
-        interval: 0,
-        repetitions: 0,
-        ef: 2.5,
-        due: toISO(addDays(today, n++ % REPARTO)),
-        lastReview: null
-      };
+      STATE.cards[cid] = nuevaTarjeta(cid, toISO(addDays(today, n++ % REPARTO)));
     });
   });
   if (n) STATE.contentUpdate = { at: toISO(today), newCards: n, dias: REPARTO };
@@ -469,24 +469,68 @@ export function getLearningOrder() {
    Efecto buscado: el dominio baja y hay que repasar lo nuevo para recuperarlo.
    ------------------------------------------------------------ */
 
-/* ---------------- Poda del temario ----------------
+/* ---------------- El progreso contra un temario que cambia ----------------
 
-   Al quitar del temario lo que quedaba fuera de la orientación oficial, las
-   tarjetas de un tema se recorren: la que era `5.1.4::fc7` pasa a ser
-   `5.1.4::fc4`. Como el progreso se guarda contra esos identificadores, sin
-   migrar quedaría apuntando a la tarjeta equivocada —con su intervalo y sus
-   repasos— y el sistema de repaso espaciado se volvería ruido.
+   Las tarjetas se guardan por posición (`5.1.4::fc7`). Mientras el contenido
+   solo crece por el final, esa posición es estable. Al PODAR deja de serlo: si
+   un tema pierde dos tarjetas de en medio, la que era `fc7` pasa a ser `fc5`,
+   y el progreso guardado queda apuntando a otra tarjeta —o a ninguna, cuando
+   el índice se sale del arreglo—.
 
-   data/poda.js guarda el orden ANTERIOR de los frentes de cada tema. Aquí se
-   empareja cada tarjeta vieja con su nueva posición por el texto del frente:
-   lo que sobrevivió conserva intacto su intervalo, y lo que se podó se borra.
-   Corre una sola vez, marcada con `podaAplicada`.
+   Una tarjeta cuyo índice ya no existe es un paso VACÍO en la sesión: el
+   runner no tiene nada que pintar y la pantalla se queda en blanco. Es
+   exactamente lo que pasó al publicar la poda del temario.
+
+   Aquí hay dos piezas:
+
+     1. `applyPoda` — migración de una sola vez para el progreso anterior a la
+        poda, con el orden viejo de cada tema (data/poda.js) para reencontrar
+        cada tarjeta por el texto de su frente.
+
+     2. `reconciliarTarjetas` — la red permanente, que corre en CADA arranque.
+        Cada tarjeta guarda desde ahora la huella de su frente; si el contenido
+        se mueve, la tarjeta se sigue hasta su nueva posición, y si desapareció
+        del temario se descarta. Sin esto, cualquier edición futura del temario
+        vuelve a dejar pasos en blanco.
    ------------------------------------------------------------ */
 
+/** Huella corta y estable del frente de una tarjeta (para seguirla si se mueve). */
+export function huellaDeFrente(front) { return hashSeed(String(front)).toString(36); }
+
+/** Estado inicial de una tarjeta, con la huella de su contenido. */
+function nuevaTarjeta(cardId, due) {
+  const fc = cardId ? flashcardOf(cardId) : null;
+  const card = {
+    interval: 0,
+    repetitions: 0,
+    ef: 2.5,
+    due: due || toISO(todayDate()),
+    lastReview: null
+  };
+  if (fc) card.h = huellaDeFrente(fc.card.front);
+  return card;
+}
+
+/* La poda se publicó el 15 de agosto de 2026. Un progreso empezado después ya
+   nació con los índices nuevos: pasarlo por el mapa viejo lo estropearía. */
+const PODA_ISO = "2026-08-15";
+
+function progresoPrevioALaPoda() {
+  const fechas = [STATE.createdAt]
+    .concat(Object.keys(STATE.sessionLog || {}))
+    .concat(Object.values(STATE.topicsIntroduced || {}))
+    .filter(Boolean)
+    .sort();
+  return fechas.length > 0 && fechas[0] < PODA_ISO;
+}
+
 function applyPoda() {
-  if (STATE.podaAplicada) return;
+  if (STATE.podaAplicada) return null;
   const previos = typeof PODA_FRONTS_PREVIOS !== "undefined" ? PODA_FRONTS_PREVIOS : null;
-  if (!previos) return; // sin el mapa no se toca nada
+  if (!previos) return null; // sin el mapa no se toca nada
+  /* Un progreso posterior a la poda ya nació con los índices nuevos: no se
+     migra, solo se marca para no volver a revisarlo. */
+  if (!progresoPrevioALaPoda()) { STATE.podaAplicada = true; return { movidas: 0, quitadas: 0 }; }
 
   const cards = {};
   let migradas = 0;
@@ -501,28 +545,96 @@ function applyPoda() {
     const topic = topicsById()[topicId];
     if (!frentesViejos || !topic) { cards[cid] = STATE.cards[cid]; return; }
 
+    /* Un tema conocido DESPUÉS de la poda ya se dio de alta con los índices
+       nuevos: sus tarjetas no pasan por el mapa viejo. */
+    const visto = STATE.topicsIntroduced[topicId];
+    if (visto && visto >= PODA_ISO) { cards[cid] = STATE.cards[cid]; return; }
+
     const front = frentesViejos[viejoIdx];
     if (front === undefined) { podadas++; return; }
     const nuevoIdx = (topic.flashcards || []).findIndex((f) => f.front === front);
     if (nuevoIdx < 0) { podadas++; return; } // la tarjeta salió del temario
-    cards[topicId + "::fc" + nuevoIdx] = STATE.cards[cid];
+    const destino = topicId + "::fc" + nuevoIdx;
+    const card = STATE.cards[cid];
+    card.h = huellaDeFrente(front);
+    if (!cards[destino] || cardIsNewer(card, cards[destino])) cards[destino] = card;
     if (nuevoIdx !== viejoIdx) migradas++;
   });
 
   STATE.cards = cards;
   STATE.podaAplicada = true;
-  STATE.poda = podadas ? { at: toISO(todayDate()), quitadas: podadas, movidas: migradas } : null;
-  saveState();
+  return { movidas: migradas, quitadas: podadas };
 }
 
-/** Quita el aviso de "se podó el temario" de la pantalla de inicio. */
+/* Sigue cada tarjeta guardada hasta donde esté hoy su contenido.
+
+   · con huella y el frente cambió de sitio  -> se mueve, conservando intervalo
+   · con huella y el frente ya no existe     -> se descarta
+   · sin huella (progreso viejo) y hay tarjeta en esa posición -> se le pone la
+     huella de lo que hay ahí y se queda como está
+   · sin huella y la posición ya no existe   -> se descarta
+
+   Descartar es lo que evita el paso en blanco: una tarjeta sin contenido no se
+   puede enseñar ni repasar, así que tampoco puede entrar al plan del día. */
+function reconciliarTarjetas() {
+  const enSitio = {};
+  const porMover = [];
+  let quitadas = 0;
+  let marcadas = 0;
+
+  Object.keys(STATE.cards).forEach((cid) => {
+    const sep = String(cid).lastIndexOf("::fc");
+    if (sep < 0) { enSitio[cid] = STATE.cards[cid]; return; } // llave desconocida: no se toca
+    const topicId = cid.slice(0, sep);
+    const idx = Number(cid.slice(sep + 4));
+    const topic = topicsById()[topicId];
+    const card = STATE.cards[cid];
+    const fcs = (topic && topic.flashcards) || null;
+    if (!fcs) { quitadas++; return; } // el tema salió del temario
+
+    const aqui = fcs[idx];
+    if (!card.h) {
+      if (!aqui) { quitadas++; return; }
+      card.h = huellaDeFrente(aqui.front);
+      marcadas++;
+      enSitio[cid] = card;
+      return;
+    }
+    if (aqui && huellaDeFrente(aqui.front) === card.h) { enSitio[cid] = card; return; }
+
+    const nuevo = fcs.findIndex((f) => huellaDeFrente(f.front) === card.h);
+    if (nuevo < 0) { quitadas++; return; }
+    porMover.push({ destino: topicId + "::fc" + nuevo, card });
+  });
+
+  /* Las movidas se colocan al final para que nunca pisen a una tarjeta que ya
+     estaba en su sitio; si dos caen en la misma casilla, gana la más avanzada. */
+  const cards = enSitio;
+  let movidas = 0;
+  porMover.forEach(({ destino, card }) => {
+    if (!cards[destino] || cardIsNewer(card, cards[destino])) cards[destino] = card;
+    movidas++;
+  });
+
+  STATE.cards = cards;
+  return { movidas, quitadas, marcadas };
+}
+
+/** Quita el aviso de "se ajustó el temario" de la pantalla de inicio. */
 export function dismissPoda() {
   STATE.poda = null;
   saveState();
 }
 
 function applyContentUpdate() {
-  applyPoda();
+  const poda = applyPoda();
+  const rec = reconciliarTarjetas();
+  const movidas = (poda ? poda.movidas : 0) + rec.movidas;
+  const quitadas = (poda ? poda.quitadas : 0) + rec.quitadas;
+  /* El aviso solo aparece cuando algo cambió de sitio o se dio de baja; poner
+     la huella por primera vez no es noticia, pero sí hay que guardarla. */
+  if (movidas || quitadas) STATE.poda = { at: toISO(todayDate()), quitadas, movidas };
+  if (poda || movidas || quitadas || rec.marcadas) saveState();
   if (STATE.contentRevision === CONTENT_REVISION) return;
   const primeraVez = Object.keys(STATE.topicsIntroduced).length === 0;
   const today = todayDate();
@@ -536,13 +648,7 @@ function applyContentUpdate() {
 
   const REPARTO = 21; // días entre los que se reparten las tarjetas nuevas
   nuevas.forEach((cid, i) => {
-    STATE.cards[cid] = {
-      interval: 0,
-      repetitions: 0,
-      ef: 2.5,
-      due: toISO(addDays(today, i % REPARTO)),
-      lastReview: null
-    };
+    STATE.cards[cid] = nuevaTarjeta(cid, toISO(addDays(today, i % REPARTO)));
   });
 
   STATE.contentRevision = CONTENT_REVISION;
@@ -560,12 +666,8 @@ export function dismissContentUpdate() {
 /* Basado en el algoritmo SM-2 (SuperMemo) usado por Anki, adaptado a 3 niveles
    de respuesta para simplificar la interfaz: 0=otra vez, 1=costó, 2=bien. */
 
-function newCardState() {
-  return { interval: 0, repetitions: 0, ef: 2.5, due: toISO(todayDate()), lastReview: null };
-}
-
 export function getCard(cardId) {
-  if (!STATE.cards[cardId]) STATE.cards[cardId] = newCardState();
+  if (!STATE.cards[cardId]) STATE.cards[cardId] = nuevaTarjeta(cardId);
   return STATE.cards[cardId];
 }
 
@@ -622,7 +724,7 @@ export function gradeCard(cardId, quality) {
 
 /** Texto humano del próximo repaso según la calificación, para mostrar en los botones. */
 export function nextIntervalPreview(cardId, quality) {
-  const card = STATE.cards[cardId] || newCardState();
+  const card = STATE.cards[cardId] || nuevaTarjeta(cardId);
   let interval;
   if (quality === 0) {
     interval = 1;
@@ -742,6 +844,21 @@ export function flashcardOf(cardId) {
   return fc ? { topic: t, card: fc, index: idx } : null;
 }
 
+/* ¿Este paso de la sesión tiene algo que mostrar?
+
+   Los pasos de tarjeta se arman con un identificador (`tema::fcN`), no con el
+   contenido: si el temario cambió y ese identificador ya no apunta a nada, el
+   paso se quedaría en blanco y la sesión se atoraría ahí, sin botón ni texto.
+   Se comprueba al armar la sesión y otra vez al pintarla. */
+export function pasoConContenido(step) {
+  if (!step) return false;
+  if (step.type === "review" || step.type === "learn") return !!flashcardOf(step.cardId);
+  if (step.type === "lesson") return !!(step.topic && step.leccion);
+  if (step.type === "intro") return !!step.topic;
+  if (step.type === "quiz") return !!(step.topic && step.question && step.question.options);
+  return true; // summary y cualquier paso futuro sin contenido propio
+}
+
 /* ---------------- Progreso por tema / área ---------------- */
 
 export function isIntroduced(topicId) { return !!STATE.topicsIntroduced[topicId]; }
@@ -765,13 +882,7 @@ export function introduceTopic(topicId) {
       if (!bloqueEnPlan(b)) return;
       cardsOfBlock(topicId, b).forEach((cid) => {
         if (STATE.cards[cid]) return;
-        STATE.cards[cid] = {
-          interval: 0,
-          repetitions: 0,
-          ef: 2.5,
-          due: toISO(addDays(today, i * DIAS_ENTRE_BLOQUES)),
-          lastReview: null
-        };
+        STATE.cards[cid] = nuevaTarjeta(cid, toISO(addDays(today, i * DIAS_ENTRE_BLOQUES)));
       });
     });
   }
@@ -1068,6 +1179,10 @@ export function computeTodayPlan() {
     const topicId = cardId.split("::")[0];
     if (!isIntroduced(topicId)) return;
     if (newTopics.some((t) => t.id === topicId)) return; // los nuevos se repasan en su propia introducción
+    /* Una tarjeta cuyo contenido ya no existe no se puede enseñar ni repasar:
+       si entrara al plan, la sesión tendría un paso en blanco. La
+       reconciliación del arranque las quita, esto es la red por si acaso. */
+    if (!flashcardOf(cardId)) return;
     const card = STATE.cards[cardId];
     if (card.due > todayISO) return;
     vencidas.push({ cardId, topicId, due: card.due });
