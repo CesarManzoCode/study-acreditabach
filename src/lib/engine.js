@@ -754,6 +754,100 @@ export function areaStats(areaNum) {
   return { total: topics.length, introducedCount: introduced.length, coverage, mastery };
 }
 
+/* ---------------- Riesgo por área ----------------
+
+   El examen no se aprueba en promedio: se aprueba área por área. Hay que
+   alcanzar 1 000 puntos del Índice Ceneval en CADA una de las siete, y
+   reprobar tres o más significa volver a empezar (guía, p. 45).
+
+   Eso cambia por completo el reparto del esfuerzo. Repartir el tiempo parejo
+   entre las siete es lo que hacía la app, y es lo peor que se puede hacer
+   cuando una área va por debajo de la línea: subir de 85 % a 90 % en un área
+   que ya pasa no vale nada, y subir de 55 % a 65 % en la que no pasa lo vale
+   todo.
+
+   NO se intenta predecir el Índice Ceneval: la guía no publica cómo convierte
+   los aciertos a esa escala y cualquier número que se inventara aquí sería
+   falsa precisión. Lo que se estima es el porcentaje de aciertos, que sí se
+   mide, y se compara contra un objetivo con margen.
+
+   El margen no es igual para todas: es más grande en las áreas con menos
+   reactivos. Con 19 preguntas, la suerte pesa más que con 32 —la desviación
+   típica de la proporción de aciertos es de unos 11 puntos contra 8—, así que
+   la misma habilidad real cae por debajo de la línea más seguido en un área
+   chica. Cultura digital y humanidades necesitan más colchón que ciencias
+   naturales, no por ser más difíciles, sino por ser más cortas.
+   ------------------------------------------------------------ */
+
+/* Acierto de referencia con el que se calcula el margen. No es el punto de
+   corte oficial —ese no se publica en aciertos— sino un objetivo de trabajo
+   deliberadamente por encima de lo que haría falta. */
+const OBJETIVO_BASE = 0.70;
+
+/** Aciertos acumulados de un área, sumando los de todos sus temas. */
+function aciertosDeArea(areaNum) {
+  let seen = 0, correct = 0;
+  topicsOfArea(areaNum).forEach((t) => {
+    const s = quizStatsFor(t.id);
+    seen += s.seen;
+    correct += s.correct;
+  });
+  return { seen, correct, acierto: seen ? correct / seen : null };
+}
+
+/** Margen extra que pide un área por ser corta (más varianza, menos preguntas). */
+function margenPorTamano(reactivos) {
+  const n = Math.max(1, reactivos || 1);
+  /* Desviación típica de la proporción de aciertos con p ≈ 0.65, redondeada a
+     un margen de trabajo: ~0.11 con n = 19 y ~0.08 con n = 32. */
+  return Math.sqrt(0.65 * 0.35 / n);
+}
+
+/**
+ * Estado de cada área frente al objetivo, ordenadas de mayor a menor riesgo.
+ * `riesgo` va de 0 (fuera de peligro) a 1 (muy por debajo).
+ */
+export function areaReadiness() {
+  return areaNumbers().map((n) => {
+    const meta = _AREA_META[n] || {};
+    const stats = areaStats(n);
+    const { seen, correct, acierto } = aciertosDeArea(n);
+    const objetivo = Math.min(0.9, OBJETIVO_BASE + margenPorTamano(meta.reactivos));
+
+    /* Sin respuestas suficientes no se puede juzgar el acierto, así que manda
+       la cobertura: un área sin estudiar es riesgo alto por definición. */
+    const minRespuestas = Math.max(8, Math.round((meta.reactivos || 20) / 2));
+    const confianza = Math.min(1, seen / minRespuestas);
+    const faltaCobertura = 1 - stats.coverage / 100;
+
+    const brecha = acierto === null ? 1 : Math.max(0, objetivo - acierto) / objetivo;
+    const riesgo = Math.min(1, confianza * brecha + (1 - confianza) * Math.max(faltaCobertura, brecha * 0.5));
+
+    return {
+      area: n,
+      nombre: meta.short || meta.name || String(n),
+      reactivos: meta.reactivos || 0,
+      sesion: meta.session,
+      cobertura: stats.coverage,
+      dominio: stats.mastery,
+      respondidos: seen,
+      aciertos: correct,
+      acierto,                                   // null si aún no hay datos
+      objetivo,                                  // el listón con margen incluido
+      confiable: confianza >= 1,                 // ¿ya hay respuestas suficientes?
+      riesgo,
+      nivel: riesgo >= 0.45 ? "alto" : riesgo >= 0.2 ? "medio" : "bajo"
+    };
+  }).sort((a, b) => b.riesgo - a.riesgo);
+}
+
+/** Peso de cada área al repartir la práctica del día. Más riesgo, más turno. */
+function pesosPorArea() {
+  const pesos = {};
+  areaReadiness().forEach((a) => { pesos[a.area] = 1 + 2 * a.riesgo; });
+  return pesos;
+}
+
 export function weakestTopics(n) {
   const introduced = getAllTopics().filter((t) => isIntroduced(t.id));
   return introduced
@@ -859,7 +953,19 @@ export function computeTodayPlan() {
     quota = Math.min(8, Math.max(1, Math.ceil(notIntroduced.length / daysLeft)));
     if (notIntroduced.length === 0) quota = 0;
   }
-  const newTopics = notIntroduced.slice(0, quota).map((id) => topicsById()[id]).filter(Boolean);
+  /* Qué temas nuevos entran hoy. El orden base entrelaza las siete áreas de
+     forma pareja, pero el examen se aprueba área por área: si una va por
+     debajo de la línea, sus temas pendientes pasan al frente. Se toma una
+     ventana de los siguientes y dentro de ella manda el riesgo, para no
+     desarmar el reparto ni dejar un área sin avanzar durante semanas. */
+  const riesgoPorArea = {};
+  areaReadiness().forEach((a) => { riesgoPorArea[a.area] = a.riesgo; });
+  const ventana = notIntroduced.slice(0, Math.max(quota, quota * 4));
+  const priorizados = ventana
+    .map((id, pos) => ({ id, pos, riesgo: riesgoPorArea[(topicsById()[id] || {}).area] || 0 }))
+    .sort((a, b) => b.riesgo - a.riesgo || a.pos - b.pos)
+    .map((x) => x.id);
+  const newTopics = priorizados.slice(0, quota).map((id) => topicsById()[id]).filter(Boolean);
 
   const todayISO = toISO(rawToday);
   const vencidas = [];
@@ -912,13 +1018,31 @@ export function computeTodayPlan() {
     if (newTopics.some((nt) => nt.id === t.id)) return false;
     return true;
   });
-  eligibleForQuiz.sort((a, b) => {
-    const sa = quizStatsFor(a.id), sb = quizStatsFor(b.id);
-    const accA = sa.seen ? sa.correct / sa.seen : -1;
-    const accB = sb.seen ? sb.correct / sb.seen : -1;
-    return accA - accB;
+  /* Antes se ordenaba solo por el acierto del tema, y eso repartía la práctica
+     por igual entre las siete áreas. Ahora pesa también el riesgo del área a la
+     que pertenece: subir de 85 % a 90 % donde ya se pasa no acerca a aprobar;
+     subir de 55 % a 65 % donde no se pasa, sí. */
+  const pesos = pesosPorArea();
+  const urgencia = (t) => {
+    const s = quizStatsFor(t.id);
+    const acierto = s.seen ? s.correct / s.seen : 0.35; // sin datos, se asume flojo
+    return (1 - acierto) * (pesos[t.area] || 1);
+  };
+  eligibleForQuiz.sort((a, b) => urgencia(b) - urgencia(a));
+
+  /* Aun priorizando, ninguna área se queda sin práctica: las cuatro primeras
+     plazas se reservan a temas de áreas distintas para no encerrar la sesión
+     entera en una sola. */
+  const quizTopics = [];
+  const areasVistas = new Set();
+  eligibleForQuiz.forEach((t) => {
+    if (quizTopics.length >= 4 || areasVistas.has(t.area)) return;
+    areasVistas.add(t.area);
+    quizTopics.push(t);
   });
-  const quizTopics = eligibleForQuiz.slice(0, 10);
+  eligibleForQuiz.forEach((t) => {
+    if (quizTopics.length < 10 && !quizTopics.includes(t)) quizTopics.push(t);
+  });
   const quizQuestions = [];
   quizTopics.forEach((t) => {
     const question = pickQuestion(t, saltDelDia(t.id));
@@ -930,10 +1054,14 @@ export function computeTodayPlan() {
     leccionesPendientes.length * 2 + quizQuestions.length * 1.2
   );
 
+  const readiness = areaReadiness();
+
   return {
     phase,
     today: rawToday,
     daysToExam: daysBetween(rawToday, EXAM_DATE),
+    readiness,
+    areaEnRiesgo: readiness.find((a) => a.nivel === "alto") || null,
     reviewCards: dueCardEntries,
     learnCards,
     learnPending: learnCardEntries.length,

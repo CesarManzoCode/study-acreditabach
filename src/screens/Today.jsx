@@ -114,6 +114,12 @@ export default function Today({ plan, stats, onStart }) {
         </Reveal>
       )}
 
+      {plan.areaEnRiesgo && (
+        <Reveal delay={70}>
+          <AvisoAreaEnRiesgo area={plan.areaEnRiesgo} />
+        </Reveal>
+      )}
+
       <Reveal delay={showWelcome ? 120 : 60}>
         <Card className="plan-card">
           <div className="plan-head">
@@ -268,6 +274,31 @@ function PhaseNote({ plan }) {
 }
 
 /* Aviso de que el temario creció: explica por qué bajó el porcentaje de dominio. */
+/* El examen se aprueba área por área: reprobar tres significa volver a
+   empezar. Cuando una va claramente por debajo, decirlo en la primera pantalla
+   vale más que cualquier estadística enterrada en Progreso: la sesión de hoy ya
+   viene cargada hacia esa área, y conviene saber por qué. */
+function AvisoAreaEnRiesgo({ area }) {
+  const pct = area.acierto === null ? null : Math.round(area.acierto * 100);
+  return (
+    <Card className="aviso-riesgo">
+      <div className="aviso-riesgo-head">
+        <Icon name="alert" size={17} />
+        <strong>{area.nombre} es la que te puede reprobar</strong>
+      </div>
+      <p>
+        {pct === null
+          ? `Todavía no has respondido lo suficiente de esta área para saber cómo vas. Son ${area.reactivos} reactivos del examen y hay que acreditarla por separado.`
+          : `Llevas ${pct}% de aciertos y la meta de trabajo es ${Math.round(area.objetivo * 100)}%. Son ${area.reactivos} reactivos y se acredita por separado: no basta con ir bien en las demás.`}
+      </p>
+      <p className="faint">La sesión de hoy ya trae más práctica de esta área.</p>
+      <Button variant="ghost" onClick={() => navigate(`repasar/a/${area.area}`)}>
+        Practicar {area.nombre}
+      </Button>
+    </Card>
+  );
+}
+
 function ContentUpdateNote({ update }) {
   return (
     <Card className="update-note">

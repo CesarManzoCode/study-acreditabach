@@ -224,5 +224,49 @@ console.log("\n12) El cronómetro usa la duración oficial de cada sesión");
   check(E.mockMinutes([1, 5]) === 0, "y un simulacro que mezcla sesiones no lleva reloj del examen");
 }
 
+/* ------------------------------------------------------------------
+   El esfuerzo se reparte por riesgo de área, no por partes iguales.
+
+   El examen se aprueba área por área: hay que llegar a 1 000 puntos en cada
+   una de las siete y reprobar tres significa volver a empezar. Repartir el
+   tiempo parejo es lo peor que se puede hacer cuando una área va por debajo.
+   ------------------------------------------------------------------ */
+console.log("\n13) El plan prioriza el área que va por debajo de la línea");
+{
+  const areas = E.areaNumbers();
+  areas.forEach((n) => E.topicsOfArea(n).forEach((t) => E.introduceTopic(t.id)));
+
+  /* Se simula un sustentante sólido en todo menos en cultura digital. */
+  const FLOJA = 2;
+  E.getAllTopics().forEach((t) => {
+    const aciertos = t.area === FLOJA ? 2 : 9;
+    for (let i = 0; i < 10; i++) E.recordQuizAnswer(t.id, i < aciertos);
+  });
+
+  const r = E.areaReadiness();
+  check(r[0].area === FLOJA, `el área más floja encabeza el riesgo (encabezó ${r[0].nombre})`);
+  check(r[0].nivel === "alto", `y queda marcada como riesgo alto (quedó "${r[0].nivel}")`);
+  check(
+    r[r.length - 1].riesgo < r[0].riesgo,
+    "las áreas que van bien quedan con menos riesgo que la floja"
+  );
+
+  /* El objetivo con margen es más exigente en las áreas cortas, porque con
+     menos reactivos la suerte pesa más. */
+  const digital = r.find((a) => a.area === 2);      // 19 reactivos
+  const naturales = r.find((a) => a.area === 5);    // 32 reactivos
+  check(
+    digital.objetivo > naturales.objetivo,
+    `un área de ${digital.reactivos} reactivos pide más margen que una de ${naturales.reactivos}`
+  );
+
+  const plan = E.computeTodayPlan();
+  check(plan.areaEnRiesgo && plan.areaEnRiesgo.area === FLOJA, "el plan del día señala esa área");
+  const deLaFloja = plan.quizQuestions.filter((q) => q.topic.area === FLOJA).length;
+  check(deLaFloja > 0, `la práctica del día incluye reactivos de esa área (incluyó ${deLaFloja})`);
+  const areasEnPractica = new Set(plan.quizQuestions.map((q) => q.topic.area)).size;
+  check(areasEnPractica >= 3, `sin encerrarse en una sola área (aparecieron ${areasEnPractica})`);
+}
+
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);
 process.exit(fallos === 0 ? 0 : 1);

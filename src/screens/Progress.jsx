@@ -5,7 +5,8 @@ import { navigate, useEngine } from "../lib/hooks.js";
 import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 import {
   areaNumbers, areaStats, weakestTopics, activityCalendar, upcomingLoad,
-  resetProgress, exportProgress, importProgress, fmtDateShort, toISO, todayDate, contentStats
+  resetProgress, exportProgress, importProgress, fmtDateShort, toISO, todayDate, contentStats,
+  areaReadiness
 } from "../lib/engine.js";
 
 export default function Progress({ plan, stats }) {
@@ -17,6 +18,7 @@ export default function Progress({ plan, stats }) {
   const areas = areaNumbers();
   const weak = useMemo(() => weakestTopics(8).filter((w) => w.mastery < 75), [rev]);
   const calendar = useMemo(() => activityCalendar(84), [rev]);
+  const readiness = useMemo(() => areaReadiness(), [rev]);
   const forecast = useMemo(() => upcomingLoad(14), [rev]);
 
   const download = () => {
@@ -78,6 +80,54 @@ export default function Progress({ plan, stats }) {
             <Badge>próximas 2 semanas</Badge>
           </div>
           <Forecast data={forecast} />
+        </Card>
+      </Reveal>
+
+      <Reveal delay={150}>
+        <Card>
+          <div className="card-title-row">
+            <h3>Qué área te puede reprobar</h3>
+            <Badge>lo que decide el examen</Badge>
+          </div>
+          <p className="faint" style={{ marginTop: 0 }}>
+            No se aprueba en promedio: hay que llegar a 1&nbsp;000 puntos en <strong>cada una</strong> de
+            las siete áreas, y reprobar tres significa volver a empezar. Aquí van ordenadas por riesgo,
+            de la más urgente a la más segura.
+          </p>
+          <div className="riesgo-lista">
+            {readiness.map((a) => {
+              const v = areaVisual(a.area);
+              const pct = a.acierto === null ? null : Math.round(a.acierto * 100);
+              return (
+                <button
+                  key={a.area}
+                  className={"riesgo-row " + a.nivel}
+                  style={areaStyle(a.area)}
+                  onClick={() => navigate(`repasar/a/${a.area}`)}
+                >
+                  <span className="riesgo-nombre">
+                    <span className="topic-dot" />
+                    {v.short}
+                    <em>{a.reactivos} reactivos</em>
+                  </span>
+                  <span className="riesgo-dato">
+                    {pct === null
+                      ? "sin datos suficientes"
+                      : `${pct}% de aciertos · meta ${Math.round(a.objetivo * 100)}%`}
+                  </span>
+                  <span className={"riesgo-chip " + a.nivel}>
+                    {a.nivel === "alto" ? "atender ya" : a.nivel === "medio" ? "vigilar" : "en curso"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="faint" style={{ marginBottom: 0, fontSize: 13 }}>
+            La meta no es igual para todas: las áreas con menos reactivos piden más margen, porque con
+            19 preguntas la suerte pesa más que con 32. No es una predicción del Índice Ceneval —la guía
+            no publica cómo convierte aciertos a esa escala—, es tu porcentaje de aciertos medido contra
+            un objetivo de trabajo.
+          </p>
         </Card>
       </Reveal>
 

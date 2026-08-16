@@ -1880,3 +1880,55 @@ select.input {
   .exam-timer { font-size: 13px; padding: 8px 12px; }
   .exam-timer-pace { font-size: 12px; }
 }
+
+/* ---------------- Riesgo por área ----------------
+   El examen se aprueba área por área, así que la pregunta útil no es "cuánto
+   llevo" sino "cuál me puede reprobar". Se ordenan por riesgo y el color solo
+   marca las que hay que atender: si todo estuviera en rojo no diría nada. */
+.riesgo-lista { display: flex; flex-direction: column; gap: 6px; margin: 14px 0 16px; }
+.riesgo-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+}
+.riesgo-row:hover { transform: translateX(2px); }
+.riesgo-row.alto { border-color: color-mix(in srgb, var(--danger) 55%, var(--line)); }
+.riesgo-row.medio { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+.riesgo-nombre { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.riesgo-nombre em { font-style: normal; font-weight: 400; font-size: 12px; color: var(--text-2); }
+.riesgo-dato { font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.riesgo-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-2) 12%, transparent);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.riesgo-chip.alto { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+.riesgo-chip.medio { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+
+@media (max-width: 560px) {
+  .riesgo-row { grid-template-columns: 1fr auto; row-gap: 4px; }
+  .riesgo-dato { grid-column: 1 / -1; }
+}
+
+/* Aviso del área en riesgo, en la pantalla de inicio. */
+.aviso-riesgo { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
+.aviso-riesgo-head {
+  display: flex; align-items: center; gap: 9px;
+  color: var(--danger); margin-bottom: 8px;
+}
+.aviso-riesgo p { margin: 0 0 8px; }
+.aviso-riesgo p.faint { font-size: 13px; }
