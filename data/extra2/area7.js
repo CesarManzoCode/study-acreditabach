@@ -28,17 +28,17 @@ const AREA7_EXTRA2 = {
   "7.1.3": {
     flashcards: [
       { front: "¿Qué actividades incluye cada sector productivo?", back: "**Primario**: extracción de recursos naturales (agricultura, pesca, minería). **Secundario**: transformación (industria, construcción). **Terciario**: servicios (comercio, transporte, educación, salud, turismo)." },
-      { front: "¿Cómo se distribuye el empleo en México por sectores?", back: "El terciario concentra la mayor parte del empleo (alrededor del 60 %), seguido del secundario; el primario ocupa la proporción menor pese a su importancia alimentaria." }
+      { front: "¿Cómo se distribuye el empleo en México por sectores?", back: "El **terciario** concentra la mayor parte (del orden del 60 %), después el **secundario** y al final el **primario**, pese a su importancia alimentaria. Fuente: ENOE del Inegi; las cifras se actualizan cada trimestre, así que memoriza el **orden**, no el porcentaje." }
     ],
     quiz: [
       { q: "La pesca y la agricultura pertenecen al sector:", options: ["Primario","Secundario","Terciario"], correct: 0, explanation: "Obtienen recursos directamente de la naturaleza." },
       { q: "Una armadora de automóviles pertenece al sector:", options: ["Secundario","Primario","Terciario"], correct: 0, explanation: "Transforma materias primas en bienes elaborados." },
       { q: "El turismo, el comercio y el transporte forman parte del sector:", options: ["Terciario","Secundario","Cuaternario"], correct: 0, explanation: "Son servicios, no producción de bienes materiales." },
-      { q: "En México, el sector que concentra la mayor proporción del empleo es:", options: ["El terciario","El primario","El secundario"], correct: 0, explanation: "Los servicios ocupan cerca del 60 % de la población ocupada." }
+      { q: "En México, el sector que concentra la mayor proporción del empleo es:", options: ["El terciario","El primario","El secundario"], correct: 0, explanation: "Los servicios ocupan del orden del 60 % de la población ocupada (ENOE, Inegi). El orden terciario > secundario > primario es estable desde hace décadas; el porcentaje exacto cambia cada trimestre." }
     ]
   },
   "7.1.4": {
-    leccion: "Tres formas de leer la desigualdad. El **coeficiente de Gini** mide la desigualdad en la distribución del ingreso, de 0 (igualdad perfecta) a 1 (un solo hogar concentra todo); México ronda el 0.45. La **curva de Lorenz** es su representación gráfica: compara la distribución real del ingreso con la línea de igualdad perfecta, y cuanto más se aleja de esa diagonal, mayor es la desigualdad. Y el Estado interviene en la distribución **secundaria** —la que resulta después de impuestos y transferencias—, mientras que la **primaria** es la que produce el mercado por sí solo con salarios, rentas y ganancias.",
+    leccion: "Tres formas de leer la desigualdad. El **coeficiente de Gini** mide la desigualdad en la distribución del ingreso, de 0 (igualdad perfecta) a 1 (un solo hogar concentra todo); México se ha movido en torno a 0.4-0.45 en las mediciones recientes del Inegi y el Coneval; memoriza la escala, no el número. La **curva de Lorenz** es su representación gráfica: compara la distribución real del ingreso con la línea de igualdad perfecta, y cuanto más se aleja de esa diagonal, mayor es la desigualdad. Y el Estado interviene en la distribución **secundaria** —la que resulta después de impuestos y transferencias—, mientras que la **primaria** es la que produce el mercado por sí solo con salarios, rentas y ganancias.",
     quiz: [
       { q: "La distribución del ingreso que resulta directamente del mercado, antes de impuestos, se llama:", options: ["Primaria","Secundaria","Terciaria"], correct: 0, explanation: "Corresponde a la retribución de los factores productivos." },
       { q: "El salario mínimo es un mecanismo de distribución que actúa:", options: ["Sobre la distribución primaria del ingreso","Solo mediante transferencias","Únicamente en el sector público"], correct: 0, explanation: "Fija un piso a la retribución del factor trabajo en el propio mercado." }
@@ -203,6 +203,7 @@ const AREA7_EXTRA2 = {
     ]
   },
   "7.2.8": {
+    leccion: "Una pieza más de la teoría del sistema-mundo: el **intercambio desigual**. Es el mecanismo por el que la periferia exporta bienes de bajo valor agregado —materias primas, ensamblaje, trabajo barato— e importa bienes de alto valor —tecnología, maquinaria, marcas, servicios financieros—. Aunque el comercio sea voluntario y los precios sean de mercado, el resultado es una transferencia sistemática de valor hacia el centro, y por eso Wallerstein sostiene que la desigualdad entre regiones no es un accidente sino la forma en que el sistema funciona.",
     flashcards: [
       { front: "¿Qué propone la teoría del sistema-mundo de Wallerstein?", back: "Que la economía mundial se organiza en **centro** (alta tecnología y valor agregado), **periferia** (materias primas y mano de obra barata) y **semiperiferia** (posición intermedia, como México o Brasil)." },
       { front: "¿Qué caracteriza a los países del centro?", back: "Concentran la investigación, las finanzas, las marcas y la producción de alto valor agregado; captan la mayor parte de la ganancia de las cadenas globales." },
@@ -240,11 +241,11 @@ const AREA7_EXTRA2 = {
     ]
   },
   "7.3.3": {
-    leccion: "Tres indicadores del bienestar en México. El **Coneval** mide la pobreza con un enfoque **multidimensional**: ingreso insuficiente más al menos una de seis carencias sociales (educación, salud, seguridad social, vivienda, servicios básicos y alimentación). La diferencia entre **pobreza** y **pobreza extrema** está en el grado: en la primera el ingreso no alcanza para cubrir las necesidades y hay carencias sociales; en la extrema el ingreso no cubre siquiera la canasta alimentaria y hay tres o más carencias. Y la **movilidad social** es la posibilidad de cambiar de posición socioeconómica respecto de la familia de origen: en México es baja, pues la mayoría de quienes nacen en el nivel más bajo permanece ahí.",
+    leccion: "Tres indicadores del bienestar en México. El **Coneval** mide la pobreza con un enfoque **multidimensional**: ingreso insuficiente más al menos una de seis carencias sociales (educación, salud, seguridad social, vivienda, servicios básicos y alimentación). La diferencia entre **pobreza** y **pobreza extrema** está en el grado: en la primera el ingreso no alcanza para cubrir las necesidades y hay carencias sociales; en la extrema el ingreso no cubre siquiera la canasta alimentaria y hay tres o más carencias. Y la **movilidad social** es la posibilidad de cambiar de posición socioeconómica respecto de la familia de origen: en México es baja: según los informes de movilidad social del CEEY, alrededor de la mitad de quienes nacen en el quintil más pobre permanece ahí toda su vida. La cifra depende del estudio y del año; lo que se pregunta es el hecho, no el dato.",
     flashcards: [
       { front: "¿Cómo mide el CONEVAL la pobreza en México?", back: "Con un enfoque multidimensional: ingreso insuficiente más al menos una de seis carencias sociales (educación, salud, seguridad social, vivienda, servicios básicos y alimentación)." },
       { front: "¿Qué diferencia hay entre pobreza y pobreza extrema?", back: "En la **pobreza** el ingreso no alcanza para cubrir las necesidades y hay carencias sociales; en la **extrema** el ingreso no cubre siquiera la canasta alimentaria y hay tres o más carencias." },
-      { front: "¿Qué es la movilidad social?", back: "La posibilidad de cambiar de posición socioeconómica respecto de la familia de origen. En México es baja: la mayoría de quienes nacen en el nivel más bajo permanece ahí." }
+      { front: "¿Qué es la movilidad social?", back: "La posibilidad de cambiar de posición socioeconómica respecto de la familia de origen. En México es baja: cerca de la mitad de quienes nacen en el quintil más pobre permanece ahí (informes de movilidad social del CEEY)." }
     ],
     quiz: [
       { q: "La medición multidimensional de la pobreza en México considera:", options: ["El ingreso y las carencias sociales de forma conjunta","Solo el nivel de ingreso","Únicamente el acceso a la vivienda"], correct: 0, explanation: "El CONEVAL combina la dimensión económica con seis carencias sociales." },

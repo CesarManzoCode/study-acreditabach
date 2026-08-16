@@ -121,7 +121,7 @@ const AREA4_EXTRA2 = {
   },
   "4.3.3": {
     flashcards: [
-      { front: "¿Qué diferencia a las normas jurídicas de las morales?", back: "Las **jurídicas** son heterónomas, coercibles y con sanción externa aplicada por el Estado; las **morales** son autónomas, incoercibles y su sanción es el remordimiento o la desaprobación social." },
+      { front: "¿Qué diferencia a las normas jurídicas de las morales?", back: "Las **jurídicas** son heterónomas (las impone el Estado), coercibles (pueden hacerse cumplir por la fuerza) y su sanción es externa e institucional. Las **morales** son autónomas (las asume la propia conciencia), incoercibles y su sanción característica es interna: el remordimiento." },
       { front: "¿Qué son las normas sociales o convencionales?", back: "Reglas de trato y cortesía sostenidas por la costumbre (saludar, vestir de cierto modo). Su incumplimiento genera rechazo social, no sanción legal." },
       { front: "¿Qué son las normas religiosas?", back: "Las que derivan de una doctrina de fe y obligan a quienes la profesan; su cumplimiento es voluntario y su sanción se plantea en un plano trascendente." }
     ],

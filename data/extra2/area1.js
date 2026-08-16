@@ -288,7 +288,7 @@ const AREA1_EXTRA2 = {
       { front: "¿Dónde está el vértice de una parábola sin derivar?", back: "En x = −b/(2a). Coincide exactamente con el punto crítico que se obtiene al derivar e igualar a cero." }
     ],
     quiz: [
-      { q: "En el problema anterior, ¿cuál es la ganancia máxima?", options: ["$500","$300","$800"], correct: 0, explanation: "G(20) = −2(400) + 80(20) − 300 = −800 + 1,600 − 300 = 500." },
+      { q: "La ganancia de un taller es G(x) = −2x² + 80x − 300, donde x son las piezas vendidas. Ya sabes que el máximo está en x = 20. ¿Cuál es la ganancia máxima?", options: ["$500","$300","$800"], correct: 0, explanation: "Una vez hallado el valor de x que maximiza, la ganancia máxima se obtiene sustituyéndolo en la función: G(20) = −2(20²) + 80(20) − 300 = −800 + 1,600 − 300 = 500." },
       { q: "Se quiere cercar un terreno rectangular con 100 m de malla. ¿Qué dimensiones dan el área máxima?", options: ["25 m × 25 m","40 m × 10 m","30 m × 20 m"], correct: 0, explanation: "Con perímetro fijo, el área máxima de un rectángulo se logra con el cuadrado: 100/4 = 25 m por lado." },
       { q: "Si f'(c) = 0 y f''(c) > 0, entonces en x = c la función tiene:", options: ["Un mínimo","Un máximo","Un punto de inflexión"], correct: 0, explanation: "La segunda derivada positiva indica concavidad hacia arriba, es decir, un valle." }
     ]

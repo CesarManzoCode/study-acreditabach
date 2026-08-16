@@ -40,7 +40,12 @@ const INFO_SECTIONS = [
         <li>Carta de autenticidad del certificado de secundaria.</li>
         <li>Documento que acredite la representación legal: acta de nacimiento (si es el padre/madre) o copia certificada del acta de tutela / sentencia del juez (si es tutor).</li>
       </ol>
-      <p><strong>Importante:</strong> si el interesado es menor de edad al registrarse pero cumple 18 años entre la apertura del registro y la aplicación, se le considerará mayor de edad y deberá presentar los documentos de mayores de edad.</p>
+      <p class="aviso"><strong>Importante — regla de los menores de edad:</strong> si eres menor de edad al momento de registrarte y cumples 18 años entre la apertura del registro y la fecha del examen,
+      <strong>conservas la calidad de menor durante todo el proceso de evaluación</strong> y debes presentar los documentos de sustentante MENOR de edad (guía, p. 7).
+      Es al revés de como se suele suponer: cumplir 18 antes del examen no te convierte en mayor de edad para este trámite. Si te registras siendo menor, ese día llevas la CURP impresa,
+      la identificación original de tu padre, madre o tutor, la carta responsiva original, el documento de representación legal y tu CREX.</p>
+      <p class="aviso">Las reglas administrativas cambian de una convocatoria a otra. Antes de registrarte, confirma esta y las demás en la convocatoria vigente del ACREDITA-BACH en
+      <strong>www.ceneval.edu.mx</strong> o al <strong>55 30 00 87 00</strong>: manda la fuente oficial, no esta página.</p>
     `
   },
   {
@@ -59,7 +64,8 @@ const INFO_SECTIONS = [
       <p>En esta app, los reactivos numéricos de matemáticas, física y química traen una calculadora científica integrada (botón <em>Abrir calculadora</em> o la tecla <strong>C</strong>), para que practiques con la misma herramienta que vas a usar ese día.</p>
       <h4>Documentos que debes llevar el día del examen (originales, no digitales)</h4>
       <p><strong>Mayores de edad:</strong> identificación oficial vigente con fotografía en ORIGINAL + Comprobante de Registro al Examen (CREX) impreso y firmado.</p>
-      <p><strong>Menores de edad:</strong> CURP impresa, identificación del padre/madre/tutor en original, carta responsiva impresa en original, documento de representación legal impreso, y el CREX impreso y firmado.</p>
+      <p><strong>Menores de edad:</strong> CURP impresa, identificación del padre/madre/tutor en original, carta responsiva impresa en original, documento de representación legal impreso (acta de nacimiento si te representa tu padre o madre; copia certificada del acta de tutela o de la sentencia del juez si te representa un tutor), y el CREX impreso y firmado.</p>
+      <p><em>Extranjeros (o padre, madre o tutor extranjero):</em> como identificación, el pasaporte vigente del país de origen <strong>en original</strong>, o el documento de legal estancia en México expedido por la autoridad competente, también <strong>en original</strong>.</p>
       <p>Debes presentarte <strong>60 minutos antes</strong> de la hora de inicio.</p>
     `
   },
@@ -68,25 +74,43 @@ const INFO_SECTIONS = [
     title: "Estructura del examen: áreas, sesiones y tiempos",
     icon: "🧩",
     html: `
-      <p>El <strong>Examen Global</strong> (primera vez que presentas) tiene <strong>180 reactivos</strong> de opción múltiple que cuentan para tu calificación, más 25 reactivos piloto (no cuentan, son de prueba estadística). Se divide en dos sesiones, con un receso de 1.5 horas entre ellas.</p>
+      <p>El <strong>Examen Global</strong> (la primera vez que presentas) tiene <strong>180 reactivos que cuentan</strong> para tu calificación <strong>más un bloque de 25 reactivos piloto</strong> que no cuentan: sirven para el análisis estadístico del Ceneval. <strong>No sabrás cuáles son los piloto</strong> y tienes que contestarlos igual, así que lo que realmente respondes ese día son <strong>205 reactivos</strong>. Se divide en dos sesiones, con un receso de 1.5 horas entre ellas.</p>
       <div class="table-wrap">
         <table class="info-table">
-          <thead><tr><th>Sesión</th><th>Áreas</th><th>Reactivos (sin piloto)</th><th>Duración</th></tr></thead>
+          <thead><tr><th>Sesión</th><th>Áreas</th><th>Reactivos que puntúan</th><th>Duración</th></tr></thead>
           <tbody>
-            <tr><td rowspan="4"><strong>Sesión 1</strong></td><td>1. Pensamiento matemático</td><td>30</td><td rowspan="4">4 h 30 min</td></tr>
+            <tr><td rowspan="5"><strong>Sesión 1</strong></td><td>1. Pensamiento matemático</td><td>30</td><td rowspan="5">4 h 30 min</td></tr>
             <tr><td>2. Cultura digital</td><td>19</td></tr>
             <tr><td>3. Conciencia histórica</td><td>23</td></tr>
             <tr><td>4. Humanidades</td><td>20</td></tr>
+            <tr><td><em>+ bloque piloto (no puntúa)</em></td><td><em>14</em></td></tr>
             <tr><td colspan="4" style="text-align:center;font-style:italic">— receso de 1.5 horas —</td></tr>
-            <tr><td rowspan="3"><strong>Sesión 2</strong></td><td>5. Ciencias naturales, experimentales y tecnología</td><td>32</td><td rowspan="3">4 h</td></tr>
+            <tr><td rowspan="4"><strong>Sesión 2</strong></td><td>5. Ciencias naturales, experimentales y tecnología</td><td>32</td><td rowspan="4">4 h</td></tr>
             <tr><td>6. Lengua y comunicación (español e inglés)</td><td>31</td></tr>
             <tr><td>7. Ciencias sociales</td><td>25</td></tr>
+            <tr><td><em>+ bloque piloto (no puntúa)</em></td><td><em>11</em></td></tr>
           </tbody>
         </table>
       </div>
-      <p><strong>Total: 180 reactivos.</strong> Cada pregunta tiene <strong>3 opciones (A, B, C)</strong> con solo una respuesta correcta.</p>
+      <p><strong>180 reactivos puntúan; 205 se contestan.</strong> Sesión 1: 92 que cuentan + 14 piloto = <strong>106</strong>. Sesión 2: 88 que cuentan + 11 piloto = <strong>99</strong>.
+      Esa es la cuenta con la que debes calcular tu ritmo: 4 h 30 min entre 106 son unos <strong>2.5 minutos por reactivo</strong> en la sesión 1, y 4 h entre 99 son unos <strong>2.4 minutos</strong> en la sesión 2.
+      Cada pregunta tiene <strong>3 opciones (A, B, C)</strong> con solo una respuesta correcta.</p>
       <h4>Si no acreditas 1 o 2 áreas: Examen de Área</h4>
       <p>Tienes <strong>2 oportunidades en el lapso de un año</strong> para presentar solo la(s) área(s) no acreditada(s). Cada Examen de Área dura <strong>2 horas</strong> y comienza a las <strong>9:00 h</strong>. Si tienes derecho a presentar 2 áreas, ambas se presentan el mismo día.</p>
+      <div class="table-wrap">
+        <table class="info-table">
+          <thead><tr><th>Área</th><th>Núm. de reactivos</th><th>Duración / horario</th></tr></thead>
+          <tbody>
+            <tr><td>Pensamiento matemático</td><td>30</td><td>2 horas · 9:00 h</td></tr>
+            <tr><td>Cultura digital</td><td>19</td><td>2 horas · 9:00 h</td></tr>
+            <tr><td>Conciencia histórica</td><td>23</td><td>2 horas · 9:00 h</td></tr>
+            <tr><td>Humanidades</td><td>20</td><td>2 horas · 9:00 h</td></tr>
+            <tr><td>Ciencias naturales, experimentales y tecnología</td><td>32</td><td>2 horas · 9:00 h</td></tr>
+            <tr><td>Lengua y comunicación</td><td>31</td><td>2 horas · 9:00 h</td></tr>
+            <tr><td>Ciencias sociales</td><td>25</td><td>2 horas · 9:00 h</td></tr>
+          </tbody>
+        </table>
+      </div>
       <p>Si te registras y pagas un Examen de Área y no te presentas, se cuenta como oportunidad usada (salvo que envíes justificante por causa de fuerza mayor al Departamento de Información y Atención al Usuario).</p>
     `
   },
@@ -111,7 +135,10 @@ const INFO_SECTIONS = [
       <ul>
         <li>Llega <strong>60 minutos antes</strong>. Revisa las listas de asistencia fuera de los salones para ubicar tu grupo.</li>
         <li>Registra tu asistencia y firma tu ingreso al salón.</li>
+        <li><strong>Espera a que el aplicador te indique el lugar físico que te fue asignado</strong>: no te sientas donde quieras.</li>
         <li>Anota tu nombre, folio y número de versión donde te indique el aplicador. No te adelantes a sus instrucciones.</li>
+        <li>Presta atención a las instrucciones del aplicador y, si algo no te queda claro, <strong>pregúntalo</strong>.</li>
+        <li>Las <strong>salidas momentáneas</strong> del salón las controla el aplicador: no se sale libremente.</li>
         <li><strong>Prohibido:</strong> celulares, laptops, tablets, plumas inteligentes o cualquier dispositivo electrónico, y también lentes inteligentes (si tus lentes graduados tienen esta tecnología, consigue un reemplazo para ese día).</li>
         <li>El aplicador <strong>no puede resolver dudas</strong> sobre el contenido del examen.</li>
         <li>No se puede sacar del salón ningún documento o material del examen — es causa de suspensión.</li>
@@ -155,7 +182,7 @@ const INFO_SECTIONS = [
           <tr><td><strong>Relación de elementos</strong></td><td>Dos columnas (por ejemplo, conceptos y definiciones) que hay que emparejar; las opciones combinan ambas columnas.</td></tr>
         </tbody>
       </table>
-      <p>Esta web usa exactamente este mismo formato de 3 opciones en todas sus preguntas de práctica y simulacros, para que llegues acostumbrado.</p>
+      <p>Esta app usa las mismas 3 opciones y los cuatro formatos en su banco de reactivos. Lo que <strong>no</strong> puede reproducir es el soporte impreso: el cuadernillo trae imágenes reales (iconos de programas, obras pictóricas, gráficas, cuadros) y la hoja de respuestas se llena a lápiz y se lee con lector óptico. Aquí encontrarás esquemas dibujados de esos formatos —iconos de la cinta de opciones, cuadros de Punnett, rectas numéricas, gráficas de funciones, composición de obras y hoja de respuestas—, que sirven para entrenar la tarea, no para sustituir el cuadernillo. <strong>Practica también con las 24 preguntas muestra de la guía oficial</strong>, que sí vienen con sus imágenes.</p>
     `
   },
   {
@@ -170,7 +197,12 @@ const INFO_SECTIONS = [
         <li><strong>No aprobado con derecho a Examen de Área:</strong> acreditaste 5 o 6 áreas. Tienes 2 oportunidades en un año para presentar la(s) área(s) faltante(s).</li>
         <li><strong>No aprobado:</strong> no acreditaste 3 o más áreas. Calificación global en escala de <strong>0 a 5.9</strong>.</li>
       </ul>
-      <p><strong>Conclusión práctica:</strong> tu meta no es "aprobar en promedio", es <strong>acreditar cada una de las 7 áreas por separado</strong>. Esta web mide tu progreso área por área para que ninguna se quede atrás.</p>
+      <p><strong>Conclusión práctica:</strong> tu meta no es "aprobar en promedio", es <strong>acreditar cada una de las 7 áreas por separado</strong>. Esta app mide tu progreso área por área para que ninguna se quede atrás.</p>
+      <h4>Qué significa —y qué no— el "dominio" de esta app</h4>
+      <p>El porcentaje de dominio que ves aquí combina tu repetición espaciada de tarjetas con tus aciertos en los cuestionarios. Es una <strong>referencia interna de estudio</strong> y nada más.
+      <strong>No es el Índice Ceneval, no se convierte a él y no existe ninguna equivalencia demostrada entre los dos.</strong> El Ceneval escala cada área de 700 a 1300 puntos con un procedimiento psicométrico que no se hace público:
+      un 60 %, un 80 % o un 100 % en esta app no corresponden a 1000 puntos ni a ninguna otra cifra oficial. Úsalo para saber qué te falta repasar, no para predecir si acreditas.</p>
+      <p>Por la misma razón, apunta alto en todas las áreas y no te conformes con el color verde de la barra: el margen entre lo que mide esta app y lo que mide el examen es tu colchón de seguridad.</p>
       <p>Consulta tus resultados en: <strong>https://prenlinea.ceneval.edu.mx/form.html</strong></p>
     `
   },
@@ -183,13 +215,23 @@ const INFO_SECTIONS = [
         <li><strong>Departamento de Información y Atención al Usuario:</strong> 55 30 00 87 00</li>
         <li><strong>Correo:</strong> informacion@ceneval.edu.mx</li>
         <li><strong>Portal:</strong> www.ceneval.edu.mx</li>
-        <li>Esta guía está vigente a partir de julio de 2025 y puede tener revisiones periódicas. La única fuente de este sitio es la <em>Guía para el sustentante ACREDITA-BACH</em> (Ceneval, junio de 2026).</li>
+        <li>La guía está vigente a partir de julio de 2025 y puede tener revisiones periódicas.</li>
+        <li><strong>De dónde sale el contenido de esta app:</strong> el temario (las 7 áreas, sus 177 temas y sus orientaciones) y toda la información de este apartado se toman de la <em>Guía para el sustentante ACREDITA-BACH</em> (Ceneval, junio de 2026).
+        Las explicaciones, tarjetas y reactivos de práctica los redactó esta app a partir de esa guía y de la bibliografía que ella recomienda: <strong>no son material del Ceneval</strong> y en varios temas van más allá de lo que la orientación pide.</li>
+        <li><strong>Fechas, requisitos, costos y sedes cambian cada convocatoria.</strong> Verifícalos siempre en www.ceneval.edu.mx; lo que dice esta app puede quedar desactualizado.</li>
+        <li>Esta app no está afiliada al Ceneval ni avalada por él, y no puede garantizar ningún resultado.</li>
       </ul>
     `
   }
 ];
 
-/* Bibliografía oficial recomendada por la guía, por área (para consulta, no obligatoria). */
+/* Bibliografía tal como la lista la guía oficial por área (p. 28, 30, 32, 34, 36,
+   39, 41 y 44). Se transcribe sin agregar ni fusionar títulos: si un autor
+   aparece con tres tomos, van los tres.
+
+   Nota sobre inglés: la guía cita a R. Murphy, «English Grammar in Use», dentro
+   de la EXPLICACIÓN de sus preguntas muestra, no en la lista bibliográfica del
+   área. Por eso no aparece aquí; se menciona en NOTA_BIBLIOGRAFIA. */
 const BIBLIOGRAFIA = {
   1: [
     "Baldor, A. (2019). Álgebra (4.ª ed.). Patria.",
@@ -202,7 +244,7 @@ const BIBLIOGRAFIA = {
     "Pierdant, A., Rodríguez, E. y Rodríguez, J. (2020). Matemáticas Financieras 1 (2.ª ed.). Patria."
   ],
   2: [
-    "Hernández, R., Huerta, R. y Hernández, N. (2018). El glosario informático. Universidad de Guadalajara.",
+    "Hernández, R., Huerta, R. y Hernández, N. (2018). El glosario informático. Compendio de términos informáticos. Universidad de Guadalajara.",
     "Ibáñez, P. (2023). Cultura digital I. Cengage Learning.",
     "Ibáñez, P. y Salazar, N. (2023). Cultura digital II. Cengage Learning.",
     "Kaspersky (2024). Seguridad en internet: ¿qué es y cómo puedes protegerte en línea?",
@@ -215,16 +257,17 @@ const BIBLIOGRAFIA = {
     "Flores, J. (2020). Historia de México 2. Cengage Learning.",
     "Menchaca, F. (2024). Conciencia histórica 1. Patria.",
     "Menchaca, F. (2025). Conciencia histórica 2. Patria.",
-    "Parcero, R. et al. (2017). Historia universal. Pearson.",
+    "Parcero, R., Romo, L., Sánchez, H. y Sánchez, L. (2017). Historia universal. Pearson.",
     "Vasconcelos, J. (2020). Breve historia de México. Trillas."
   ],
   4: [
-    "Barrientos, J. (2020). Filosofía aplicada experiencial. Plaza y Valdés.",
+    "Barrientos, J. (2020). Filosofía aplicada experiencial: Más allá del postureo filosófico. Plaza y Valdés.",
+    "Coordinación de Universidad Abierta y Educación Digital (2025). Los criterios o categorías estéticas. Bachillerato a distancia.",
     "García, T., y Weeke, Z. (2019). Ética. Umbral.",
     "Gómez, I. (2016). Ciencia, tecnología, sociedad y valores. Pearson.",
     "Islas, B. (2019). El lenguaje y sus funciones. Unidad de Apoyo para el Aprendizaje.",
     "Magadán, M. (2019). Ética 2. Espacios Creativos. Santillana.",
-    "Messina, L. (2021). Análisis y didáctica del discurso político. Sincronía, 80, 467-491.",
+    "Messina, L. (2021). Análisis y didáctica del discurso político. Sincronía. Revista de Filosofía, Letras y Humanidades, 80, 467-491.",
     "Muñoz, J. (2019). El pensamiento crítico para la solución a un problema. Revista de Marina, 970, 49-52."
   ],
   5: [
@@ -240,21 +283,31 @@ const BIBLIOGRAFIA = {
   ],
   6: [
     "Bal, M. (2025). Narratología. Introducción a la teoría de la narrativa. Akal.",
-    "Barajas, B. et al. (2022). Didáctica del ensayo para el bachillerato. CCH-UNAM.",
-    "Aragón, C. et al. (2023). Lengua y comunicación 1, 2 y 3. Patria.",
+    "Barajas, B., Barrera, O., Lara, A., Quintanar, K., Rosado, R. y Soria, N. (2022). Didáctica del ensayo para el bachillerato. CCH-UNAM.",
+    "Aragón, C., Díaz, Y., Isidro, O., López, M. y Reyes, E. (2023). Lengua y comunicación 1. Patria.",
+    "Aragón, C., Díaz, Y., Isidro, O., López, M. y Reyes, E. (2023). Lengua y comunicación 2. Patria.",
+    "Aragón, C., Díaz, Y., Isidro, O., López, M. y Reyes, E. (2023). Lengua y comunicación 3. Patria.",
     "Luna, M. (2019). Taller de lectura y redacción 1. Trillas.",
     "Luna, M. (2022). Taller de lectura y redacción 2. Trillas.",
+    "— Inglés —",
     "Bolofindo, B. B. (2024). Basic English Grammar at a Glance. Justin Garry.",
     "Fernández, Ma. E. (2021). Communicative Handbook. Basic-Intermediate. Trillas.",
-    "Ranjot Singh, C. (2023). Comprehensive English Grammar Guide. Rana Books.",
-    "Murphy, R. English Grammar in Use."
+    "Ranjot Singh, C. (2023). Comprehensive English Grammar Guide. Rana Books."
   ],
   7: [
     "Arellano, C. (2019). Estructura socioeconómica de México. Patria.",
     "Arellano, C. (2024). Ciencias Sociales 3. Patria.",
-    "Benedicto, J. (2016). La ciudadanía juvenil. Revista Latinoamericana de Ciencias Sociales, Niñez y Juventud, 4(2), 925-938.",
-    "Castellanos, A. (2023). Hegemonía: una aproximación conceptual. Acta Sociológica, 91(91), 37-63.",
+    "Benedicto, J. (2016). La ciudadanía juvenil: Un enfoque basado en las experiencias vitales de los jóvenes. Revista Latinoamericana de Ciencias Sociales, Niñez y Juventud, 4(2), 925-938.",
+    "Castellanos, A. (2023). Hegemonía: una aproximación conceptual al análisis del poder en la ecología política. Acta Sociológica, 91(91), 37-63.",
     "García, J. (2020). Immanuel Wallerstein y la teoría del sistema-mundo. Illes i Imperis, (22), 321-329.",
-    "Martínez, H. (2023). Ciencias sociales I y II. Cengage Learning."
+    "Martínez, H. (2023). Ciencias sociales I. Cengage Learning.",
+    "Martínez, H. (2023). Ciencias sociales II. Cengage Learning."
   ]
 };
+
+/* Aclaraciones sobre la bibliografía que la guía hace fuera de las listas. */
+const NOTA_BIBLIOGRAFIA =
+  "La guía cita además, en la explicación de sus preguntas muestra de inglés, el libro " +
+  "English Grammar in Use de R. Murphy, y en la de bioética a Reyes y Cruz (2023). No forman parte " +
+  "de las listas bibliográficas por área, pero son las fuentes que el propio Ceneval usa para justificar " +
+  "esas respuestas. Ninguna de estas lecturas es obligatoria: son apoyo para preparar el examen.";

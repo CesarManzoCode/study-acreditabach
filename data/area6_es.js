@@ -68,10 +68,10 @@ const AREA6_ES_TOPICS = [
     ],
     quiz: [
       {
-        q: "En un mapa conceptual sobre 'Los mamíferos', que incluye 'perros', 'animales de sangre caliente' y 'labrador', ¿cuál va en el nivel más alto?",
-        options: ["Animales de sangre caliente", "Perros", "Labrador"],
+        q: "En un mapa conceptual sobre los animales, que incluye los conceptos 'perros', 'mamíferos' y 'labrador', ¿cuál va en el nivel más alto?",
+        options: ["Mamíferos", "Perros", "Labrador"],
         correct: 0,
-        explanation: "Es la categoría más general: los mamíferos son animales de sangre caliente; 'perros' es más específico y 'labrador' es aún más particular (una raza de perro)."
+        explanation: "En un mapa conceptual la jerarquía va de lo general a lo particular: mamíferos incluye a perros, y perros incluye a labrador. 'Animales de sangre caliente' no sirve como concepto raíz aquí: es una característica de los mamíferos, no la clase que los agrupa en este mapa."
       },
       {
         q: "¿Qué concepto debería ir en el nivel más bajo (más específico) del ejemplo anterior?",
@@ -87,10 +87,10 @@ const AREA6_ES_TOPICS = [
     lang: "es",
     subarea: "6.1 Estrategias de comprensión lectora",
     tema: "Tipos de formas textuales de comunicación (resumen, relato simple, reseña y comentario crítico)",
-    note: "Cuatro formas de comunicar información sobre un texto u obra: el **resumen** condensa las ideas principales de forma objetiva y breve, sin opiniones. El **relato simple** narra hechos o sucesos en orden, como una historia, sin analizarlos. La **reseña** describe y presenta una obra (libro, película) de forma objetiva, con datos generales, sin juicio profundo. El **comentario crítico** va más allá: incluye la opinión y valoración argumentada del autor sobre la obra, señalando aciertos o defectos.",
+    note: "Cuatro formas textuales que la guía pide distinguir. Ordénalas por **cuánta valoración** llevan:\n\n**Resumen** — cero valoración. Condensa las ideas principales del texto de forma objetiva y breve; quien lo escribe no opina, solo sintetiza.\n\n**Relato simple** — cero valoración. Narra hechos o sucesos en el orden en que ocurrieron, como una historia, sin analizarlos ni juzgarlos.\n\n**Reseña** — descripción **más** una valoración breve. Presenta la obra (autor, tema, contenido, contexto) y, hacia el final, la valora: dice si vale la pena, qué aporta, a quién le puede servir. No es un texto puramente objetivo: la reseña sin juicio no es reseña, es resumen. Lo que la distingue del comentario crítico es la **proporción**: en la reseña domina la presentación y el juicio es breve.\n\n**Comentario crítico** — la valoración es el centro. Analiza y argumenta a fondo sobre aciertos y defectos de la obra, con criterios explícitos, y supone que el lector ya sabe de qué trata.\n\nTruco: ¿solo cuenta qué dice? Resumen. ¿Solo cuenta qué pasó? Relato simple. ¿Presenta la obra y opina un poco? Reseña. ¿Casi todo es opinión argumentada? Comentario crítico.",
     flashcards: [
       { front: "¿Qué distingue al resumen del comentario crítico?", back: "El resumen es objetivo y condensa ideas principales; el comentario crítico incluye opinión y valoración argumentada." },
-      { front: "¿Qué diferencia hay entre relato simple y reseña?", back: "El relato simple narra hechos en orden sin analizarlos; la reseña describe una obra con datos generales de forma objetiva." }
+      { front: "¿Qué diferencia hay entre relato simple y reseña?", back: "El relato simple narra hechos en orden, sin analizarlos ni valorarlos. La reseña presenta una obra y **sí incluye una valoración** breve del reseñista." }
     ],
     quiz: [
       {
@@ -139,7 +139,7 @@ const AREA6_ES_TOPICS = [
     lang: "es",
     subarea: "6.2 Recursos del análisis literario",
     tema: "Trama del texto literario narrativo",
-    note: "La trama es la secuencia de sucesos y conflictos que se desarrollan en la historia. Tiene planteamiento (presentación de personajes y situación), nudo (el conflicto central, el momento de mayor tensión) y desenlace (la resolución). El **nudo** es la parte donde el conflicto se complica al máximo. Ejemplo: 'Ana descubrió que su mejor amiga había mentido sobre el accidente. Confrontarla significaba arriesgar la amistad, pero callar la hacía sentir cómplice.' Ese dilema sin resolver es el nudo de la trama.",
+    note: "La trama es la secuencia de sucesos y conflictos de la historia, y se organiza en tres partes:\n\n**Planteamiento**: presenta a los personajes, el lugar y la situación inicial.\n**Nudo**: aparece y se desarrolla el conflicto; las complicaciones se acumulan y la tensión sube. Es la parte **más extensa** del relato.\n**Desenlace**: el conflicto se resuelve (bien o mal) y la historia cierra.\n\nOjo con una distinción que se pregunta: el **clímax** no es sinónimo de nudo. El clímax es el **punto exacto de máxima tensión**, el instante en que el conflicto llega a su límite; está **dentro** del nudo, justo al final, y da paso al desenlace. El nudo es todo el desarrollo del conflicto; el clímax es su cumbre.\n\nEjemplo: 'Ana descubrió que su mejor amiga había mentido sobre el accidente. Confrontarla significaba arriesgar la amistad, pero callar la hacía sentir cómplice.' Ese conflicto que se complica y aún no se resuelve es el **nudo**. El momento en que Ana por fin la encara sería el **clímax**; lo que pase con la amistad después, el **desenlace**.",
     flashcards: [
       { front: "¿Qué partes tiene la trama de un relato?", back: "Planteamiento, nudo (conflicto central) y desenlace (resolución)." },
       { front: "¿Cómo se reconoce el nudo de una trama?", back: "Es el momento de mayor tensión o conflicto, cuando el problema central se complica y aún no se resuelve." }
@@ -295,10 +295,10 @@ const AREA6_ES_TOPICS = [
     lang: "es",
     subarea: "6.3 Procesos de composición de textos",
     tema: "Tipos de fuentes de información (primarias, secundarias y terciarias)",
-    note: "Una fuente **primaria** ofrece información de primera mano, original, sin intermediarios (un diario personal, una carta, un poema del propio autor, un testimonio directo). Una fuente **secundaria** reorganiza, analiza o resume información basada en fuentes primarias (una reseña de una novela, un artículo que comenta un poema). Una fuente **terciaria** organiza o sintetiza fuentes secundarias (una enciclopedia, un catálogo bibliográfico, un índice de artículos). Entre más 'pasos' de análisis tenga la información antes de llegar a ti, más lejos está de ser primaria.",
+    note: "ATENCIÓN: este es el único tema donde el criterio del Ceneval **no coincide** con el que se enseña habitualmente en la escuela. Aprende el del Ceneval, que es el que califica, y ten presente el otro para no confundirte al leer.\n\n**Criterio del Ceneval** (el de su guía oficial y sus preguntas muestra):\n· **Primaria**: información de primera mano, sin intermediarios. Un **diario personal**, una carta, un testimonio directo, la obra literaria misma.\n· **Secundaria**: información primaria presentada de forma **sintetizada y reorganizada** para facilitar su acceso. La guía pone como ejemplo la **reseña**, y también el resumen o la sinopsis.\n· **Terciaria**: lo que resulta de un **análisis e interpretación** de fuentes primarias y secundarias. La guía pone como ejemplo el **análisis crítico** de una obra.\n\nEn ese criterio, lo que sube de nivel es el **grado de elaboración interpretativa**: contar lo vivido (primaria) → resumir y reorganizar (secundaria) → analizar e interpretar (terciaria).\n\n**Criterio académico habitual** (bibliotecas, metodología de la investigación):\n· Primaria: el documento original.\n· Secundaria: lo que analiza o interpreta la primaria (reseña, artículo crítico, monografía).\n· Terciaria: lo que compila y organiza a las anteriores para localizarlas (enciclopedia, diccionario, índice, catálogo bibliográfico).\n\nLa diferencia práctica está en el **análisis crítico**: para el Ceneval es terciaria; en la clasificación académica es secundaria. **En el examen, si te dan un análisis o comentario crítico de una obra, marca terciaria.**\n\nCómo decidir rápido con el criterio del Ceneval: pregúntate cuánta interpretación hay. ¿Cero, es el testimonio o la obra en bruto? Primaria. ¿Se resume o reordena lo que otro dijo? Secundaria. ¿Se juzga, interpreta y argumenta sobre ello? Terciaria.",
     flashcards: [
       { front: "¿Qué es una fuente primaria? Da un ejemplo.", back: "Información de primera mano y original. Ejemplo: una carta escrita por su propio autor, o el testimonio directo de quien vivió un hecho." },
-      { front: "¿Qué diferencia hay entre fuente secundaria y terciaria?", back: "La secundaria analiza o resume fuentes primarias (una reseña); la terciaria organiza o sintetiza fuentes secundarias (una enciclopedia o índice)." }
+      { front: "Según el criterio del Ceneval, ¿qué diferencia hay entre fuente secundaria y terciaria?", back: "La **secundaria** sintetiza y reorganiza la información primaria (la reseña, el resumen). La **terciaria** la analiza e interpreta (el análisis crítico de una obra). Ojo: en la clasificación académica habitual el análisis crítico sería secundario y las enciclopedias terciarias; en el examen manda el criterio del Ceneval." }
     ],
     quiz: [
       {
@@ -308,10 +308,10 @@ const AREA6_ES_TOPICS = [
         explanation: "Es información de primera mano, dada directamente por quien vivió el hecho, sin intermediarios."
       },
       {
-        q: "Una enciclopedia que resume y organiza artículos ya publicados sobre la Revolución Mexicana es una fuente:",
+        q: "Un artículo que analiza e interpreta la redondilla «Hombres necios que acusáis…» de Sor Juana, y argumenta qué evidencia sobre la sociedad novohispana, es una fuente:",
         options: ["Terciaria", "Primaria", "Secundaria"],
         correct: 0,
-        explanation: "Sintetiza y organiza información que ya fue analizada previamente en fuentes secundarias, característica de las fuentes terciarias."
+        explanation: "Para el Ceneval, la fuente terciaria es la que resulta del análisis e interpretación de fuentes primarias y secundarias: el análisis crítico. Este es exactamente el caso de su pregunta muestra oficial. La redondilla misma sería primaria y una reseña que la resumiera, secundaria."
       }
     ]
   },
@@ -349,15 +349,15 @@ const AREA6_ES_TOPICS = [
     tema: "Reglas de puntuación",
     note: "La puntuación organiza el sentido de un texto. La **coma** separa elementos de una lista o incisos ('Compré manzanas, peras y uvas'). El **punto** cierra una idea completa. Los **dos puntos** anuncian una enumeración, cita o explicación ('Necesito tres cosas: tiempo, dinero y paciencia'). El **punto y coma** separa ideas relacionadas pero independientes, o elementos de una lista compleja. Los **signos de interrogación y exclamación** en español se abren y cierran (¿...? ¡...!). En diálogos, la **raya** (—) indica el cambio de hablante.",
     flashcards: [
-      { front: "¿Para qué se usan los dos puntos?", back: "Para anunciar una enumeración, una cita textual o una explicación de lo dicho antes." },
+      { front: "¿Para qué se usan los dos puntos?", back: "Para anunciar una enumeración, una cita textual o una explicación de lo dicho antes. Nunca entre el verbo y su complemento directo: «Necesito comprar pan y leche» (sin nada) o «Necesito comprar lo siguiente: pan y leche» (con anticipación)." },
       { front: "¿Qué signo se usa para marcar cambio de hablante en un diálogo en español?", back: "La raya (—), no el guion corto ni las comillas." }
     ],
     quiz: [
       {
-        q: "\"Necesito comprar___ pan, leche y huevos.\" ¿Qué signo de puntuación falta en el espacio?",
+        q: "\"Necesito comprar tres cosas___ pan, leche y huevos.\" ¿Qué signo de puntuación falta en el espacio?",
         options: ["Dos puntos (:)", "Punto y coma (;)", "Coma (,)"],
         correct: 0,
-        explanation: "Los dos puntos se usan para anunciar una enumeración que sigue a la oración; en este caso, la lista de productos."
+        explanation: "Los dos puntos anuncian una enumeración anticipada por un elemento previo ('tres cosas'). Cuidado con el error contrario: NO se ponen dos puntos entre el verbo y su complemento directo. Se escribe «Necesito comprar pan, leche y huevos», sin ningún signo, y «Necesito comprar lo siguiente: pan, leche y huevos», con dos puntos porque 'lo siguiente' anticipa la lista."
       },
       {
         q: "En el diálogo: \"___Ya llegué, dijo Marta.\" ¿Qué signo falta al inicio para marcar que Marta está hablando?",
@@ -373,7 +373,7 @@ const AREA6_ES_TOPICS = [
     lang: "es",
     subarea: "6.3 Procesos de composición de textos",
     tema: "Función de unidades sintácticas",
-    note: "Una oración se organiza en **sujeto** (quién realiza la acción) y **predicado** (lo que se dice del sujeto, incluye el verbo). Dentro del predicado hay complementos: el **complemento directo** (CD) recibe la acción directamente del verbo (responde a '¿qué?'; se puede sustituir por 'lo/la/los/las'), el **complemento indirecto** (CI) es el destinatario de la acción (responde a '¿a quién?' o '¿para quién?'; se sustituye por 'le/les') y el **complemento circunstancial** (CC) indica modo, tiempo, lugar o causa. Ejemplo: 'Ana (sujeto) le regaló un libro (CD) a su hermano (CI) ayer (CC de tiempo).'",
+    note: "Una oración se organiza en **sujeto** y **predicado** (lo que se dice del sujeto; incluye el verbo).\n\nDefinición fiable de sujeto: es la palabra o grupo de palabras que **concuerda en número y persona con el verbo**. Si cambias el verbo a plural, el sujeto es lo que también cambia. Esa prueba nunca falla; la definición de «quien realiza la acción» sí falla en dos casos frecuentes: en la voz pasiva («La casa fue construida por los albañiles», el sujeto es *la casa*, que no hace nada) y con verbos que no expresan acción («A Luis le gustan los tacos», el sujeto es *los tacos*; «El niño duerme», nadie recibe acción alguna). Úsala solo como atajo, y comprueba siempre con la concordancia.\n\n Dentro del predicado hay complementos: el **complemento directo** (CD) recibe la acción directamente del verbo (responde a '¿qué?'; se puede sustituir por 'lo/la/los/las'), el **complemento indirecto** (CI) es el destinatario de la acción (responde a '¿a quién?' o '¿para quién?'; se sustituye por 'le/les') y el **complemento circunstancial** (CC) indica modo, tiempo, lugar o causa. Ejemplo: 'Ana (sujeto) le regaló un libro (CD) a su hermano (CI) ayer (CC de tiempo).'",
     flashcards: [
       { front: "¿Cómo se identifica el complemento directo (CD) en una oración?", back: "Responde a la pregunta '¿qué?' hecha al verbo, y puede sustituirse por lo/la/los/las." },
       { front: "¿Cómo se identifica el complemento indirecto (CI)?", back: "Responde a '¿a quién?' o '¿para quién?' y puede sustituirse por le/les." }

@@ -142,14 +142,14 @@ const AREA6_EXTRA2 = {
     flashcards: [
       { front: "¿Qué es una fuente primaria?", back: "El documento o testimonio de primera mano: una carta, un acta, una entrevista, los datos originales de una investigación o la obra literaria misma." },
       { front: "¿Qué es una fuente secundaria?", back: "La que analiza, interpreta o comenta fuentes primarias: un artículo académico, una biografía, un libro de historia." },
-      { front: "¿Qué es una fuente terciaria?", back: "La que compila y organiza las anteriores: enciclopedias, diccionarios, catálogos y bibliografías. Sirve para ubicarse, no para citar en un trabajo serio." }
+      { front: "En el criterio del Ceneval, ¿qué es una fuente terciaria?", back: "La que **analiza e interpreta** fuentes primarias y secundarias: el análisis crítico de una obra. (En la clasificación académica de biblioteca, en cambio, terciaria es la que compila y organiza —enciclopedias, catálogos, índices—. En el examen usa el criterio del Ceneval.)" }
     ],
     quiz: [
       { q: "El diario personal de un soldado que participó en la Revolución es una fuente:", options: ["Primaria","Secundaria","Terciaria"], correct: 0, explanation: "Es un testimonio directo de quien vivió los hechos." },
       { q: "Un libro de un historiador que analiza cartas y documentos de una época es una fuente:", options: ["Secundaria","Primaria","Terciaria"], correct: 0, explanation: "Interpreta materiales de primera mano." },
       { q: "Una enciclopedia general corresponde a una fuente:", options: ["Terciaria","Primaria","Secundaria"], correct: 0, explanation: "Compila y resume información ya elaborada por otros." },
       { q: "En un análisis literario, la novela estudiada es una fuente:", options: ["Primaria","Secundaria","Terciaria"], correct: 0, explanation: "La obra misma es el objeto de estudio directo." },
-      { q: "Al citar en un trabajo académico conviene privilegiar:", options: ["Fuentes primarias y secundarias especializadas","Solo enciclopedias","Publicaciones sin autor"], correct: 0, explanation: "Las terciarias orientan la búsqueda, pero no sustentan un argumento propio." }
+      { q: "Al citar en un trabajo académico conviene privilegiar:", options: ["Fuentes primarias y estudios especializados","Solo enciclopedias","Publicaciones sin autor"], correct: 0, explanation: "Las obras de consulta general orientan la búsqueda, pero un argumento propio se sostiene con el documento original y con estudios firmados y verificables." }
     ]
   },
   "6.3.3": {
@@ -183,7 +183,7 @@ const AREA6_EXTRA2 = {
       { front: "¿Qué es el complemento indirecto?", back: "Indica el destinatario o beneficiario de la acción y se sustituye por **le** o **les**: «di el libro a Juan» → «le di el libro»." }
     ],
     quiz: [
-      { q: "En «Los estudiantes presentaron su proyecto ayer», el sujeto es:", options: ["Los estudiantes","su proyecto","ayer"], correct: 0, explanation: "Es quien realiza la acción y concuerda en número con el verbo." },
+      { q: "En «Los estudiantes presentaron su proyecto ayer», el sujeto es:", options: ["Los estudiantes","su proyecto","ayer"], correct: 0, explanation: "Concuerda en número y persona con el verbo: si cambia a «el estudiante», el verbo pasa a «presentó». La concordancia es la prueba segura; «quien realiza la acción» solo es un atajo que falla en pasivas y con verbos que no expresan acción." },
       { q: "En «Compré unas flores para mi madre», el complemento directo es:", options: ["unas flores","para mi madre","Compré"], correct: 0, explanation: "Se puede sustituir por «las»: las compré para mi madre." },
       { q: "En «Le entregué el examen al profesor», el complemento indirecto es:", options: ["al profesor","el examen","Le entregué"], correct: 0, explanation: "Es el destinatario de la acción y se sustituye por «le»." },
       { q: "En «Ayer llovió mucho en la sierra», la oración es:", options: ["Impersonal, no tiene sujeto","De sujeto tácito «él»","De sujeto «la sierra»"], correct: 0, explanation: "Los verbos meteorológicos forman oraciones impersonales." }
@@ -335,11 +335,11 @@ const AREA6_EXTRA2 = {
   "6.5.6": {
     flashcards: [
       { front: "Whose, which y what", back: "**Whose** pregunta por el poseedor (¿de quién?), **which** por una opción dentro de un conjunto limitado y **what** de forma abierta." },
-      { front: "Subject questions sin auxiliar", back: "Cuando la palabra wh- **es** el sujeto no se usa do/does/did: «Who broke the window?» (no «Who did break…»)." }
+      { front: "Subject questions sin auxiliar", back: "Cuando la palabra wh- **es** el sujeto no se usa do/does/did: «Who broke the window?». El auxiliar solo reaparece con valor enfático —«Who DID break the window?», para insistir—, no en la pregunta neutra." }
     ],
     quiz: [
       { q: "Complete: «______ is that red car? It's Peter's.»", options: ["Whose","Who's","Which"], correct: 0, explanation: "Se pregunta por el poseedor del auto." },
-      { q: "Choose the correct question:", options: ["Who called you yesterday?","Who did called you yesterday?","Who did call you yesterday?"], correct: 0, explanation: "Cuando «who» es el sujeto de la oración no se usa el auxiliar did." }
+      { q: "Choose the standard question to ask who the caller was:", options: ["Who called you yesterday?","Who did called you yesterday?","Who you called yesterday?"], correct: 0, explanation: "Cuando «who» es el sujeto de la oración no se usa el auxiliar did: el verbo va directamente en pasado. («Who DID call you yesterday?» también existe, pero solo como forma enfática para insistir o contradecir; no es la pregunta neutra que pide el examen.)" }
     ]
   },
   "6.5.7": {

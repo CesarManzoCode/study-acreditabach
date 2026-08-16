@@ -6,7 +6,7 @@ import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 import {
   areaNumbers, areaStats, weakestTopics, activityCalendar, upcomingLoad,
   resetProgress, exportProgress, importProgress, fmtDateShort, toISO, todayDate, contentStats,
-  areaReadiness
+  areaReadiness, isModoEsencial, setModoEsencial
 } from "../lib/engine.js";
 
 export default function Progress({ plan, stats }) {
@@ -16,7 +16,7 @@ export default function Progress({ plan, stats }) {
   const fileRef = useRef(null);
 
   const areas = areaNumbers();
-  const weak = useMemo(() => weakestTopics(8).filter((w) => w.mastery < 75), [rev]);
+  const weak = useMemo(() => weakestTopics(8).filter((w) => w.mastery < 85), [rev]);
   const calendar = useMemo(() => activityCalendar(84), [rev]);
   const readiness = useMemo(() => areaReadiness(), [rev]);
   const forecast = useMemo(() => upcomingLoad(14), [rev]);
@@ -131,9 +131,52 @@ export default function Progress({ plan, stats }) {
         </Card>
       </Reveal>
 
+      {/* Qué se estudia: solo lo que la guía evalúa, o también la ampliación. */}
+      <Reveal delay={170}>
+        <Card>
+          <div className="card-title-row">
+            <h3>Qué estás estudiando</h3>
+            <Badge tone={isModoEsencial() ? "success" : "brand"}>
+              {isModoEsencial() ? "Modo esencial" : "Modo completo"}
+            </Badge>
+          </div>
+          <p className="muted" style={{ marginTop: 0 }}>
+            {isModoEsencial()
+              ? "Estás estudiando solo lo que las orientaciones de la guía evalúan: la explicación de cada tema, los formatos que el examen usa y los reactivos de refuerzo. Es el camino más corto para acreditar."
+              : "Estás estudiando también los bloques de ampliación, que van más allá de lo que la guía pide. Sabrás más, pero el temario se alarga bastante."}
+          </p>
+          <Button
+            variant="solid"
+            block
+            icon={isModoEsencial() ? "sparkles" : "target"}
+            onClick={() => {
+              const nuevo = !isModoEsencial();
+              setModoEsencial(nuevo);
+              toast(
+                nuevo
+                  ? "Modo esencial: solo lo que la guía evalúa"
+                  : "Modo completo: se agregaron los bloques de ampliación",
+                { tone: "success", icon: "check" }
+              );
+            }}
+          >
+            {isModoEsencial() ? "Cambiar a modo completo" : "Volver al modo esencial"}
+          </Button>
+          <p className="faint" style={{ marginBottom: 0 }}>
+            Cambiar de modo <strong>no borra nada</strong>: las tarjetas de ampliación que ya hayas
+            estudiado conservan su intervalo y sus repasos, y vuelven en cuanto actives el modo completo.
+          </p>
+        </Card>
+      </Reveal>
+
       <Reveal delay={180}>
         <Card>
-          <h3>Dominio por área</h3>
+          <h3>Avance de estudio por área</h3>
+          <p className="faint" style={{ marginTop: -4 }}>
+            Mide tu repaso y tus aciertos <strong>dentro de esta app</strong>. No es el Índice Ceneval
+            (700–1300 puntos, mínimo 1000 por área) ni se convierte a él: sirve para ver qué falta repasar,
+            no para predecir si acreditas.
+          </p>
           {areas.map((a) => {
             const st = areaStats(a);
             const v = areaVisual(a);

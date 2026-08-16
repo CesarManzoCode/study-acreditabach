@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Icon from "../ui/Icon.jsx";
 import { Button, Card, Bar, Badge, Ring, Stat, Modal, Stack } from "../ui/kit.jsx";
 import Calculator from "../ui/Calculator.jsx";
+import Figura from "../ui/Figura.jsx";
 import { RichText, Inline } from "../lib/text.jsx";
 import { needsCalculator } from "../lib/calcNeed.js";
 import { useKeys, useScrollLock, navigate } from "../lib/hooks.js";
@@ -20,13 +21,14 @@ const LETTERS = ["A", "B", "C"];
    debajo de la instrucción. Se parte en la primera línea para que la
    instrucción conserve el tamaño de título y las listas se lean como cuerpo de
    texto, en vez de un bloque enorme en tipografía de display. */
-function QuestionStem({ text }) {
+function QuestionStem({ text, figura }) {
   const salto = String(text).indexOf("\n");
-  if (salto < 0) return <h2 className="quiz-q"><Inline>{text}</Inline></h2>;
+  const cuerpo = salto < 0 ? null : String(text).slice(salto + 1);
   return (
     <>
-      <h2 className="quiz-q"><Inline>{String(text).slice(0, salto)}</Inline></h2>
-      <div className="quiz-detail"><Inline>{String(text).slice(salto + 1)}</Inline></div>
+      <h2 className="quiz-q"><Inline>{salto < 0 ? text : String(text).slice(0, salto)}</Inline></h2>
+      {figura && <Figura spec={figura} />}
+      {cuerpo && <div className="quiz-detail"><Inline>{cuerpo}</Inline></div>}
     </>
   );
 }
@@ -327,6 +329,7 @@ function IntroStep({ topic, onNext }) {
         <p className="intro-sub">{topic.subarea}</p>
         <div className="intro-note">
           <RichText>{topic.note}</RichText>
+          {topic.figura && <Figura spec={topic.figura} />}
         </div>
       </Card>
       <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={onNext}>
@@ -374,7 +377,7 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
           <span className="faint">{topic.tema}</span>
         </div>
 
-        <QuestionStem text={question.q} />
+        <QuestionStem text={question.q} figura={question.figura} />
 
         {withCalc && !calcOpen && (
           <button className="calc-open" onClick={() => setCalcOpen(true)}>
@@ -547,6 +550,8 @@ export function MockRunner({ mock, onExit }) {
     setAnswers((a) => [...a, { ...item, chosen: i, correct: isCorrect }]);
     setIdx((n) => n + 1);
   };
+  /* Los reactivos piloto se contestan igual que los demás —en el examen real
+     no se distinguen— pero no cuentan para el resultado. */
 
   useKeys(
     done || calcOpen ? {} : { 1: () => answer(0), 2: () => answer(1), 3: () => answer(2), c: () => setCalcOpen(true) },
@@ -573,7 +578,7 @@ export function MockRunner({ mock, onExit }) {
       <div className="step-anim" key={idx}>
         <Card style={areaStyle(topic.area)}>
           <Badge tone="area">{v.short}</Badge>
-          <QuestionStem text={question.q} />
+          <QuestionStem text={question.q} figura={question.figura} />
           {withCalc && !calcOpen && (
             <button className="calc-open" onClick={() => setCalcOpen(true)}>
               <Icon name="calc" size={17} />
@@ -601,14 +606,18 @@ export function MockRunner({ mock, onExit }) {
 
 function MockResults({ mock, answers, onExit }) {
   const [review, setReview] = useState(false);
-  const total = answers.length;
-  const correct = answers.filter((a) => a.correct).length;
+  /* El resultado se calcula SOLO con los reactivos calificados, igual que el
+     examen: el bloque piloto se contesta pero no puntúa. */
+  const contados = answers.filter((a) => !a.piloto);
+  const pilotos = answers.length - contados.length;
+  const total = contados.length;
+  const correct = contados.filter((a) => a.correct).length;
   const pct = total ? Math.round((correct / total) * 100) : 0;
   const missed = answers.filter((a) => !a.correct);
 
   const byArea = useMemo(() => {
     const map = {};
-    answers.forEach((a) => {
+    contados.forEach((a) => {
       const k = a.topic.area;
       map[k] = map[k] || { total: 0, correct: 0 };
       map[k].total++;
@@ -640,7 +649,10 @@ function MockResults({ mock, answers, onExit }) {
                 <Icon name={pct >= 60 ? "check" : "target"} size={30} strokeWidth={2.2} />
               </div>
               <div className="result-score">{pct}%</div>
-              <p className="muted" style={{ marginTop: 6 }}>{correct} de {total} correctas</p>
+              <p className="muted" style={{ marginTop: 6 }}>
+                {correct} de {total} correctas
+                {pilotos > 0 && ` · ${pilotos} reactivos piloto contestados que no puntúan`}
+              </p>
             </Card>
 
             <Card>
@@ -664,7 +676,9 @@ function MockResults({ mock, answers, onExit }) {
                 );
               })}
               <p className="faint" style={{ marginTop: 4 }}>
-                Este porcentaje es una referencia de estudio, no el Índice Ceneval oficial (700–1300 puntos, mínimo 1000 por área).
+                Este porcentaje es una referencia de estudio: <strong>no es</strong> el Índice Ceneval ni se convierte a él.
+                El Ceneval califica cada área de 700 a 1300 puntos y pide 1000 para acreditarla, con una escala que no se hace
+                pública. Un 70 % aquí no equivale a 1000 puntos allá.
               </p>
             </Card>
 
@@ -682,6 +696,7 @@ function MockResults({ mock, answers, onExit }) {
                       <div key={i} className="intro-note" style={areaStyle(a.topic.area)}>
                         <div className="faint" style={{ marginBottom: 6 }}>{a.topic.tema}</div>
                         <div style={{ fontWeight: 600, marginBottom: 8 }}><Inline>{a.question.q}</Inline></div>
+                        {a.question.figura && <Figura spec={a.question.figura} />}
                         <div className="muted" style={{ marginBottom: 6 }}>
                           <strong>Correcta:</strong> {LETTERS[a.question.correct]}) <Inline>{a.question.options[a.question.correct]}</Inline>
                         </div>

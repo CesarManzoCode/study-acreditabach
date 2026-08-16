@@ -63,5 +63,79 @@ const AREA2_FORMATO = {
         explanation: "El algoritmo abre con el inicio (3), captura el dato de entrada (2), evalúa la condición y muestra el resultado (1), y cierra con el fin (4)."
       }
     ]
+  },
+
+  /* Guía 2.3.2: "Identificación de los ICONOS para insertar tablas, ajustar
+     márgenes y dividir texto en software de procesamiento de texto."
+     El examen muestra los iconos impresos; aquí van dibujados. Son esquemas:
+     conservan la forma con la que se reconocen en cualquier cinta de
+     opciones, sin reproducir la marca de ningún programa. */
+  "2.3.2": {
+    quiz: [
+      {
+        q: "¿Cuál de estos iconos sirve para INSERTAR UNA TABLA en un documento?",
+        figura: { tipo: "iconos", items: ["margenes", "tabla", "columnas"] },
+        options: ["El B", "El A", "El C"],
+        correct: 0,
+        explanation: "El icono de tabla es una cuadrícula: un rectángulo dividido en filas y columnas. El A, con la hoja y el marco punteado por dentro, es el de márgenes; el C, con dos bloques de texto lado a lado, es el de columnas."
+      },
+      {
+        q: "¿Cuál de estos iconos AJUSTA LOS MÁRGENES de la página?",
+        figura: { tipo: "iconos", items: ["tabla", "saltoPagina", "margenes"] },
+        options: ["El C", "El A", "El B"],
+        correct: 0,
+        explanation: "El icono de márgenes representa la hoja completa con un marco punteado dentro: ese marco es el área de texto y lo que queda fuera es el margen. El A es insertar tabla y el B, con la línea punteada entre dos hojas, es salto de página."
+      },
+      {
+        q: "¿Cuál de estos iconos DIVIDE EL TEXTO EN COLUMNAS?",
+        figura: { tipo: "iconos", items: ["vinetas", "columnas", "interlineado"] },
+        options: ["El B", "El A", "El C"],
+        correct: 0,
+        explanation: "El icono de columnas muestra dos bloques verticales de texto uno junto al otro. El A, con puntos y renglones, es viñetas; el C, con flechas verticales junto a los renglones, es interlineado."
+      },
+      {
+        q: "Relacione cada icono con la función que realiza en un procesador de texto.",
+        figura: { tipo: "iconos", items: ["tabla", "vinetas", "saltoPagina"], etiquetas: ["1", "2", "3"] },
+        options: ["1 insertar tabla, 2 viñetas, 3 salto de página", "1 viñetas, 2 salto de página, 3 insertar tabla", "1 salto de página, 2 insertar tabla, 3 viñetas"],
+        correct: 0,
+        explanation: "La cuadrícula (1) inserta una tabla. Los puntos con renglones al lado (2) aplican viñetas a una lista. Las dos hojas separadas por una línea punteada (3) insertan un salto de página."
+      }
+    ]
+  },
+
+  /* Guía 2.3.3: "Identificación de los ICONOS para insertar gráficos, tablas,
+     cuestionarios o imágenes de WordArt en software de presentaciones
+     electrónicas." */
+  "2.3.3": {
+    quiz: [
+      {
+        q: "En un software de presentaciones, ¿cuál de estos iconos INSERTA UN GRÁFICO?",
+        figura: { tipo: "iconos", items: ["imagen", "grafico", "tabla"] },
+        options: ["El B", "El A", "El C"],
+        correct: 0,
+        explanation: "El icono de gráfico muestra barras de distinta altura sobre unos ejes. El A, con el marco, el sol y las montañas, inserta una imagen; el C, la cuadrícula, inserta una tabla."
+      },
+      {
+        q: "¿Cuál de estos iconos inserta un texto decorativo tipo WORDART?",
+        figura: { tipo: "iconos", items: ["grafico", "wordart", "hipervinculo"] },
+        options: ["El B", "El A", "El C"],
+        correct: 0,
+        explanation: "El icono de WordArt es una letra grande —normalmente una A— con un efecto curvo o de sombra debajo: lo que anuncia es texto con estilo gráfico. El C, con los dos eslabones, inserta un hipervínculo."
+      },
+      {
+        q: "¿Cuál de estos iconos corresponde a insertar un CUESTIONARIO o formulario de preguntas?",
+        figura: { tipo: "iconos", items: ["cuestionario", "tabla", "transicion"] },
+        options: ["El A", "El B", "El C"],
+        correct: 0,
+        explanation: "El icono de cuestionario muestra una hoja con opciones marcables: círculos a la izquierda y renglones a la derecha, como una lista de preguntas de opción múltiple. El C, con dos diapositivas y una flecha entre ellas, es el de transición."
+      },
+      {
+        q: "Relacione cada icono con lo que inserta en una presentación.",
+        figura: { tipo: "iconos", items: ["wordart", "imagen", "grafico"], etiquetas: ["1", "2", "3"] },
+        options: ["1 WordArt, 2 imagen, 3 gráfico", "1 imagen, 2 gráfico, 3 WordArt", "1 gráfico, 2 WordArt, 3 imagen"],
+        correct: 0,
+        explanation: "La letra grande con el trazo curvo (1) es WordArt. El marco con el sol y las montañas (2) inserta una imagen. Las barras sobre los ejes (3) insertan un gráfico."
+      }
+    ]
   }
 };

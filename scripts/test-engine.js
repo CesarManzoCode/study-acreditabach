@@ -48,6 +48,11 @@ const check = (ok, msg) => {
   if (!ok) fallos++;
 };
 
+/* Las pruebas de bloques recorren también los de ampliación, así que corren en
+   MODO COMPLETO. El modo esencial —el de fábrica— tiene su propio grupo al
+   final. */
+E.setModoEsencial(false);
+
 const ID = "1.1.1";
 const topic = E.topicsById()[ID];
 
@@ -194,19 +199,37 @@ check(
    La guía lista 177 temas pero 180 reactivos: cultura digital tiene 18 temas
    y 19 reactivos, y conciencia histórica 21 y 23. Cuando el simulacro tomaba
    uno por tema salía de 89 en la sesión uno, aunque la pantalla prometía 92.
+
+   Y esos 92 tampoco son la carga del día: el examen añade un bloque de 14
+   reactivos piloto en la sesión uno y 11 en la dos, que no puntúan pero que
+   hay que contestar sin saber cuáles son (guía, p. 21). El simulacro completo
+   arma 106 y 99, y descuenta el bloque piloto al calificar.
    ------------------------------------------------------------------ */
 console.log("\n11) El simulacro completo tiene el número real de reactivos");
 {
   const s1 = E.buildMockExam([1, 2, 3, 4], false);
   const s2 = E.buildMockExam([5, 6, 7], false);
-  check(s1.length === 92, `la sesión 1 arma 92 reactivos (armó ${s1.length})`);
-  check(s2.length === 88, `la sesión 2 arma 88 reactivos (armó ${s2.length})`);
-  check(s1.length + s2.length === 180, "entre las dos sesiones suman los 180 del examen");
+  check(s1.length === 106, `la sesión 1 arma 106 reactivos físicos (armó ${s1.length})`);
+  check(s2.length === 99, `la sesión 2 arma 99 reactivos físicos (armó ${s2.length})`);
+  check(s1.length + s2.length === 205, "entre las dos sesiones suman los 205 que se contestan");
+
+  const cal1 = s1.filter((i) => !i.piloto).length;
+  const cal2 = s2.filter((i) => !i.piloto).length;
+  check(cal1 === 92 && cal2 === 88, `de esos, 92 y 88 puntúan (fueron ${cal1} y ${cal2})`);
+  check(cal1 + cal2 === 180, "que son los 180 reactivos calificados del examen");
+  check(
+    s1.filter((i) => i.piloto).length === 14 && s2.filter((i) => i.piloto).length === 11,
+    "y el bloque piloto trae 14 y 11 reactivos"
+  );
 
   check(
-    E.countMockQuestions([1, 2, 3, 4], false) === 92 && E.countMockQuestions([5, 6, 7], false) === 88,
+    E.countMockQuestions([1, 2, 3, 4], false) === 106 && E.countMockQuestions([5, 6, 7], false) === 99,
     "y la pantalla anuncia exactamente esa cantidad"
   );
+
+  /* Un simulacro parcial —solo lo ya estudiado— no lleva bloque piloto: ahí
+     el piloto no simula nada, solo alarga la sesión. */
+  check(E.pilotoDe([1, 2]) === 0, "un simulacro que no cubre la sesión completa no lleva piloto");
 
   /* Todo tema evaluado debe aparecer al menos una vez: los reactivos de más
      se sortean encima, nunca sustituyen a un tema. */
@@ -224,6 +247,61 @@ console.log("\n12) El cronómetro usa la duración oficial de cada sesión");
   check(E.mockMinutes([1, 5]) === 0, "y un simulacro que mezcla sesiones no lleva reloj del examen");
 }
 
+
+/* ------------------------------------------------------------------
+   13) Modo esencial
+
+   Por omisión la app estudia solo lo que las orientaciones de la guía evalúan:
+   la nota del tema (`base`), los formatos que el examen usa (`formato`) y los
+   reactivos que reponen lo que la guía nombra (`refuerzo`). Los bloques de
+   ampliación quedan fuera del plan hasta que se pida el modo completo.
+
+   Lo que no puede pasar nunca: que cambiar de modo borre progreso.
+   ------------------------------------------------------------------ */
+console.log("\n13) El modo esencial estudia solo lo que la guía evalúa");
+{
+  const ID2 = "1.1.2";
+  const t2 = E.topicsById()[ID2];
+  const tieneAmpliacion = t2.blocks.some((b) => b.nombre === "ampliacion" || b.nombre === "ampliacion2");
+  check(tieneAmpliacion, "el tema de prueba tiene bloques de ampliación que dejar fuera");
+
+  E.setModoEsencial(false);
+  const completoCards = E.cardsForTopic(ID2).length;
+
+  E.setModoEsencial(true);
+  const esencialCards = E.cardsForTopic(ID2).length;
+  check(esencialCards < completoCards, `en modo esencial el tema pide menos tarjetas (${esencialCards} < ${completoCards})`);
+
+  check(
+    t2.blocks.filter((b) => E.bloqueEnPlan(b)).every((b) => ["base", "formato", "refuerzo"].includes(b.nombre)),
+    "y los bloques que quedan en el plan son base, formato y refuerzo"
+  );
+  check(
+    !E.bloqueEnPlan({ nombre: "ampliacion" }) && !E.bloqueEnPlan({ nombre: "ampliacion2" }),
+    "los bloques de ampliación quedan fuera del plan"
+  );
+
+  /* Ningún reactivo del banco disponible puede venir de un bloque de ampliación. */
+  const banco = E.availableQuiz(t2);
+  const deAmpliacion = t2.blocks
+    .filter((b) => b.nombre.startsWith("ampliacion"))
+    .flatMap((b) => (t2.quiz || []).slice(b.qFrom, b.qTo));
+  check(
+    banco.every((q) => !deAmpliacion.includes(q)),
+    "y ningún reactivo del banco disponible sale de un bloque de ampliación"
+  );
+
+  /* Nada se pierde: al volver al modo completo, las tarjetas reaparecen. */
+  E.setModoEsencial(false);
+  check(E.cardsForTopic(ID2).length === completoCards, "al volver al modo completo reaparecen todas las tarjetas");
+
+  /* Y el simulacro completo sigue armando la carga real en cualquiera de los dos. */
+  E.setModoEsencial(true);
+  const s1e = E.buildMockExam([1, 2, 3, 4], false);
+  check(s1e.length === 106, `el simulacro completo sigue armando 106 reactivos en modo esencial (armó ${s1e.length})`);
+  E.setModoEsencial(false);
+}
+
 /* ------------------------------------------------------------------
    El esfuerzo se reparte por riesgo de área, no por partes iguales.
 
@@ -231,7 +309,7 @@ console.log("\n12) El cronómetro usa la duración oficial de cada sesión");
    una de las siete y reprobar tres significa volver a empezar. Repartir el
    tiempo parejo es lo peor que se puede hacer cuando una área va por debajo.
    ------------------------------------------------------------------ */
-console.log("\n13) El plan prioriza el área que va por debajo de la línea");
+console.log("\n14) El plan prioriza el área que va por debajo de la línea");
 {
   const areas = E.areaNumbers();
   areas.forEach((n) => E.topicsOfArea(n).forEach((t) => E.introduceTopic(t.id)));
@@ -266,6 +344,7 @@ console.log("\n13) El plan prioriza el área que va por debajo de la línea");
   check(deLaFloja > 0, `la práctica del día incluye reactivos de esa área (incluyó ${deLaFloja})`);
   const areasEnPractica = new Set(plan.quizQuestions.map((q) => q.topic.area)).size;
   check(areasEnPractica >= 3, `sin encerrarse en una sola área (aparecieron ${areasEnPractica})`);
+
 }
 
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);

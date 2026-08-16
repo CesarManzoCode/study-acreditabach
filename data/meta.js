@@ -9,9 +9,16 @@ const AREA_META = {
   7: { name: "Ciencias sociales", short: "Ciencias sociales", reactivos: 25, color: "#84cc16", session: 2 }
 };
 
+/* Ojo con la diferencia entre `reactivos` y `fisicos` (guía, p. 21):
+   los que CUENTAN para la calificación son 180, pero en el cuadernillo se
+   contestan además 25 reactivos piloto que no puntúan. El sustentante no sabe
+   cuáles son y tiene que responderlos igual, así que el cansancio y el reparto
+   del tiempo se calculan sobre los 205 físicos, no sobre los 180 calificados. */
 const SESSION_META = {
-  1: { name: "Sesión 1", areas: [1, 2, 3, 4], duracion: "4 h 30 min", reactivos: 92 },
-  2: { name: "Sesión 2", areas: [5, 6, 7], duracion: "4 h", reactivos: 88 }
+  1: { name: "Sesión 1", areas: [1, 2, 3, 4], duracion: "4 h 30 min", reactivos: 92, piloto: 14, fisicos: 106 },
+  2: { name: "Sesión 2", areas: [5, 6, 7], duracion: "4 h", reactivos: 88, piloto: 11, fisicos: 99 }
 };
 
-const TOTAL_REACTIVOS = 180;
+const TOTAL_REACTIVOS = 180;   // los que cuentan para el Índice Ceneval
+const TOTAL_PILOTO = 25;       // bloque de prueba estadística, no puntúa
+const TOTAL_FISICOS = 205;     // los que realmente se contestan ese día
