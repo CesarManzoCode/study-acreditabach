@@ -38,19 +38,19 @@ const OPTIONS = [
     key: "s1full",
     icon: "simulacro",
     title: "Sesión 1 completa",
-    desc: "Como el examen real: mismo número de reactivos por área, con cronómetro, e incluye temas que quizá todavía no estudias.",
+    desc: "La carga real de ese día: 92 reactivos que puntúan más el bloque de 14 piloto que también hay que contestar. No sabrás cuáles son los piloto, igual que en la sede.",
     areas: [1, 2, 3, 4],
     onlyIntroduced: false,
-    tag: "92 reactivos · 4 h 30 min con reloj"
+    tag: "106 reactivos · 4 h 30 min con reloj"
   },
   {
     key: "s2full",
     icon: "simulacro",
     title: "Sesión 2 completa",
-    desc: "Como el examen real: mismo número de reactivos por área, con cronómetro, e incluye temas que quizá todavía no estudias.",
+    desc: "La carga real de ese día: 88 reactivos que puntúan más el bloque de 11 piloto que también hay que contestar. No sabrás cuáles son los piloto, igual que en la sede.",
     areas: [5, 6, 7],
     onlyIntroduced: false,
-    tag: "88 reactivos · 4 h con reloj"
+    tag: "99 reactivos · 4 h con reloj"
   }
 ];
 
@@ -78,7 +78,7 @@ export default function Mock({ onStart }) {
 
   return (
     <div className="stack">
-      <SectionTitle hint="Mismo formato del examen real: opción múltiple con tres respuestas y sin retroalimentación hasta el final.">
+      <SectionTitle hint="Opción múltiple con tres respuestas y sin retroalimentación hasta el final, como en el examen. Lo que no se puede simular aquí son las imágenes impresas del cuadernillo ni la hoja de lector óptico.">
         Simulacros
       </SectionTitle>
 
@@ -88,9 +88,12 @@ export default function Mock({ onStart }) {
             <span className="mock-icon"><Icon name="info" size={20} /></span>
             <div>
               <p className="muted" style={{ margin: 0 }}>
-                El examen se aplica en <strong>dos sesiones</strong>: {SESSION_META[1]?.reactivos || 92} reactivos
-                en {SESSION_META[1]?.duracion || "4 h 30 min"} y {SESSION_META[2]?.reactivos || 88} en {SESSION_META[2]?.duracion || "4 h"}.
-                El porcentaje que ves aquí es una referencia de estudio, no el Índice Ceneval oficial.
+                El examen se aplica en <strong>dos sesiones</strong> el mismo día, con receso de hora y media.
+                Se contestan <strong>{SESSION_META[1]?.fisicos || 106} reactivos</strong> en {SESSION_META[1]?.duracion || "4 h 30 min"}
+                {" "}y <strong>{SESSION_META[2]?.fisicos || 99}</strong> en {SESSION_META[2]?.duracion || "4 h"}: 205 en total,
+                de los cuales <strong>180 puntúan</strong> y 25 son piloto. Los simulacros completos usan esa cuenta física,
+                que es la que marca el ritmo por pregunta.
+                El porcentaje que ves aquí es una referencia de estudio; <strong>no</strong> es el Índice Ceneval ni se convierte a él.
               </p>
             </div>
           </div>

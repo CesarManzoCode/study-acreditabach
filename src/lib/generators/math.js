@@ -415,12 +415,17 @@ export function probabilidadCondicional(h) {
    1.3 Pensamiento algebraico
    ============================================================ */
 
+/* Ojo con la redacción: "el triple de un número disminuido en 5" se puede leer
+   como 3x − 5 o como 3(x − 5), y el distractor era justamente la otra lectura.
+   Un reactivo cuya respuesta depende de cómo se lea la frase no mide álgebra,
+   mide adivinanza. Todas las frases dicen ahora el orden de las operaciones. */
 const FRASES = [
-  { t: (a, b) => `el triple de un número disminuido en ${b}`, e: (a, b) => `3x - ${b}`, d: (a, b) => [`3(x - ${b})`, `x/3 - ${b}`, `3x + ${b}`] },
-  { t: (a, b) => `el doble de la suma de un número con ${b}`, e: (a, b) => `2(x + ${b})`, d: (a, b) => [`2x + ${b}`, `2x - ${b}`, `x + 2${b}`] },
-  { t: (a, b) => `${a} veces un número aumentado en ${b}`, e: (a, b) => `${a}x + ${b}`, d: (a, b) => [`${a}(x + ${b})`, `${a}x - ${b}`, `x + ${a * b}`] },
-  { t: (a, b) => `la mitad de un número más ${b}`, e: (a, b) => `x/2 + ${b}`, d: (a, b) => [`2x + ${b}`, `(x + ${b})/2`, `x/2 - ${b}`] },
-  { t: (a, b) => `el cuadrado de un número menos ${b}`, e: (a, b) => `x² - ${b}`, d: (a, b) => [`(x - ${b})²`, `2x - ${b}`, `x² + ${b}`] },
+  { t: (a, b) => `el triple de un número y, al resultado, se le restan ${b}`, e: (a, b) => `3x - ${b}`, d: (a, b) => [`3(x - ${b})`, `x/3 - ${b}`, `3x + ${b}`] },
+  { t: (a, b) => `el doble de la suma de un número con ${b}`, e: (a, b) => `2(x + ${b})`, d: (a, b) => [`2x + ${b}`, `2x - ${b}`, `x + 2(${b})`] },
+  { t: (a, b) => `${a} veces un número y, al resultado, se le suman ${b}`, e: (a, b) => `${a}x + ${b}`, d: (a, b) => [`${a}(x + ${b})`, `${a}x - ${b}`, `x + ${a * b}`] },
+  { t: (a, b) => `un número aumentado en ${b} y todo eso multiplicado por ${a}`, e: (a, b) => `${a}(x + ${b})`, d: (a, b) => [`${a}x + ${b}`, `${a}x - ${b}`, `x + ${a * b}`] },
+  { t: (a, b) => `la mitad de un número y, al resultado, se le suman ${b}`, e: (a, b) => `x/2 + ${b}`, d: (a, b) => [`2x + ${b}`, `(x + ${b})/2`, `x/2 - ${b}`] },
+  { t: (a, b) => `el cuadrado de un número y, al resultado, se le restan ${b}`, e: (a, b) => `x² - ${b}`, d: (a, b) => [`(x - ${b})²`, `2x - ${b}`, `x² + ${b}`] },
   { t: (a, b) => `${b} menos el doble de un número`, e: (a, b) => `${b} - 2x`, d: (a, b) => [`2x - ${b}`, `2(${b} - x)`, `${b} + 2x`] },
   { t: (a, b) => `la suma de un número con su consecutivo`, e: () => `x + (x + 1)`, d: () => [`x + 1`, `x(x + 1)`, `2x + 2`] },
   { t: (a, b) => `el ${a}% de un número`, e: (a) => `${a}x/100`, d: (a) => [`${a}x`, `100x/${a}`, `x + ${a}`] }

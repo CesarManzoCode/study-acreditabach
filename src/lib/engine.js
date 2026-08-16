@@ -166,14 +166,20 @@ const _AREA_META = typeof AREA_META !== "undefined" ? AREA_META : {};
 const _SESSION_META = typeof SESSION_META !== "undefined" ? SESSION_META : {};
 const _INFO_SECTIONS = typeof INFO_SECTIONS !== "undefined" ? INFO_SECTIONS : [];
 const _BIBLIOGRAFIA = typeof BIBLIOGRAFIA !== "undefined" ? BIBLIOGRAFIA : {};
+const _NOTA_BIBLIOGRAFIA = typeof NOTA_BIBLIOGRAFIA !== "undefined" ? NOTA_BIBLIOGRAFIA : "";
 const _TOTAL_REACTIVOS = typeof TOTAL_REACTIVOS !== "undefined" ? TOTAL_REACTIVOS : 180;
+const _TOTAL_PILOTO = typeof TOTAL_PILOTO !== "undefined" ? TOTAL_PILOTO : 25;
+const _TOTAL_FISICOS = typeof TOTAL_FISICOS !== "undefined" ? TOTAL_FISICOS : 205;
 
 export {
   _AREA_META as AREA_META,
   _SESSION_META as SESSION_META,
   _INFO_SECTIONS as INFO_SECTIONS,
   _BIBLIOGRAFIA as BIBLIOGRAFIA,
-  _TOTAL_REACTIVOS as TOTAL_REACTIVOS
+  _NOTA_BIBLIOGRAFIA as NOTA_BIBLIOGRAFIA,
+  _TOTAL_REACTIVOS as TOTAL_REACTIVOS,
+  _TOTAL_PILOTO as TOTAL_PILOTO,
+  _TOTAL_FISICOS as TOTAL_FISICOS
 };
 
 /* Paquetes de contenido adicional (data/extra/*.js, data/extra2/*.js): más
@@ -202,6 +208,83 @@ export {
    la nota del tema. */
 
 export const BLOQUES = ["base", "ampliacion", "ampliacion2", "formato", "refuerzo"];
+
+/* ---------------- Modo esencial ----------------
+
+   Los bloques no valen lo mismo de cara al examen:
+
+     · `base`     — la nota del tema, escrita desde la orientación de la guía.
+     · `formato`  — los formatos que la guía marca (relación, jerarquización)
+                    y las figuras que el cuadernillo trae impresas.
+     · `refuerzo` — lo que la guía nombra por su nombre y no tenía reactivo.
+
+   Esos tres son el examen. Los otros dos, `ampliacion` y `ampliacion2`, son
+   ampliación de cultura general: útil, a veces excelente, pero fuera de lo que
+   las orientaciones piden, y cuestan la mayor parte del tiempo de estudio.
+
+   El MODO ESENCIAL (activado por omisión) deja fuera del plan diario esos dos
+   bloques: ni sus tarjetas nuevas ni sus reactivos entran. Quien tenga tiempo
+   de sobra puede apagarlo y estudiarlo todo.
+
+   Importante: apagar o encender el modo NO borra nada. Las tarjetas de
+   ampliación que ya se hayan programado siguen guardadas con su intervalo y sus
+   repasos; simplemente dejan de proponerse mientras el modo esté activo. Por eso
+   la preferencia vive en su propia llave de localStorage y jamás toca
+   `acreditabach_v1`. */
+
+const BLOQUES_ESENCIALES = new Set(["base", "formato", "refuerzo"]);
+const MODO_KEY = "acreditabach_modo_esencial";
+
+let MODO_ESENCIAL = (() => {
+  try {
+    const v = localStorage.getItem(MODO_KEY);
+    return v === null ? true : v === "1";   // por omisión, esencial
+  } catch (e) {
+    return true;
+  }
+})();
+
+export function isModoEsencial() { return MODO_ESENCIAL; }
+
+export function setModoEsencial(on) {
+  const antes = MODO_ESENCIAL;
+  MODO_ESENCIAL = !!on;
+  try { localStorage.setItem(MODO_KEY, MODO_ESENCIAL ? "1" : "0"); } catch (e) {}
+  /* Al apagarlo, los temas ya vistos necesitan que se den de alta las tarjetas
+     de ampliación que nunca se programaron; si no, quedarían invisibles para
+     siempre. Se reparten en el tiempo para no soltarlas todas de golpe. */
+  if (antes && !MODO_ESENCIAL) programarTarjetasFaltantes();
+  emit();
+}
+
+function programarTarjetasFaltantes() {
+  const today = todayDate();
+  const REPARTO = 21;
+  let n = 0;
+  Object.keys(STATE.topicsIntroduced).forEach((topicId) => {
+    const t = topicsById()[topicId];
+    if (!t) return;
+    (t.flashcards || []).forEach((fc, i) => {
+      const cid = topicId + "::fc" + i;
+      if (STATE.cards[cid]) return;
+      STATE.cards[cid] = {
+        interval: 0,
+        repetitions: 0,
+        ef: 2.5,
+        due: toISO(addDays(today, n++ % REPARTO)),
+        lastReview: null
+      };
+    });
+  });
+  if (n) STATE.contentUpdate = { at: toISO(today), newCards: n, dias: REPARTO };
+  saveState();
+}
+
+/** ¿Este bloque entra hoy en el plan de estudio? */
+export function bloqueEnPlan(block) {
+  if (!MODO_ESENCIAL) return true;
+  return BLOQUES_ESENCIALES.has(block && block.nombre);
+}
 
 function packGroups() {
   /* data/formato/*.js: reactivos con los formatos de relación de elementos y de
@@ -558,10 +641,20 @@ export function nextIntervalPreview(cardId, quality) {
   return months <= 1 ? "en 1 mes" : `en ${months} meses`;
 }
 
+/** Las tarjetas del tema que hoy cuentan para el plan y para el porcentaje.
+    En modo esencial se dejan fuera las de los bloques de ampliación; las que ya
+    estuvieran programadas siguen guardadas y vuelven al apagar el modo. */
 export function cardsForTopic(topicId) {
   const t = topicsById()[topicId];
   if (!t) return [];
-  return (t.flashcards || []).map((fc, i) => topicId + "::fc" + i);
+  const todas = (t.flashcards || []).map((fc, i) => topicId + "::fc" + i);
+  if (!MODO_ESENCIAL || !t.blocks || !t.blocks.length) return todas;
+  const out = [];
+  t.blocks.forEach((b) => {
+    if (!bloqueEnPlan(b)) return;
+    for (let i = b.fcFrom; i < b.fcTo; i++) if (todas[i]) out.push(todas[i]);
+  });
+  return out;
 }
 
 /** Las tarjetas de un bloque concreto del tema. */
@@ -625,6 +718,7 @@ export function availableQuiz(topic) {
   if (!blocks || !blocks.length) return bank;
   const out = [];
   blocks.forEach((b, i) => {
+    if (!bloqueEnPlan(b)) return;
     if (!blockUnlocked(topic, b, i)) return;
     for (let q = b.qFrom; q < b.qTo; q++) if (bank[q]) out.push(bank[q]);
   });
@@ -668,6 +762,7 @@ export function introduceTopic(topicId) {
     cardsForTopic(topicId).forEach((cid) => getCard(cid));
   } else {
     blocks.forEach((b, i) => {
+      if (!bloqueEnPlan(b)) return;
       cardsOfBlock(topicId, b).forEach((cid) => {
         if (STATE.cards[cid]) return;
         STATE.cards[cid] = {
@@ -973,7 +1068,10 @@ export function overallStats() {
     quizCorrect += e.quizCorrect || 0;
   });
   const studyDays = Object.keys(STATE.sessionLog).length;
-  const mastered = getAllTopics().filter((t) => isIntroduced(t.id) && topicMastery(t.id) >= 75).length;
+  /* Umbral del contador de temas "firmes". Se subió de 75 a 85 para que la
+     etiqueta no se lea como "ya lo tengo para el examen": este porcentaje mide
+     el repaso dentro de la app y no equivale al Índice Ceneval. */
+  const mastered = getAllTopics().filter((t) => isIntroduced(t.id) && topicMastery(t.id) >= 85).length;
   return {
     total,
     introducedCount,
@@ -1030,6 +1128,7 @@ export function upcomingLoad(days = 14) {
 export function buildMockExam(areaNums, onlyIntroduced, limit) {
   const semilla = randomSeed();
   const items = [];
+  const elegibles = [];
   let n = 0;
 
   areaNums.forEach((area) => {
@@ -1037,6 +1136,7 @@ export function buildMockExam(areaNums, onlyIntroduced, limit) {
       (t) => t.area === area && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
     );
     if (!topics.length) return;
+    elegibles.push(...topics);
 
     /* Uno por tema, que es el piso: todo tema evaluado aparece al menos una vez. */
     topics.forEach((t) => {
@@ -1058,7 +1158,33 @@ export function buildMockExam(areaNums, onlyIntroduced, limit) {
   });
 
   if (limit && items.length > limit) return shuffle(items).slice(0, limit);
+
+  /* Bloque piloto. En el examen real se contestan 14 reactivos más en la
+     sesión uno y 11 en la dos que NO cuentan para la calificación, y el
+     sustentante no sabe cuáles son (guía, p. 21). Simular solo los 92 y los 88
+     calificados regalaba ~15 % y ~12.5 % más de tiempo por pregunta y dejaba
+     fuera la parte de resistencia. Aquí se añaden como bloque al final, sin
+     avisar cuáles son: se responden igual y se descuentan al calificar. */
+  const piloto = pilotoDe(areaNums);
+  if (piloto > 0 && elegibles.length) {
+    for (let i = 0; i < piloto; i++) {
+      const t = elegibles[(i * 7 + 3) % elegibles.length];
+      const question = pickQuestion(t, semilla + "|piloto|" + n++);
+      if (question) items.push({ topic: t, question, piloto: true });
+    }
+  }
   return items;
+}
+
+/** Reactivos piloto que le tocan a una sesión completa (0 si no es una sesión entera). */
+export function pilotoDe(areaNums) {
+  const sesiones = new Set(areaNums.map((a) => (_AREA_META[a] || {}).session).filter(Boolean));
+  if (sesiones.size !== 1) return 0;
+  const s = _SESSION_META[[...sesiones][0]];
+  if (!s) return 0;
+  /* Solo cuando el simulacro cubre TODAS las áreas de esa sesión. */
+  const completas = (s.areas || []).every((a) => areaNums.includes(a));
+  return completas ? (s.piloto || 0) : 0;
 }
 
 /** Cuánto dura la sesión de simulacro que cubre esas áreas, en minutos. */
@@ -1078,7 +1204,7 @@ function puedeExaminar(t) {
 
 /** Cuántas preguntas tendría un simulacro con esos filtros. */
 export function countMockQuestions(areaNums, onlyIntroduced) {
-  return areaNums.reduce((total, area) => {
+  const calificados = areaNums.reduce((total, area) => {
     const temas = getAllTopics().filter(
       (t) => t.area === area && (!onlyIntroduced || isIntroduced(t.id)) && puedeExaminar(t)
     ).length;
@@ -1086,6 +1212,8 @@ export function countMockQuestions(areaNums, onlyIntroduced) {
     const cuota = onlyIntroduced ? 0 : (_AREA_META[area] || {}).reactivos || 0;
     return total + Math.max(temas, cuota);
   }, 0);
+  if (onlyIntroduced || !calificados) return calificados;
+  return calificados + pilotoDe(areaNums);
 }
 
 /**

@@ -124,7 +124,7 @@ function AreaScreen({ areaNum }) {
                 {st.total} temas · {v.reactivos} reactivos en el examen
               </p>
             </div>
-            <Ring value={st.mastery} size={62} stroke={6} color={v.color} label={`${st.mastery}%`} sublabel="dominio" />
+            <Ring value={st.mastery} size={62} stroke={6} color={v.color} label={`${st.mastery}%`} sublabel="repasado" />
           </div>
           <div style={{ marginTop: 16 }}>
             <div className="bar-row">
@@ -215,7 +215,7 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
               <h2 style={{ fontSize: "1.35rem", margin: "10px 0 3px" }}>{topic.tema}</h2>
               <p className="faint" style={{ margin: 0 }}>{topic.subarea}</p>
             </div>
-            {introduced && <Ring value={mastery} size={62} stroke={6} color={v.color} label={`${mastery}%`} sublabel="dominio" />}
+            {introduced && <Ring value={mastery} size={62} stroke={6} color={v.color} label={`${mastery}%`} sublabel="repasado" />}
           </div>
 
           {introduced && (

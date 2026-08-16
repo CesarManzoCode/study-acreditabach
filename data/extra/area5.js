@@ -103,7 +103,7 @@ const AREA5_EXTRA = {
   },
   "5.2.5": {
     flashcards: [
-      { front: "¿Qué es la entropía?", back: "La medida del desorden o de la energía no aprovechable de un sistema. La segunda ley afirma que la entropía del universo siempre aumenta en los procesos espontáneos." },
+      { front: "¿Qué es la entropía?", back: "La medida del desorden o de la energía no aprovechable de un sistema. La segunda ley dice que en un sistema aislado la entropía **nunca disminuye**: crece en los procesos espontáneos y se mantiene constante en un proceso reversible ideal." },
       { front: "¿Por qué ninguna máquina térmica tiene 100% de eficiencia?", back: "Por la segunda ley: parte de la energía se disipa siempre como calor no aprovechable hacia el ambiente." }
     ],
     quiz: [
@@ -246,7 +246,7 @@ const AREA5_EXTRA = {
     quiz: [
       { q: "¿Cuál de estas radiaciones es ionizante y por eso requiere protección?", options: ["Los rayos X","Las ondas de radio","Las microondas"], correct: 0, explanation: "Su alta energía puede alterar moléculas biológicas, incluido el ADN, de ahí los mandiles de plomo." },
       { q: "En el espectro electromagnético, a mayor frecuencia corresponde:", options: ["Menor longitud de onda y mayor energía","Mayor longitud de onda","Menor energía"], correct: 0, explanation: "Frecuencia y longitud de onda son inversamente proporcionales, ya que c = λ·f es constante." },
-      { q: "El horno de microondas calienta los alimentos porque:", options: ["Hace vibrar las moléculas de agua, y esa agitación es calor","Emite radiación ionizante","Quema la superficie con luz infrarroja"], correct: 0, explanation: "La frecuencia usada coincide con la absorción del agua, que se agita y eleva la temperatura del alimento." },
+      { q: "El horno de microondas calienta los alimentos porque:", options: ["Hace girar las moléculas de agua, y el roce entre ellas es calor","Emite radiación ionizante","Quema la superficie con luz infrarroja"], correct: 0, explanation: "El campo eléctrico oscilante reorienta continuamente las moléculas de agua, que son polares; la fricción entre ellas eleva la temperatura. No se usa ninguna frecuencia de resonancia del agua, y la penetración es de pocos centímetros: el centro de una pieza grande se calienta por conducción." },
       { q: "Las fibras ópticas transmiten información usando:", options: ["Luz, generalmente infrarroja, que se refleja dentro del hilo de vidrio","Ondas de radio","Rayos gamma"], correct: 0, explanation: "La reflexión interna total mantiene la señal luminosa confinada a lo largo de la fibra." }
     ]
   },
@@ -285,7 +285,7 @@ const AREA5_EXTRA = {
     ]
   },
   "5.6.3": {
-    leccion: "Dos precisiones sobre la obtención de energía en la célula. La **fermentación** es la vía anaerobia que sigue a la glucólisis cuando falta oxígeno: produce muy poco ATP y genera ácido láctico en los músculos o etanol y CO₂ en las levaduras. Y de las etapas de la respiración celular, la que produce **más ATP** es la **cadena transportadora de electrones**, en la membrana interna de la mitocondria: ahí se genera la gran mayoría de los 36 a 38 ATP totales, no en la glucólisis ni en el ciclo de Krebs.",
+    leccion: "Dos precisiones sobre la obtención de energía en la célula. La **fermentación** es la vía anaerobia que sigue a la glucólisis cuando falta oxígeno: produce muy poco ATP y genera lactato en los músculos o etanol y CO₂ en las levaduras. Aclaración importante, porque es un mito muy extendido: el **lactato no es lo que causa el ardor ni la fatiga muscular** —de hecho es un combustible que el músculo y el corazón reutilizan—, y tampoco tiene nada que ver con el dolor de uno o dos días después, que se debe a microlesiones del tejido. Lo que acompaña a la fatiga aguda es la acumulación de iones H⁺ y de fosfato, no el lactato en sí. Y de las etapas de la respiración celular, la que produce **más ATP** es la **cadena transportadora de electrones**, en la membrana interna de la mitocondria: ahí se genera la gran mayoría del total, que las estimaciones actuales sitúan en unos 30 a 32 ATP por glucosa (el clásico «36-38» está sobreestimado).",
     flashcards: [
       { front: "¿Cuál etapa de la respiración celular produce más ATP?", back: "La cadena transportadora de electrones, en la membrana interna de la mitocondria: ahí se genera la gran mayoría de los 36-38 ATP totales." }
     ],

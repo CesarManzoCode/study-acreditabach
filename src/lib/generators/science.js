@@ -800,12 +800,39 @@ export function nivelesOrganizacion(h) {
   };
 }
 
+/* El nivel trófico NO es una propiedad del animal: depende de qué come en esa
+   red concreta. Una serpiente que come ratones es consumidor secundario, pero
+   si come ranas insectívoras es terciario; un águila puede ser secundaria si
+   caza conejos. La versión anterior de este generador preguntaba "¿qué nivel
+   ocupa un águila?", que no tiene una sola respuesta correcta.
+
+   Por eso cada ejemplo describe la CADENA, no solo la especie. */
 const TROFICOS = [
-  ["productor", "elabora su propio alimento mediante la fotosíntesis", ["una planta de maíz", "el pasto", "un alga"]],
-  ["consumidor primario", "se alimenta directamente de los productores", ["un conejo", "un saltamontes", "una vaca"]],
-  ["consumidor secundario", "se alimenta de los consumidores primarios", ["una rana que come insectos", "una serpiente que come ratones", "un pájaro insectívoro"]],
-  ["consumidor terciario", "se alimenta de consumidores secundarios y suele estar en la cima de la cadena", ["un águila", "un puma", "un tiburón"]],
-  ["descomponedor", "degrada la materia orgánica muerta y devuelve nutrientes al suelo", ["un hongo", "una bacteria del suelo", "el moho"]]
+  ["productor", "elabora su propio alimento mediante la fotosíntesis", [
+    "una planta de maíz",
+    "el pasto de un pastizal",
+    "un alga del fitoplancton"
+  ]],
+  ["consumidor primario", "se alimenta directamente de los productores", [
+    "un conejo que come pasto",
+    "un saltamontes que come hojas",
+    "una vaca que pasta en el potrero"
+  ]],
+  ["consumidor secundario", "se alimenta de los consumidores primarios", [
+    "una rana que come saltamontes que comieron hojas",
+    "una serpiente que come ratones que comieron semillas",
+    "un pájaro que come orugas que comieron hojas"
+  ]],
+  ["consumidor terciario", "se alimenta de consumidores secundarios", [
+    "un águila que come serpientes que comieron ratones",
+    "un puma que come zorros que comieron conejos",
+    "un tiburón que come atunes que comieron sardinas"
+  ]],
+  ["descomponedor", "degrada la materia orgánica muerta y devuelve nutrientes al suelo", [
+    "un hongo que crece sobre un tronco caído",
+    "una bacteria del suelo que degrada restos vegetales",
+    "el moho que aparece sobre la fruta podrida"
+  ]]
 ];
 
 export function redesTroficas(h) {
@@ -818,10 +845,13 @@ export function redesTroficas(h) {
     const opts = h.choice3(nivel.charAt(0).toUpperCase() + nivel.slice(1), otros.map((o) => o[0].charAt(0).toUpperCase() + o[0].slice(1)));
     if (!opts) return null;
     return {
-      q: `En una red trófica, ¿qué nivel ocupa ${ej}?`,
+      q: `En la siguiente red trófica, ¿qué nivel ocupa ${ej}?`,
       options: opts.options,
       correct: opts.correct,
-      explanation: `${ej.charAt(0).toUpperCase() + ej.slice(1)} es un ${nivel}: ${definicion}.`
+      explanation:
+        `En esa cadena es un ${nivel}: ${definicion}. ` +
+        `Ojo: el nivel trófico depende de lo que el organismo come en la red que te dan, no de la especie. ` +
+        `El mismo animal puede ser consumidor secundario en una cadena y terciario en otra.`
     };
   }
   const opts = h.choice3(nivel.charAt(0).toUpperCase() + nivel.slice(1), otros.map((o) => o[0].charAt(0).toUpperCase() + o[0].slice(1)));
@@ -830,7 +860,7 @@ export function redesTroficas(h) {
     q: `¿Qué nivel trófico ${definicion}?`,
     options: opts.options,
     correct: opts.correct,
-    explanation: `Es el ${nivel}: ${definicion}. Ejemplo típico: ${ejemplos[0]}.`
+    explanation: `Es el ${nivel}: ${definicion}. Ejemplo: ${ejemplos[0]}.`
   };
 }
 

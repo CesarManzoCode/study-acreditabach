@@ -29,7 +29,7 @@ const AREA2_TOPICS = [
     area: 2,
     subarea: "2.1 Ciudadanía digital",
     tema: "Tipos de licenciamiento de software",
-    note: "Existen distintos tipos de licencia según lo que te permiten hacer con un programa. **Freeware**: software gratis, pero de código cerrado (no puedes ver ni modificar su código), ejemplo Skype o Adobe Reader. **Shareware**: es de prueba, gratis por tiempo limitado o con funciones reducidas, y luego debes pagar para seguir usándolo completo, ejemplo WinRAR. **Software de código abierto (open source)**: es gratis y además puedes ver, modificar y redistribuir su código fuente, ejemplo Linux, LibreOffice o Mozilla Firefox. La clave para identificarlos en el examen: freeware = gratis y cerrado; shareware = prueba temporal; open source = código visible y modificable.",
+    note: "Existen distintos tipos de licencia según lo que te permiten hacer con un programa. **Freeware**: se usa sin pagar, pero el código es cerrado (no puedes verlo ni modificarlo), ejemplo Skype o Adobe Reader. **Shareware**: es de prueba, gratis por tiempo limitado o con funciones reducidas, y luego debes pagar para seguir usándolo completo, ejemplo WinRAR. **Software de código abierto (open source)**: su código fuente se puede ver, modificar y redistribuir, ejemplo Linux, LibreOffice o Mozilla Firefox.\n\nOjo con una confusión muy común: **código abierto no significa gratis**. Lo que lo define es el acceso al código, no el precio. Casi siempre se descarga sin costo, pero existen distribuciones de pago (Red Hat Enterprise Linux se cobra y es de código abierto). Al revés también: el freeware no cuesta nada y aun así es de código cerrado. Precio y apertura del código son dos cosas distintas. La clave para identificarlos en el examen: freeware = sin costo y cerrado; shareware = prueba temporal y luego se paga; open source = código visible y modificable.",
     flashcards: [
       { front: "¿Qué es el shareware?", back: "Software de prueba, gratuito por tiempo limitado o con funciones reducidas; para usarlo completo hay que pagar." },
       { front: "Menciona un ejemplo de software de código abierto", back: "Linux, LibreOffice o Mozilla Firefox: su código fuente se puede ver y modificar libremente." }
@@ -43,9 +43,9 @@ const AREA2_TOPICS = [
       },
       {
         q: "¿Cuál es la característica principal del software de código abierto?",
-        options: ["Solo funciona 30 días de prueba", "Su código fuente puede ser visto, modificado y redistribuido", "Siempre requiere pago único"],
+        options: ["Solo funciona 30 días de prueba", "Su código fuente puede ser visto, modificado y redistribuido", "Que siempre es gratuito"],
         correct: 1,
-        explanation: "El software de código abierto permite el acceso, modificación y redistribución de su código fuente."
+        explanation: "Lo que define al código abierto es el acceso al código fuente, no el precio: suele descargarse sin costo, pero hay versiones de pago (Red Hat) que siguen siendo de código abierto."
       }
     ]
   },
@@ -404,10 +404,10 @@ const AREA2_TOPICS = [
     area: 2,
     subarea: "2.4 Pensamiento algorítmico",
     tema: "Características del pensamiento algorítmico",
-    note: "Un buen algoritmo debe cumplir tres características principales. **Definido**: cada paso debe ser claro y sin ambigüedad, no debe prestarse a interpretaciones distintas. **Preciso**: las instrucciones deben indicar exactamente qué hacer y en qué orden, sin dejar huecos. **Finito**: debe tener un número limitado de pasos y terminar en algún momento, no puede repetirse para siempre. Ejemplo de algoritmo mal hecho: \"sumar números hasta que ya no quieras\" (no es finito ni preciso). Un algoritmo correcto siempre indica claramente cuándo empieza, qué hace y cuándo termina.",
+    note: "La guía pide exactamente tres características: **definido, preciso y finito**. Apréndelas con esta división, porque es la que usa el examen.\n\n**Definido**: con las mismas entradas produce siempre el mismo resultado; no depende del humor, del azar ni de quién lo ejecute. **Preciso**: cada paso está redactado sin ambigüedad y en un orden establecido; \"agregar sal al gusto\" no es preciso porque cada persona lo hace distinto. **Finito**: tiene un número limitado de pasos y termina; \"repetir hasta que te canses\" no es finito.\n\nEjemplo de algoritmo mal hecho: \"sumar números hasta que ya no quieras\" —falla la finitud (nunca termina) y la precisión (no dice cuándo parar). Un algoritmo correcto indica claramente dónde empieza, qué hace en cada paso y cuándo termina.",
     flashcards: [
       { front: "¿Qué significa que un algoritmo sea 'finito'?", back: "Que tiene un número limitado de pasos y llega a un fin, no se repite indefinidamente." },
-      { front: "¿Qué significa que un algoritmo sea 'preciso'?", back: "Que sus instrucciones indican exactamente qué hacer y en qué orden, sin ambigüedad ni huecos." }
+      { front: "¿Qué significa que un algoritmo sea 'preciso'?", back: "Que cada paso está redactado sin ambigüedad y en un orden establecido: no admite dos interpretaciones. Contraejemplo: 'sazonar al gusto'." }
     ],
     quiz: [
       {

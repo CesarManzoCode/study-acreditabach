@@ -55,11 +55,24 @@ const DATA_SCRIPTS = [
   "data/extra2/area7.js",
   /* Reactivos con los formatos de relación de elementos y de jerarquización
      que la guía oficial marca para ciertos temas (data/formato). */
+  "data/formato/area1.js",
   "data/formato/area2.js",
   "data/formato/area3.js",
   "data/formato/area4.js",
+  "data/formato/area5.js",
   "data/formato/area6.js",
-  "data/formato/area7.js"
+  "data/formato/area7.js",
+  /* Refuerzo (data/refuerzo): repone lo que la guía nombra por su nombre y no
+     tenía ni un reactivo, y trae los textos largos de comprensión lectora del
+     área 6. Estos archivos existían y el validador los contaba, pero el
+     index.html nunca los cargaba: el sitio publicado se quedaba sin ellos. */
+  "data/refuerzo/area1.js",
+  "data/refuerzo/area2.js",
+  "data/refuerzo/area3.js",
+  "data/refuerzo/area4.js",
+  "data/refuerzo/area5.js",
+  "data/refuerzo/area6.js",
+  "data/refuerzo/area7.js"
 ];
 
 function cleanOutdir() {

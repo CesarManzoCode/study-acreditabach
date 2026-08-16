@@ -1,12 +1,35 @@
 # ACREDITA-BACH · Plan de estudio
 
 Plan de estudio diario para el **Examen para la Acreditación del Bachillerato General
-(ACREDITA-BACH, Ceneval)**: repetición espaciada, práctica activa y simulacros con el
-formato real del examen.
+(ACREDITA-BACH, Ceneval)**: repetición espaciada, práctica activa y simulacros con la
+carga real del examen.
 
 Todo corre en el navegador. Sin cuenta se estudia igual (modo invitado, el avance se
 guarda en el dispositivo); con una cuenta, el avance vive en el servidor y te sigue a
 cualquier dispositivo donde inicies sesión.
+
+### Qué es y qué no es esto
+
+- **Es** una herramienta de estudio independiente, construida sobre el temario oficial:
+  las 7 áreas, los 177 temas y sus orientaciones salen de la *Guía para el sustentante
+  ACREDITA-BACH* (Ceneval, junio de 2026).
+- **No está** afiliada al Ceneval ni avalada por él, y **no puede garantizar** ningún
+  resultado.
+- Las explicaciones, tarjetas y reactivos **los redactó esta app**. No son material del
+  Ceneval, y en varios temas van más allá de lo que la orientación pide.
+- Fechas, requisitos, costos y sedes **cambian cada convocatoria**: confírmalos siempre en
+  [ceneval.edu.mx](https://www.ceneval.edu.mx).
+- Úsala **junto con** las 24 preguntas muestra de la guía oficial, que traen las imágenes
+  impresas que aquí solo se pueden aproximar con esquemas dibujados.
+
+### El examen que se simula
+
+180 reactivos cuentan para la calificación, pero se contestan **205**: hay un bloque de 25
+reactivos piloto que no puntúan y que el sustentante no puede distinguir. Sesión 1: 92 + 14
+piloto = **106** en 4 h 30 min. Sesión 2: 88 + 11 piloto = **99** en 4 h, con receso de hora
+y media entre ambas. Los simulacros completos de la app usan esa cuenta física, que es la
+que marca el ritmo por pregunta (≈ 2.5 y ≈ 2.4 minutos), y descuentan el bloque piloto al
+calificar.
 
 ---
 
@@ -37,10 +60,34 @@ En **Progreso → Tus datos** puedes descargar un respaldo `.json` y restaurarlo
 
 | | |
 | --- | --- |
-| Temas | 177 |
-| Tarjetas de repaso | 1,257 |
-| Reactivos escritos | 1,915 |
+| Temas | 177 (los 177 de la guía oficial) |
+| Tarjetas de repaso | 1,032 |
+| Reactivos escritos | 1,708 |
+| Reactivos **con figura** (iconos, gráficas, cuadros de Punnett, obras) | 28 |
 | Temas con **problemas generados** | 45 |
+
+### Modo esencial (activado de fábrica)
+
+No todo el banco pesa lo mismo de cara al examen. Cada tema se arma con bloques:
+
+| Bloque | Qué es | ¿Entra en el modo esencial? |
+| --- | --- | --- |
+| `base` | La explicación del tema, escrita desde la orientación de la guía | Sí |
+| `formato` | Los formatos que la guía marca (relación, jerarquización) y las figuras que el cuadernillo trae impresas | Sí |
+| `refuerzo` | Lo que la guía nombra por su nombre y no tenía reactivo, y las lecturas largas del área 6 | Sí |
+| `ampliacion`, `ampliacion2` | Ampliación de cultura general, fuera de lo que las orientaciones piden | No |
+
+En **modo esencial** el plan diario son **354 tarjetas y 610 reactivos**; en modo completo,
+1,032 y 1,708. Casi tres veces menos tiempo de estudio para cubrir lo mismo que el examen
+evalúa. Se cambia desde *Progreso → Qué estás estudiando*, y **cambiar de modo no borra
+nada**: las tarjetas de ampliación conservan intervalo y repasos, y vuelven al activar el
+modo completo (`setModoEsencial` en `src/lib/engine.js`).
+
+Estas cifras se cuentan sobre lo que la página **carga de verdad**: `data/*.js` más los
+cuatro paquetes (`extra`, `extra2`, `formato`, `refuerzo`), todos declarados en
+`DATA_SCRIPTS` de `build.mjs`. Si agregas un archivo de datos y no lo pones ahí, el
+validador lo contará y el sitio publicado no lo tendrá — que es exactamente lo que
+pasaba con `data/refuerzo/` hasta esta versión.
 
 Los 45 temas con generador (todo Pensamiento matemático y la parte de física, química y
 genética de Ciencias naturales) producen un problema **distinto cada vez**: cambian los
@@ -181,16 +228,22 @@ mezclen y que el simulacro completo no se vacíe.
 
 ---
 
-## Cómo se calcula el dominio (y por qué a veces baja)
+## Cómo se calcula el avance de estudio (y por qué a veces baja)
 
-El porcentaje de dominio de un tema combina dos cosas:
+> **Este porcentaje no es el Índice Ceneval y no se convierte a él.** El Ceneval califica
+> cada área de 700 a 1300 puntos, con un procedimiento psicométrico que no se hace
+> público, y pide 1000 para acreditarla. No existe ninguna equivalencia demostrada entre
+> el porcentaje de esta app —o el de sus simulacros— y esa escala. Sirve para saber qué
+> falta repasar, no para predecir si acreditas.
+
+El porcentaje de avance de un tema combina dos cosas:
 
 - **Repaso**: el promedio de repeticiones de *todas* sus tarjetas, incluidas las nuevas.
 - **Preguntas**: el porcentaje de aciertos, ponderado por cuántas respuestas llevas.
   Con un banco más grande se piden más intentos antes de dar el crédito completo.
 
 Cuando el temario crece, los temas que ya habías visto ganan tarjetas sin repasar y esas
-cuentan como cero. **El dominio baja a propósito**: hay que estudiar el material nuevo
+cuentan como cero. **El porcentaje baja a propósito**: hay que estudiar el material nuevo
 para recuperar el porcentaje anterior. Nada del avance previo se borra; solo cambia la
 vara de medir. Las tarjetas nuevas no llegan todas de golpe: se reparten entre los
 siguientes 21 días, cada una se enseña antes de entrar al repaso, y la pantalla de inicio

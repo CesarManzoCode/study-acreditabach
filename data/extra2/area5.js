@@ -102,8 +102,8 @@ const AREA5_EXTRA2 = {
   "5.2.5": {
     flashcards: [
       { front: "¿Qué expresa la ecuación ΔU = Q − W?", back: "La primera ley de la termodinámica: el cambio de energía interna es el calor que entra menos el trabajo que hace el sistema. Es la conservación de la energía aplicada al calor." },
-      { front: "¿Qué dice la segunda ley de la termodinámica?", back: "El calor fluye espontáneamente del cuerpo caliente al frío y nunca al revés sin trabajo externo. La entropía del universo siempre aumenta." },
-      { front: "¿Qué le pasa a la entropía total en cualquier proceso natural?", back: "Aumenta. La entropía mide el desorden o la energía no disponible para hacer trabajo, y todo proceso espontáneo la incrementa en el sistema y su entorno." }
+      { front: "¿Qué dice la segunda ley de la termodinámica?", back: "El calor fluye espontáneamente del cuerpo caliente al frío y nunca al revés sin trabajo externo. En un sistema aislado la entropía nunca disminuye." },
+      { front: "¿Qué le pasa a la entropía total en cualquier proceso natural?", back: "No disminuye: aumenta en todo proceso espontáneo real y se mantiene constante solo en un proceso reversible ideal. Una parte del sistema sí puede ordenarse —un refrigerador, un ser vivo— siempre que el entorno se desordene más." }
     ],
     quiz: [
       { q: "Que el calor no pase espontáneamente de un cuerpo frío a uno caliente es consecuencia de:", options: ["La segunda ley de la termodinámica","La primera ley","La ley cero"], correct: 0, explanation: "La segunda ley establece la dirección de los procesos térmicos." },
@@ -273,7 +273,7 @@ const AREA5_EXTRA2 = {
     quiz: [
       { q: "El organelo donde ocurre la respiración celular y se produce ATP es:", options: ["La mitocondria","El ribosoma","El lisosoma"], correct: 0, explanation: "Se le llama la central energética de la célula." },
       { q: "Los ribosomas son responsables de:", options: ["La síntesis de proteínas","La digestión celular","La fotosíntesis"], correct: 0, explanation: "Traducen el ARN mensajero en cadenas de aminoácidos." },
-      { q: "La estructura que da rigidez a la célula vegetal y falta en la animal es:", options: ["La pared celular de celulosa","La membrana plasmática","El núcleo"], correct: 0, explanation: "La membrana está en ambas; la pared es exclusiva de plantas, hongos y algunas bacterias." },
+      { q: "La estructura que da rigidez a la célula vegetal y falta en la animal es:", options: ["La pared celular de celulosa","La membrana plasmática","El núcleo"], correct: 0, explanation: "La membrana está en ambas. La pared existe también en hongos (de quitina) y bacterias (de peptidoglicano); lo que es exclusivo de la planta es que sea de celulosa, y lo que falta siempre en la célula animal es la pared." },
       { q: "Los lisosomas contienen enzimas digestivas cuya función es:", options: ["Degradar sustancias y organelos dañados","Producir energía","Sintetizar lípidos"], correct: 0, explanation: "Son el sistema de reciclaje y digestión intracelular." },
       { q: "Una bacteria es una célula procariota porque:", options: ["Su material genético no está separado por una envoltura nuclear","No tiene ADN","Carece de membrana plasmática"], correct: 0, explanation: "El ADN se encuentra en el nucleoide, sin membrana que lo delimite." }
     ]
@@ -340,7 +340,7 @@ const AREA5_EXTRA2 = {
       { q: "En el cruce Aa × Aa, ¿qué porcentaje de la descendencia presenta el fenotipo recesivo?", options: ["25 %","50 %","75 %"], correct: 0, explanation: "Solo el genotipo aa expresa el carácter recesivo: 1 de cada 4." },
       { q: "En el cruce Aa × aa, ¿qué proporción de la descendencia será heterocigota?", options: ["50 %","25 %","100 %"], correct: 0, explanation: "La mitad recibe el alelo A del progenitor heterocigoto y resulta Aa." },
       { q: "Del cruce AA × aa se obtiene una descendencia:", options: ["100 % heterocigota con fenotipo dominante","50 % dominante y 50 % recesiva","100 % recesiva"], correct: 0, explanation: "Todos los descendientes reciben un alelo de cada progenitor: Aa." },
-      { q: "Dos padres de ojos cafés (Aa) tienen un hijo de ojos azules (aa). Esto indica que:", options: ["Ambos padres son portadores del alelo recesivo","Hubo una mutación nueva","El carácter no es hereditario"], correct: 0, explanation: "El hijo recibió un alelo recesivo de cada progenitor heterocigoto." },
+      { q: "En un modelo escolar de un solo gen, dos progenitores Aa tienen un hijo aa. Esto indica que:", options: ["Ambos progenitores son portadores del alelo recesivo","Hubo una mutación nueva","El carácter no es hereditario"], correct: 0, explanation: "El hijo recibió un alelo recesivo de cada progenitor heterocigoto: es la celda aa del cuadro de Punnett. Nota: el color de ojos suele usarse como ejemplo, pero en realidad depende de varios genes; el modelo de un solo gen sirve para practicar el cuadro, no como descripción biológica exacta." },
       { q: "En el cruce Aa × Aa, la probabilidad de obtener un individuo homocigoto dominante es:", options: ["1/4","1/2","3/4"], correct: 0, explanation: "Solo una de las cuatro combinaciones del cuadro de Punnett es AA." }
     ]
   },

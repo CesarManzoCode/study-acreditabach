@@ -19,13 +19,13 @@ const AREA2_EXTRA = {
   },
   "2.1.2": {
     flashcards: [
-      { front: "¿Qué es el software propietario o comercial?", back: "Programas con código cerrado por los que hay que pagar una licencia de uso, como Microsoft Office o Photoshop. No puedes modificarlos ni redistribuirlos." },
+      { front: "¿Qué es el software propietario?", back: "Aquel cuyo fabricante conserva los derechos y cierra el código: la licencia limita lo que puedes hacer y no puedes modificarlo ni redistribuirlo (Microsoft Office, Photoshop). Casi siempre se cobra, pero no siempre: el freeware también es propietario y no cuesta nada." },
       { front: "¿Freeware y open source son lo mismo?", back: "No. Los dos pueden ser gratis, pero el **freeware** tiene el código cerrado y el **open source** permite ver, modificar y redistribuir el código fuente." }
     ],
     quiz: [
       { q: "Un programa se puede usar gratis 30 días; después pide pago para seguir funcionando. ¿Qué tipo de licenciamiento tiene?", options: ["Freeware","Shareware","Open source"], correct: 1, explanation: "El shareware es software de prueba: gratuito por tiempo o funciones limitadas y de pago para la versión completa." },
-      { q: "Una escuela quiere instalar un sistema operativo que pueda adaptar a sus necesidades y copiar en todas sus computadoras sin pagar licencias. ¿Qué le conviene?", options: ["Software propietario","Shareware","Software de código abierto"], correct: 2, explanation: "El código abierto permite usar, modificar y redistribuir libremente; por eso Linux es una opción típica en instituciones." },
-      { q: "¿Cuál es la diferencia principal entre freeware y software propietario de pago?", options: ["El freeware es gratuito, aunque ambos tienen el código cerrado","El freeware permite modificar el código y el propietario no","No hay diferencia, son sinónimos"], correct: 0, explanation: "Los dos ocultan el código fuente; lo que cambia es que el freeware no cobra por su uso." }
+      { q: "Una escuela quiere instalar un sistema operativo que pueda adaptar a sus necesidades y copiar en todas sus computadoras sin pagar licencias por equipo. ¿Qué le conviene?", options: ["Software propietario","Shareware","Software de código abierto"], correct: 2, explanation: "El código abierto permite usar, modificar y redistribuir; por eso Linux es la opción típica en instituciones. La ventaja no es solo el precio: es que la licencia no limita la copia ni la adaptación." },
+      { q: "¿Cuál es la diferencia principal entre freeware y software propietario de pago?", options: ["El freeware no cobra por su uso, aunque los dos tienen el código cerrado","El freeware permite modificar el código y el propietario no","No hay diferencia, son sinónimos"], correct: 0, explanation: "Los dos son propietarios y ocultan el código fuente; lo único que cambia es el precio. Por eso el freeware es un caso particular de software propietario, no su contrario." }
     ]
   },
   "2.1.3": {
@@ -64,7 +64,7 @@ const AREA2_EXTRA = {
   },
   "2.2.1": {
     flashcards: [
-      { front: "¿El ciberespacio es lo mismo que internet?", back: "No exactamente. **Internet** es la infraestructura física de redes; el **ciberespacio** es el entorno simbólico de interacción que se crea sobre ella." }
+      { front: "¿El ciberespacio es lo mismo que internet?", back: "No. **Internet** es la red mundial de computadoras conectadas: su infraestructura y los protocolos que la hacen funcionar. El **ciberespacio** es el entorno simbólico de interacción que existe gracias a ella, donde las personas se comunican, publican y conviven." }
     ],
     quiz: [
       { q: "¿Cuál es la diferencia entre internet y el ciberespacio?", options: ["Internet es la red física de conexiones y el ciberespacio es el entorno de interacción que se genera en ella","Son sinónimos exactos","El ciberespacio solo existe en los videojuegos"], correct: 0, explanation: "Uno es la infraestructura (cables, servidores, protocolos); el otro es el espacio simbólico donde ocurre la comunicación." },
@@ -172,9 +172,9 @@ const AREA2_EXTRA = {
     ]
   },
   "2.4.3": {
-    leccion: "Además de ser definido, preciso y finito, un algoritmo se construye con dos operaciones mentales que el examen nombra por su nombre. La **descomposición** consiste en partir un problema grande en subproblemas más pequeños y manejables, que se resuelven por separado y luego se integran (dividir el desarrollo de una app en pantallas, base de datos y pruebas). La **abstracción** consiste en quedarse con lo esencial del problema e ignorar los detalles que no afectan la solución, de modo que la misma solución sirva para casos parecidos. Ambas forman parte de lo que se llama **pensamiento computacional**.",
+    leccion: "Además de ser definido, preciso y finito —definido: mismas entradas, mismo resultado; preciso: sin ambigüedad en cada paso; finito: termina—, un algoritmo se construye con dos operaciones mentales que el examen nombra por su nombre. La **descomposición** consiste en partir un problema grande en subproblemas más pequeños y manejables, que se resuelven por separado y luego se integran (dividir el desarrollo de una app en pantallas, base de datos y pruebas). La **abstracción** consiste en quedarse con lo esencial del problema e ignorar los detalles que no afectan la solución, de modo que la misma solución sirva para casos parecidos. Ambas forman parte de lo que se llama **pensamiento computacional**.",
     quiz: [
-      { q: "Un algoritmo cuyas instrucciones pueden entenderse de dos maneras distintas incumple la característica de ser:", options: ["Definido","Finito","Eficiente"], correct: 0, explanation: "Un algoritmo definido no admite ambigüedad: cada paso tiene una sola interpretación posible." },
+      { q: "Un algoritmo cuyas instrucciones pueden entenderse de dos maneras distintas incumple la característica de ser:", options: ["Preciso","Finito","Eficiente"], correct: 0, explanation: "La precisión es la que exige que cada paso tenga una sola interpretación posible. Que sea *definido* es otra cosa: que con las mismas entradas dé siempre el mismo resultado." },
       { q: "¿Por qué un algoritmo debe ser finito?", options: ["Porque debe terminar y entregar un resultado en un número limitado de pasos","Porque debe caber en una hoja","Porque solo puede usar números enteros"], correct: 0, explanation: "Si nunca termina no resuelve el problema: la finitud garantiza que se llegue a una salida." }
     ]
   },

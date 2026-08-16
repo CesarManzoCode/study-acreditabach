@@ -1071,6 +1071,32 @@ button, input, textarea { font: inherit; color: inherit; }
   text-wrap: pretty;
 }
 .quiz-detail strong { color: var(--text); }
+
+/* Figuras de los reactivos (iconos, gráficas, cuadros de Punnett, hoja de
+   respuestas, esquemas de obra). Se dibujan con SVG en línea, así que heredan
+   el tema claro/oscuro y funcionan sin conexión. */
+.figura {
+  margin: 0 0 18px;
+  padding: 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  overflow-x: auto;
+}
+.figura-svg {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  margin: 0 auto;
+}
+.figura figcaption {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-3, var(--text-2));
+  line-height: 1.45;
+}
 .options { display: flex; flex-direction: column; gap: 9px; }
 .option {
   display: flex; align-items: center; gap: 12px;
@@ -1252,6 +1278,16 @@ button, input, textarea { font: inherit; color: inherit; }
 .accordion-body th, .accordion-body td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
 .accordion-body th { background: var(--surface-2); font-weight: 650; color: var(--text); }
 .accordion-body .table-wrap { overflow-x: auto; border-radius: var(--r-sm); }
+/* Avisos dentro de la guía: reglas administrativas que conviene no pasar por
+   alto (la de menores de edad, sobre todo, que se suele entender al revés). */
+.accordion-body .aviso {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  border-left: 3px solid var(--warn);
+}
+.accordion-body .figura { margin: 14px 0; }
 
 /* ============================================================
    Formularios

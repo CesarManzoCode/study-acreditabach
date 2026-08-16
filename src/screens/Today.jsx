@@ -180,7 +180,7 @@ export default function Today({ plan, stats, onStart }) {
             <Ring value={stats.coverage} size={78} stroke={8} label={`${stats.coverage}%`} sublabel="visto" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="bar-row">
-                <span className="lbl">Temas dominados</span>
+                <span className="lbl">Temas firmes (85 % o más)</span>
                 <span className="val">{stats.mastered}</span>
               </div>
               <Bar value={stats.total ? (stats.mastered / stats.total) * 100 : 0} color="var(--success)" />

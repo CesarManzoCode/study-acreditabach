@@ -282,8 +282,8 @@ const AREA6_EXTRA = {
     ],
     quiz: [
       { q: "Complete: \"By the time we arrived, the movie ______.\"", options: ["had already started","already started","has already started"], correct: 0, explanation: "La película empezó ANTES de que llegáramos: la acción anterior va en pasado perfecto." },
-      { q: "Choose the correct sentence:", options: ["She had studied French before she moved to Paris.","She has studied French before she moved to Paris.","She had study French before she moved to Paris."], correct: 0, explanation: "El pasado perfecto se forma con 'had' + participio, y marca la acción más antigua." },
-      { q: "In \"When I got home, my brother had cooked dinner\", which action happened FIRST?", options: ["My brother cooked dinner","I got home","Both at the same time"], correct: 0, explanation: "El pasado perfecto ('had cooked') siempre señala el hecho anterior." },
+      { q: "Choose the correct sentence:", options: ["She had studied French before she moved to Paris.","She has studied French before she moved to Paris.","She had study French before she moved to Paris."], correct: 0, explanation: "El pasado perfecto se forma con 'had' + participio pasado. Las otras dos fallan en la forma: 'has' es presente perfecto y no encaja con un contexto pasado, y 'study' no es participio." },
+      { q: "In \"When I got home, my brother had cooked dinner\", which action happened FIRST?", options: ["My brother cooked dinner","I got home","Both at the same time"], correct: 0, explanation: "El pasado perfecto ('had cooked') marca lo ocurrido antes del punto de referencia pasado, que aquí es el momento de llegar a casa." },
       { q: "The past perfect is formed with:", options: ["had + past participle","have + past participle","was + verb-ing"], correct: 0, explanation: "'Had' es igual para todos los sujetos, sin variación." }
     ]
   },
@@ -303,7 +303,7 @@ const AREA6_EXTRA = {
       { q: "Complete: \"This exercise is ______ than the last one.\"", options: ["easier","more easy","easiest"], correct: 0, explanation: "'Easy' es un adjetivo corto terminado en -y: la 'y' cambia a 'i' y se agrega -er." },
       { q: "Choose the correct sentence:", options: ["He is the best player on the team.","He is the most good player on the team.","He is the better player on the team."], correct: 0, explanation: "'Good' es irregular: better (comparativo) y the best (superlativo)." },
       { q: "Complete: \"My house is ______ expensive ______ yours.\" (they cost the same)", options: ["as / as","more / than","the most / of"], correct: 0, explanation: "Para expresar igualdad se usa la estructura as + adjetivo + as." },
-      { q: "Which sentence is correct?", options: ["Mexico City is more crowded than Monterrey.","Mexico City is crowdeder than Monterrey.","Mexico City is most crowded than Monterrey."], correct: 0, explanation: "'Crowded' tiene dos sílabas y no termina en -y, así que forma el comparativo con 'more'." }
+      { q: "Which sentence is correct?", options: ["Mexico City is more crowded than Monterrey.","Mexico City is crowdeder than Monterrey.","Mexico City is most crowded than Monterrey."], correct: 0, explanation: "'Crowded' termina en -ed, y esos adjetivos de dos sílabas forman el comparativo con 'more'. Ojo: no todos los bisílabos van con 'more' —narrow → narrower, simple → simpler, happy → happier—; la terminación es la que manda." }
     ]
   },
   "6.5.8": {

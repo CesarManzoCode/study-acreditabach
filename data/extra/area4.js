@@ -101,7 +101,7 @@ const AREA4_EXTRA = {
     leccion: "Dos teorías éticas más que se suman al hedonismo y al estoicismo. La **ética deontológica de Kant** sostiene que una acción es buena por el deber que la motiva y no por sus consecuencias; su criterio es el **imperativo categórico**: actuar solo según aquello que quisieras que se convirtiera en ley universal. La **ética de la virtud de Aristóteles** desplaza la pregunta de la acción al carácter: lo importante es formar buenos hábitos, y cada virtud es el **punto medio** entre dos excesos (la valentía está entre la cobardía y la temeridad).",
     quiz: [
       { q: "¿Cuál es la principal crítica al utilitarismo?", options: ["Que puede justificar perjudicar a una minoría si eso beneficia a la mayoría","Que ignora por completo las consecuencias","Que prohíbe cualquier cálculo de beneficios"], correct: 0, explanation: "Al medir solo el bienestar agregado, corre el riesgo de sacrificar derechos individuales." },
-      { q: "Alguien organiza su vida en torno a maximizar su disfrute y evitar todo malestar. Esta postura corresponde al:", options: ["Hedonismo","Estoicismo","Deontologismo"], correct: 0, explanation: "El hedonismo pone el placer y la ausencia de dolor como bien supremo." }
+      { q: "Alguien decide qué hacer preguntándose siempre qué le dará más placer y menos dolor a lo largo de su vida, incluso si eso significa renunciar hoy a un gusto que después le costará caro. Esta postura corresponde al:", options: ["Hedonismo","Estoicismo","Deontologismo"], correct: 0, explanation: "El hedonismo toma el placer como criterio de lo bueno. No exige impulsividad: la versión epicúrea calcula qué placeres convienen a largo plazo y por eso rechaza los excesos." }
     ]
   },
   "4.3.2": {
