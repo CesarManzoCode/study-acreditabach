@@ -1,6 +1,9 @@
 import { useMemo, useState, useRef } from "react";
 import Icon from "../ui/Icon.jsx";
-import { Button, Card, Ring, Bar, Badge, Stat, SectionTitle, Reveal, Modal, EmptyState, useToast } from "../ui/kit.jsx";
+import {
+  Button, Sheet, MeterBlock, Badge, Figures, Figure, PageHead, Section,
+  Modal, EmptyState, Mark, useToast
+} from "../ui/kit.jsx";
 import { navigate, useEngine } from "../lib/hooks.js";
 import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 import {
@@ -8,6 +11,13 @@ import {
   resetProgress, exportProgress, importProgress, fmtDateShort, toISO, todayDate, contentStats,
   areaReadiness, isModoEsencial, setModoEsencial
 } from "../lib/engine.js";
+
+/* Pantalla Progreso.
+
+   El orden no es casual: lo primero es el área que te puede reprobar, porque
+   el examen se acredita área por área y esa es la única cifra que cambia lo
+   que conviene estudiar mañana. Las estadísticas de constancia van después:
+   motivan, pero no deciden nada. */
 
 export default function Progress({ plan, stats }) {
   const rev = useEngine();
@@ -48,107 +58,145 @@ export default function Progress({ plan, stats }) {
   };
 
   return (
-    <div className="stack">
-      <SectionTitle hint="Tu avance vive solo en este navegador. Descarga un respaldo si vas a cambiar de dispositivo.">
-        Progreso
-      </SectionTitle>
+    <>
+      <PageHead title="Progreso">
+        Cómo vas por área, qué conviene reforzar y cuánto has estudiado.
+      </PageHead>
 
-      <Reveal>
-        <Card>
-          <div className="stats">
-            <Stat value={Math.max(0, plan.daysToExam)} label="días para el examen" />
-            <Stat value={stats.streak} label={stats.streak === 1 ? "día de racha" : "días de racha"} tone="brand" />
-            <Stat value={`${stats.coverage}%`} label="temario visto" tone="success" />
-          </div>
-        </Card>
-      </Reveal>
+      <Figures className="figures-lead">
+        <Figure value={Math.max(0, plan.daysToExam)} label="días para el examen" />
+        <Figure value={stats.streak} label={stats.streak === 1 ? "día de racha" : "días de racha"} />
+        <Figure value={`${stats.coverage}%`} label="temario visto" />
+        <Figure value={stats.studyDays} label="días activos" />
+      </Figures>
 
-      <Reveal delay={60}>
-        <Card>
-          <div className="card-title-row">
-            <h3>Constancia</h3>
-            <Badge tone="brand" icon="flame">{stats.studyDays} días activos</Badge>
-          </div>
-          <Heatmap days={calendar} />
-        </Card>
-      </Reveal>
+      <Section
+        title="Qué área te puede reprobar"
+        note="No se aprueba en promedio: hay que llegar a 1 000 puntos en cada una de las siete áreas, y reprobar tres significa volver a empezar. Van de la más urgente a la más segura."
+      >
+        <div className="risk-list">
+          {readiness.map((a) => {
+            const v = areaVisual(a.area);
+            const pct = a.acierto === null ? null : Math.round(a.acierto * 100);
+            return (
+              <button
+                key={a.area}
+                className="risk-row"
+                style={areaStyle(a.area)}
+                onClick={() => navigate(`repasar/a/${a.area}`)}
+              >
+                <span className="risk-name">
+                  <Mark />
+                  {v.short}
+                  <em>{a.reactivos} reactivos</em>
+                </span>
+                <span className="risk-note">
+                  {pct === null
+                    ? "sin datos suficientes"
+                    : `${pct}% de aciertos · meta ${Math.round(a.objetivo * 100)}%`}
+                </span>
+                <span className={"risk-flag " + a.nivel}>
+                  {a.nivel === "alto" ? "atender ya" : a.nivel === "medio" ? "vigilar" : "en curso"}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="faint" style={{ marginTop: 12 }}>
+          La meta no es igual para todas: las áreas con menos reactivos piden más margen, porque con
+          19 preguntas la suerte pesa más que con 32. No es una predicción del Índice Ceneval —la guía
+          no publica cómo convierte aciertos a esa escala—, es tu porcentaje de aciertos medido contra
+          un objetivo de trabajo.
+        </p>
+      </Section>
 
-      <Reveal delay={120}>
-        <Card>
-          <div className="card-title-row">
-            <h3>Repasos que vienen</h3>
-            <Badge>próximas 2 semanas</Badge>
-          </div>
-          <Forecast data={forecast} />
-        </Card>
-      </Reveal>
+      <Section
+        title="Avance de estudio por área"
+        note="Mide tu repaso y tus aciertos dentro de esta app. No es el Índice Ceneval (700–1300 puntos, mínimo 1000 por área) ni se convierte a él: sirve para ver qué falta repasar."
+      >
+        {areas.map((a) => {
+          const st = areaStats(a);
+          const v = areaVisual(a);
+          return (
+            <button
+              key={a}
+              className="area-meter"
+              style={areaStyle(a)}
+              onClick={() => navigate(`repasar/a/${a}`)}
+            >
+              <MeterBlock
+                label={<><Mark />{v.short}</>}
+                value={st.mastery}
+                display={`${st.mastery}% · ${st.introducedCount}/${st.total} vistos`}
+                color={v.color}
+              />
+            </button>
+          );
+        })}
+      </Section>
 
-      <Reveal delay={150}>
-        <Card>
-          <div className="card-title-row">
-            <h3>Qué área te puede reprobar</h3>
-            <Badge>lo que decide el examen</Badge>
-          </div>
-          <p className="faint" style={{ marginTop: 0 }}>
-            No se aprueba en promedio: hay que llegar a 1&nbsp;000 puntos en <strong>cada una</strong> de
-            las siete áreas, y reprobar tres significa volver a empezar. Aquí van ordenadas por riesgo,
-            de la más urgente a la más segura.
-          </p>
-          <div className="riesgo-lista">
-            {readiness.map((a) => {
-              const v = areaVisual(a.area);
-              const pct = a.acierto === null ? null : Math.round(a.acierto * 100);
+      <Section
+        title="Temas para reforzar"
+        action={weak.length > 0 ? <Badge tone="warn">{weak.length}</Badge> : null}
+      >
+        {weak.length ? (
+          <div className="topic-list">
+            {weak.map(({ topic, mastery }) => {
+              const label = masteryLabel(mastery);
               return (
                 <button
-                  key={a.area}
-                  className={"riesgo-row " + a.nivel}
-                  style={areaStyle(a.area)}
-                  onClick={() => navigate(`repasar/a/${a.area}`)}
+                  key={topic.id}
+                  className="topic-row"
+                  style={areaStyle(topic.area)}
+                  onClick={() => navigate(`repasar/t/${topic.id}`)}
                 >
-                  <span className="riesgo-nombre">
-                    <span className="topic-dot" />
-                    {v.short}
-                    <em>{a.reactivos} reactivos</em>
+                  <span className="topic-name">
+                    {topic.tema}
+                    <small>{areaVisual(topic.area).short} · {topic.subarea}</small>
                   </span>
-                  <span className="riesgo-dato">
-                    {pct === null
-                      ? "sin datos suficientes"
-                      : `${pct}% de aciertos · meta ${Math.round(a.objetivo * 100)}%`}
+                  <span className="topic-value" style={{ color: `var(--${label.tone === "success" ? "ok" : label.tone === "warn" ? "hold" : "bad"})` }}>
+                    {mastery}%
                   </span>
-                  <span className={"riesgo-chip " + a.nivel}>
-                    {a.nivel === "alto" ? "atender ya" : a.nivel === "medio" ? "vigilar" : "en curso"}
-                  </span>
+                  <Icon name="chevronRight" size={15} className="icon-chev" />
                 </button>
               );
             })}
           </div>
-          <p className="faint" style={{ marginBottom: 0, fontSize: 13 }}>
-            La meta no es igual para todas: las áreas con menos reactivos piden más margen, porque con
-            19 preguntas la suerte pesa más que con 32. No es una predicción del Índice Ceneval —la guía
-            no publica cómo convierte aciertos a esa escala—, es tu porcentaje de aciertos medido contra
-            un objetivo de trabajo.
-          </p>
-        </Card>
-      </Reveal>
+        ) : (
+          <EmptyState icon="check" title="Nada urgente por ahora">
+            Todos los temas que has visto están en buen nivel. Sigue con tus sesiones diarias.
+          </EmptyState>
+        )}
+      </Section>
+
+      <div className="pair-grid">
+        <Section title="Constancia" note="Últimas 12 semanas.">
+          <Heatmap days={calendar} />
+        </Section>
+
+        <Section title="Repasos que vienen" note="Próximas dos semanas.">
+          <Forecast data={forecast} />
+        </Section>
+      </div>
 
       {/* Qué se estudia: solo lo que la guía evalúa, o también la ampliación. */}
-      <Reveal delay={170}>
-        <Card>
-          <div className="card-title-row">
-            <h3>Qué estás estudiando</h3>
-            <Badge tone={isModoEsencial() ? "success" : "brand"}>
-              {isModoEsencial() ? "Modo esencial" : "Modo completo"}
-            </Badge>
-          </div>
-          <p className="muted" style={{ marginTop: 0 }}>
-            {isModoEsencial()
-              ? "Estás estudiando solo lo que las orientaciones de la guía evalúan: la explicación de cada tema, los formatos que el examen usa y los reactivos de refuerzo. Es el camino más corto para acreditar."
-              : "Estás estudiando también los bloques de ampliación, que van más allá de lo que la guía pide. Sabrás más, pero el temario se alarga bastante."}
-          </p>
+      <Section
+        title="Qué estás estudiando"
+        action={
+          <Badge tone={isModoEsencial() ? "success" : "accent"}>
+            {isModoEsencial() ? "Modo esencial" : "Modo completo"}
+          </Badge>
+        }
+      >
+        <p className="muted" style={{ maxWidth: "68ch" }}>
+          {isModoEsencial()
+            ? "Estás estudiando solo lo que las orientaciones de la guía evalúan: la explicación de cada tema, los formatos que el examen usa y los reactivos de refuerzo. Es el camino más corto para acreditar."
+            : "Estás estudiando también los bloques de ampliación, que van más allá de lo que la guía pide. Sabrás más, pero el temario se alarga bastante."}
+        </p>
+        <div className="row-gap" style={{ marginTop: 14 }}>
           <Button
             variant="solid"
-            block
-            icon={isModoEsencial() ? "sparkles" : "target"}
+            icon={isModoEsencial() ? "layers" : "target"}
             onClick={() => {
               const nuevo = !isModoEsencial();
               setModoEsencial(nuevo);
@@ -162,96 +210,26 @@ export default function Progress({ plan, stats }) {
           >
             {isModoEsencial() ? "Cambiar a modo completo" : "Volver al modo esencial"}
           </Button>
-          <p className="faint" style={{ marginBottom: 0 }}>
-            Cambiar de modo <strong>no borra nada</strong>: las tarjetas de ampliación que ya hayas
-            estudiado conservan su intervalo y sus repasos, y vuelven en cuanto actives el modo completo.
-          </p>
-        </Card>
-      </Reveal>
+        </div>
+        <p className="faint" style={{ marginTop: 12 }}>
+          Cambiar de modo <strong>no borra nada</strong>: las tarjetas de ampliación que ya hayas
+          estudiado conservan su intervalo y sus repasos, y vuelven en cuanto actives el modo completo.
+        </p>
+      </Section>
 
-      <Reveal delay={180}>
-        <Card>
-          <h3>Avance de estudio por área</h3>
-          <p className="faint" style={{ marginTop: -4 }}>
-            Mide tu repaso y tus aciertos <strong>dentro de esta app</strong>. No es el Índice Ceneval
-            (700–1300 puntos, mínimo 1000 por área) ni se convierte a él: sirve para ver qué falta repasar,
-            no para predecir si acreditas.
-          </p>
-          {areas.map((a) => {
-            const st = areaStats(a);
-            const v = areaVisual(a);
-            return (
-              <button
-                key={a}
-                onClick={() => navigate(`repasar/a/${a}`)}
-                style={{ ...areaStyle(a), display: "block", width: "100%", background: "transparent", border: 0, padding: "6px 0", textAlign: "left", cursor: "pointer" }}
-              >
-                <div className="bar-row">
-                  <span className="lbl">
-                    <span className="topic-dot" />
-                    {v.short}
-                  </span>
-                  <span className="val">{st.mastery}% · {st.introducedCount}/{st.total} vistos</span>
-                </div>
-                <Bar value={st.mastery} color={v.color} />
-              </button>
-            );
-          })}
-        </Card>
-      </Reveal>
+      <ContentSection />
 
-      <Reveal delay={240}>
-        <Card>
-          <div className="card-title-row">
-            <h3>Temas para reforzar</h3>
-            {weak.length > 0 && <Badge tone="warn">{weak.length}</Badge>}
-          </div>
-          {weak.length ? (
-            <div className="topic-list">
-              {weak.map(({ topic, mastery }) => {
-                const label = masteryLabel(mastery);
-                return (
-                  <button
-                    key={topic.id}
-                    className="topic-row"
-                    style={areaStyle(topic.area)}
-                    onClick={() => navigate(`repasar/t/${topic.id}`)}
-                  >
-                    <span className="topic-dot" />
-                    <span className="topic-name">
-                      {topic.tema}
-                      <small>{areaVisual(topic.area).short} · {topic.subarea}</small>
-                    </span>
-                    <Badge tone={label.tone}>{mastery}%</Badge>
-                    <Icon name="chevronRight" size={16} className="icon-chev" />
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <EmptyState icon="check" title="Nada urgente por ahora">
-              Todos los temas que has visto están en buen nivel. Sigue con tus sesiones diarias.
-            </EmptyState>
-          )}
-        </Card>
-      </Reveal>
-
-      <Reveal delay={280}>
-        <ContentCard />
-      </Reveal>
-
-      <Reveal delay={320}>
-        <Card className="danger-zone">
-          <h3>Tus datos</h3>
-          <p className="muted">
+      <Section title="Tus datos">
+        <Sheet className="danger-zone">
+          <p className="muted" style={{ maxWidth: "66ch" }}>
             Todo se guarda en este navegador (localStorage). Para que el avance te siga en otros dispositivos,
             conecta una cuenta en <button className="link-btn" onClick={() => navigate("cuenta")}>Cuenta y sincronización</button>.
             Un respaldo descargado de vez en cuando tampoco sobra.
           </p>
-          <div className="chips" style={{ marginTop: 14 }}>
+          <div className="row-gap" style={{ marginTop: 16 }}>
             <Button variant="solid" icon="download" onClick={download}>Descargar respaldo</Button>
             <Button variant="solid" icon="upload" onClick={() => fileRef.current?.click()}>Restaurar respaldo</Button>
-            <Button variant="danger" icon="trash" onClick={() => setConfirmReset(true)}>Reiniciar</Button>
+            <Button variant="danger" icon="trash" onClick={() => setConfirmReset(true)}>Reiniciar progreso</Button>
           </div>
           <input
             ref={fileRef}
@@ -260,8 +238,8 @@ export default function Progress({ plan, stats }) {
             hidden
             onChange={(e) => { upload(e.target.files?.[0]); e.target.value = ""; }}
           />
-        </Card>
-      </Reveal>
+        </Sheet>
+      </Section>
 
       <Modal
         open={confirmReset}
@@ -284,28 +262,26 @@ export default function Progress({ plan, stats }) {
           </>
         }
       />
-    </div>
+    </>
   );
 }
 
 /* ---------------- Contenido disponible ---------------- */
 
-function ContentCard() {
+function ContentSection() {
   const c = useMemo(() => contentStats(), []);
   return (
-    <Card>
-      <h3>Contenido del temario</h3>
-      <p className="muted" style={{ marginTop: 0 }}>
-        Los temas marcados con <strong>problemas aleatorios</strong> generan un ejercicio distinto cada vez:
-        cambian los números y los datos, así que nunca se acaba la práctica.
-      </p>
-      <div className="stats" style={{ marginTop: 14 }}>
-        <Stat value={c.topics} label="temas" />
-        <Stat value={c.flashcards} label="tarjetas" tone="brand" />
-        <Stat value={c.quiz} label="preguntas fijas" />
-        <Stat value={c.conGenerador} label="temas con problemas aleatorios" tone="success" />
-      </div>
-    </Card>
+    <Section
+      title="Contenido del temario"
+      note="Los temas con problemas aleatorios generan un ejercicio distinto cada vez: cambian los números y los datos, así que nunca se acaba la práctica."
+    >
+      <Figures>
+        <Figure value={c.topics} label="temas" />
+        <Figure value={c.flashcards} label="tarjetas" />
+        <Figure value={c.quiz} label="reactivos fijos" />
+        <Figure value={c.conGenerador} label="temas con problemas aleatorios" />
+      </Figures>
+    </Section>
   );
 }
 
@@ -338,7 +314,7 @@ function Heatmap({ days }) {
                 <div
                   key={ri}
                   className={`heat heat-${level(d.load)}`}
-                  title={`${fmtDateShort(d.date)}: ${d.load ? `${d.entry.cardsReviewed || 0} tarjetas, ${d.entry.quizAnswered || 0} preguntas` : "sin actividad"}`}
+                  title={`${fmtDateShort(d.date)}: ${d.load ? `${d.entry.cardsReviewed || 0} tarjetas, ${d.entry.quizAnswered || 0} reactivos` : "sin actividad"}`}
                 />
               ) : (
                 <div key={ri} className="heat" style={{ opacity: 0 }} />
@@ -349,12 +325,11 @@ function Heatmap({ days }) {
       </div>
       <div className="heat-legend">
         <span>menos</span>
-        <span className="heat heat-1" style={{ width: 11, height: 11 }} />
-        <span className="heat heat-2" style={{ width: 11, height: 11 }} />
-        <span className="heat heat-3" style={{ width: 11, height: 11 }} />
-        <span className="heat heat-4" style={{ width: 11, height: 11 }} />
+        <span className="heat heat-1" style={{ width: 10, height: 10 }} />
+        <span className="heat heat-2" style={{ width: 10, height: 10 }} />
+        <span className="heat heat-3" style={{ width: 10, height: 10 }} />
+        <span className="heat heat-4" style={{ width: 10, height: 10 }} />
         <span>más</span>
-        <span style={{ marginLeft: "auto" }}>últimas 12 semanas</span>
       </div>
     </>
   );
@@ -384,7 +359,7 @@ function Forecast({ data }) {
           </div>
         ))}
       </div>
-      <p className="faint" style={{ marginTop: 10 }}>
+      <p className="faint" style={{ marginTop: 12 }}>
         {totalUpcoming} tarjetas repartidas en los próximos 14 días. El algoritmo separa cada vez más los repasos
         de lo que ya dominas.
       </p>

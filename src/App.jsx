@@ -21,7 +21,7 @@ import { SessionRunner, MockRunner } from "./screens/Runner.jsx";
 
 const NAV = [
   { id: "hoy", label: "Hoy", icon: "hoy" },
-  { id: "repasar", label: "Repasar", icon: "repasar" },
+  { id: "repasar", label: "Temario", icon: "repasar" },
   { id: "simulacro", label: "Simulacro", icon: "simulacro" },
   { id: "progreso", label: "Progreso", icon: "progreso" },
   { id: "info", label: "Guía", icon: "info" }
@@ -161,23 +161,19 @@ function Shell() {
   })();
 
   const pending = plan.totalSteps;
+  /* Hoy y Progreso reparten la pantalla en dos columnas y piden todo el ancho.
+     Las demás son listas y texto: se leen mejor en una medida corta. */
+  const ancho = route.name === "hoy" || route.name === "progreso";
 
   return (
     <div className="shell">
-      <Rail active={route.name} pending={pending} streak={stats.streak} theme={theme} onTheme={setTheme} />
+      <a className="skip-link" href="#contenido">Saltar al contenido</a>
 
-      <div className="main">
-        <header className="topbar">
-          <BrandMark />
-          <div className="topbar-spacer" />
-          <AccountButton active={route.name === "cuenta"} />
-          <ThemeToggle theme={theme} onChange={setTheme} compact />
-        </header>
+      <Masthead active={route.name} pending={pending} streak={stats.streak} theme={theme} onTheme={setTheme} />
 
-        <main className="content">
-          <div className="route-fade" key={route.name}>{screen}</div>
-        </main>
-      </div>
+      <main className="content" id="contenido">
+        <div className={`page route-fade${ancho ? " is-wide" : ""}`} key={route.name}>{screen}</div>
+      </main>
 
       <TabBar active={route.name} pending={pending} />
 
@@ -194,15 +190,52 @@ function Shell() {
   );
 }
 
-function BrandMark() {
+/* La cabecera es la cabecera de un documento: marca, secciones subrayadas y
+   los dos controles que hacen falta. No hay barra lateral: el temario se
+   consulta a ancho completo y el móvil manda su propia barra abajo. */
+function Masthead({ active, pending, streak, theme, onTheme }) {
   return (
-    <div className="brand">
-      <span className="brand-mark"><Icon name="cap" size={18} strokeWidth={1.9} /></span>
-      <span className="brand-text">
-        <b>ACREDITA-BACH</b>
-        <span>Plan de estudio</span>
-      </span>
-    </div>
+    <header className="masthead">
+      <div className="masthead-inner">
+        <a
+          className="brand"
+          href="#/hoy"
+          onClick={(e) => { e.preventDefault(); navigate("hoy"); }}
+        >
+          <span className="brand-mark"><Icon name="cap" size={17} strokeWidth={1.8} /></span>
+          <span className="brand-text">
+            <b>ACREDITA-BACH</b>
+            <span>Plan de estudio</span>
+          </span>
+        </a>
+
+        <nav className="mast-nav" aria-label="Secciones">
+          {NAV.map((item) => (
+            <button
+              key={item.id}
+              className={`mast-item${active === item.id ? " is-active" : ""}`}
+              onClick={() => navigate(item.id)}
+              aria-current={active === item.id ? "page" : undefined}
+            >
+              {item.label}
+              {item.id === "hoy" && pending > 0 && (
+                <span className="mast-count">{pending}</span>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="mast-tools">
+          {streak > 0 && (
+            <p className="streak" title={`${streak} ${streak === 1 ? "día seguido" : "días seguidos"} de estudio`}>
+              <b>{streak}</b> {streak === 1 ? "día seguido" : "días seguidos"}
+            </p>
+          )}
+          <ThemeToggle theme={theme} onChange={onTheme} />
+          <AccountButton active={active === "cuenta"} />
+        </div>
+      </div>
+    </header>
   );
 }
 
@@ -221,7 +254,7 @@ function AccountButton({ active }) {
           {String(user.nombre).trim().charAt(0).toUpperCase()}
         </span>
       ) : (
-        <Icon name="user" size={19} />
+        <Icon name="user" size={18} />
       )}
       <SyncDot />
     </button>
@@ -235,48 +268,6 @@ function SyncDot() {
   return <span className={`sync-dot sync-dot-${modo}`} aria-hidden="true" />;
 }
 
-function Rail({ active, pending, streak, theme, onTheme }) {
-  return (
-    <aside className="rail">
-      <BrandMark />
-
-      <nav className="rail-nav" aria-label="Secciones">
-        {NAV.map((item) => (
-          <button
-            key={item.id}
-            className={`rail-item${active === item.id ? " is-active" : ""}`}
-            onClick={() => navigate(item.id)}
-            aria-current={active === item.id ? "page" : undefined}
-          >
-            <Icon name={item.icon} size={19} />
-            {item.label}
-            {item.id === "hoy" && pending > 0 && <span className="rail-count tnum">{pending}</span>}
-          </button>
-        ))}
-      </nav>
-
-      <div className="rail-foot">
-        <button
-          className={`rail-item${active === "cuenta" ? " is-active" : ""}`}
-          onClick={() => navigate("cuenta")}
-        >
-          <Icon name="user" size={19} />
-          Cuenta
-          <SyncDot />
-        </button>
-        <div className="rail-streak">
-          <Icon name="flame" size={20} />
-          <div>
-            <b className="tnum">{streak}</b>
-            <span>{streak === 1 ? "día seguido" : "días seguidos"}</span>
-          </div>
-        </div>
-        <ThemeToggle theme={theme} onChange={onTheme} />
-      </div>
-    </aside>
-  );
-}
-
 function TabBar({ active, pending }) {
   return (
     <nav className="tabbar" aria-label="Secciones">
@@ -287,9 +278,11 @@ function TabBar({ active, pending }) {
           onClick={() => navigate(item.id)}
           aria-current={active === item.id ? "page" : undefined}
         >
-          <span className="tab-dot" />
-          <Icon name={item.icon} size={21} />
+          <Icon name={item.icon} size={20} />
           <span>{item.label}</span>
+          {item.id === "hoy" && pending > 0 && (
+            <span className="tab-count" aria-label={`${pending} pendientes`}>{pending}</span>
+          )}
         </button>
       ))}
     </nav>
@@ -302,36 +295,18 @@ const THEMES = [
   { value: "dark", icon: "moon", label: "Oscuro" }
 ];
 
-function ThemeToggle({ theme, onChange, compact }) {
-  if (compact) {
-    const idx = THEMES.findIndex((t) => t.value === theme);
-    const current = THEMES[idx < 0 ? 0 : idx];
-    const next = THEMES[(idx + 1) % THEMES.length];
-    return (
-      <button
-        className="btn btn-ghost btn-icon"
-        onClick={() => onChange(next.value)}
-        aria-label={`Tema: ${current.label}. Cambiar a ${next.label.toLowerCase()}`}
-        title={`Tema ${current.label.toLowerCase()}`}
-      >
-        <Icon name={current.icon} size={19} />
-      </button>
-    );
-  }
+function ThemeToggle({ theme, onChange }) {
+  const idx = THEMES.findIndex((t) => t.value === theme);
+  const current = THEMES[idx < 0 ? 0 : idx];
+  const next = THEMES[(idx < 0 ? 0 : idx + 1) % THEMES.length];
   return (
-    <div className="segmented" role="group" aria-label="Tema de la interfaz">
-      {THEMES.map((t) => (
-        <button
-          key={t.value}
-          className={`segmented-item${theme === t.value ? " is-active" : ""}`}
-          onClick={() => onChange(t.value)}
-          aria-pressed={theme === t.value}
-          title={t.label}
-        >
-          <Icon name={t.icon} size={15} />
-          <span className="sr-only">{t.label}</span>
-        </button>
-      ))}
-    </div>
+    <button
+      className="btn btn-ghost btn-icon"
+      onClick={() => onChange(next.value)}
+      aria-label={`Tema: ${current.label}. Cambiar a ${next.label.toLowerCase()}`}
+      title={`Tema ${current.label.toLowerCase()}`}
+    >
+      <Icon name={current.icon} size={18} />
+    </button>
   );
 }

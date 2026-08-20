@@ -1,39 +1,39 @@
-/* Identidad visual de cada área: color base, color de apoyo para los degradados
-   y una etiqueta corta. Los nombres y el número de reactivos siguen viniendo de
-   data/meta.js (AREA_META), que es la fuente de verdad del contenido. */
+/* Identidad visual de cada área.
+
+   El examen se acredita ÁREA POR ÁREA: reprobar tres significa volver a
+   empezar. Por eso el color de la interfaz está reservado casi por completo
+   para las siete áreas (y para el acierto/error de un reactivo): todo lo
+   demás es tinta sobre papel. Cuando aparece un color, significa algo.
+
+   El tono concreto vive en CSS (`--a1` … `--a7` en styles.css), que es donde
+   se ajusta para el tema claro y el oscuro. Aquí solo se apunta a él, así el
+   color de un área nunca queda quemado en el JS con un valor de un solo tema.
+
+   Los nombres y el número de reactivos siguen viniendo de data/meta.js
+   (AREA_META), que es la fuente de verdad del contenido. */
 
 import { AREA_META } from "./engine.js";
 
-const VISUALS = {
-  1: { from: "#6366f1", to: "#818cf8", emoji: "∑" },
-  2: { from: "#06b6d4", to: "#22d3ee", emoji: "⌘" },
-  3: { from: "#f59e0b", to: "#fbbf24", emoji: "⌛" },
-  4: { from: "#a855f7", to: "#c084fc", emoji: "✒" },
-  5: { from: "#10b981", to: "#34d399", emoji: "⚗" },
-  6: { from: "#f43f5e", to: "#fb7185", emoji: "¶" },
-  7: { from: "#84cc16", to: "#a3e635", emoji: "◎" }
-};
-
-const FALLBACK = { from: "#6366f1", to: "#818cf8", emoji: "•" };
-
 export function areaVisual(areaNum) {
-  const v = VISUALS[areaNum] || FALLBACK;
-  const meta = AREA_META[areaNum] || {};
+  const n = Number(areaNum);
+  const meta = AREA_META[n] || {};
+  const token = n >= 1 && n <= 7 ? `var(--a${n})` : "var(--ink-3)";
   return {
-    ...v,
-    color: meta.color || v.from,
-    gradient: `linear-gradient(135deg, ${v.from}, ${v.to})`,
-    name: meta.name || `Área ${areaNum}`,
-    short: meta.short || `Área ${areaNum}`,
+    color: token,
+    /* Número del área en dos cifras: así se alinea en las listas del temario,
+       igual que la numeración de la guía. */
+    num: String(n).padStart(2, "0"),
+    name: meta.name || `Área ${n}`,
+    short: meta.short || `Área ${n}`,
     reactivos: meta.reactivos || 0,
     session: meta.session || 1
   };
 }
 
-/** Variables CSS que colorean una tarjeta o pastilla según su área. */
+/** Variable CSS que colorea la marca de área de una fila o una ficha. */
 export function areaStyle(areaNum) {
-  const v = areaVisual(areaNum);
-  return { "--c": v.from, "--c2": v.to };
+  const n = Number(areaNum);
+  return { "--c": n >= 1 && n <= 7 ? `var(--a${n})` : "var(--ink-3)" };
 }
 
 /* Etiquetas del porcentaje interno de estudio.

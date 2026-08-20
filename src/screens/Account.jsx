@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import Icon from "../ui/Icon.jsx";
-import { Button, Card, SectionTitle, Reveal, useToast } from "../ui/kit.jsx";
+import { Button, Sheet, Section, PageHead, useToast } from "../ui/kit.jsx";
 import { useAccounts, useCloud, useEngine } from "../lib/hooks.js";
 import { getActiveUser, isGuest, getServerUrl, setServerUrl, servidorFijo } from "../lib/accounts.js";
 import {
@@ -20,80 +20,61 @@ export default function Account() {
   useAccounts();
   useCloud();
   const rev = useEngine();
+  const stats = useMemo(() => overallStats(), [rev]);
   const toast = useToast();
 
   const user = getActiveUser();
   const invitado = isGuest();
   const estado = ESTADO[getCloudStatus().modo] || ESTADO.invitado;
-  const stats = useMemo(() => overallStats(), [rev]);
   const servidor = getServerUrl();
 
   return (
-    <div className="stack">
-      <SectionTitle hint={
-        invitado
+    <>
+      <PageHead title="Cuenta">
+        {invitado
           ? "Sin cuenta, tu avance se guarda solo en este dispositivo. Con una cuenta, te sigue a donde entres."
-          : "Tu avance se guarda en tu cuenta. Entra con el mismo usuario en cualquier dispositivo y ahí estará."
-      }>
-        Cuenta
-      </SectionTitle>
+          : "Tu avance se guarda en tu cuenta. Entra con el mismo usuario en cualquier dispositivo y ahí estará."}
+      </PageHead>
 
       {/* ---------------- Quién eres ---------------- */}
-      <Reveal>
-        <Card className="account-hero">
-          <div className="account-hero-main">
-            <span className={`avatar avatar-lg${invitado ? " avatar-guest" : ""}`}>
-              {invitado ? <Icon name="user" size={24} /> : inicial(user.nombre)}
-            </span>
-            <div style={{ minWidth: 0 }}>
-              <div className="account-name">{invitado ? "Invitado" : user.nombre}</div>
-              <p className="muted" style={{ margin: "2px 0 0" }}>
-                {stats.introducedCount} de {stats.total} temas vistos · racha de {stats.streak}
-                {!invitado && <> · <span className="mono">@{user.usuario}</span></>}
-              </p>
-            </div>
-          </div>
-          <span className={`sync-chip sync-${estado.tone}`}>
-            <Icon name={estado.icon} size={15} />
-            {estado.texto}
-          </span>
-        </Card>
-      </Reveal>
+      <header className="account-head">
+        <span className={`avatar avatar-lg${invitado ? " avatar-guest" : ""}`}>
+          {invitado ? <Icon name="user" size={22} /> : inicial(user.nombre)}
+        </span>
+        <div className="account-id">
+          <div className="account-name">{invitado ? "Invitado" : user.nombre}</div>
+          <p className="faint" style={{ margin: "2px 0 0" }}>
+            {stats.introducedCount} de {stats.total} temas vistos · racha de {stats.streak}
+            {!invitado && <> · <span className="mono">@{user.usuario}</span></>}
+          </p>
+        </div>
+        <span className={`sync-chip sync-${estado.tone}`}>
+          <Icon name={estado.icon} size={14} />
+          {estado.texto}
+        </span>
+      </header>
 
       {/* ---------------- Servidor (solo si falta configurarlo) ---------------- */}
-      {!servidor && (
-        <Reveal delay={60}>
-          <ServidorCard toast={toast} />
-        </Reveal>
-      )}
+      {!servidor && <ServidorCard toast={toast} />}
 
       {/* ---------------- Entrar / registrarse o sesión abierta ---------------- */}
-      {servidor && (
-        <Reveal delay={60}>
-          {invitado ? <AccesoCard toast={toast} /> : <SesionCard toast={toast} />}
-        </Reveal>
-      )}
+      {servidor && (invitado ? <AccesoCard toast={toast} /> : <SesionCard toast={toast} />)}
 
       {servidor && !servidorFijo() && (
-        <Reveal delay={120}>
-          <Card tone="soft">
-            <div className="note-row">
-              <span className="mock-icon"><Icon name="cloud" size={18} /></span>
-              <div style={{ minWidth: 0 }}>
-                <p className="muted" style={{ margin: 0 }}>
-                  Servidor de cuentas: <span className="mono">{servidor}</span>
-                </p>
-                {invitado && (
-                  <button className="link-btn" onClick={() => { setServerUrl(""); }}>
-                    Cambiar de servidor
-                  </button>
-                )}
-              </div>
-            </div>
-          </Card>
-        </Reveal>
+        <Section title="Servidor de cuentas">
+          <p className="muted" style={{ margin: 0 }}>
+            <span className="mono">{servidor}</span>
+          </p>
+          {invitado && (
+            <p style={{ marginTop: 8 }}>
+              <button className="link-btn" onClick={() => { setServerUrl(""); }}>
+                Cambiar de servidor
+              </button>
+            </p>
+          )}
+        </Section>
       )}
-    </div>
+    </>
   );
 }
 
@@ -126,18 +107,15 @@ function ServidorCard({ toast }) {
   };
 
   return (
-    <Card>
-      <div className="card-head">
-        <h3 className="card-title">Conecta el servidor de cuentas</h3>
-      </div>
-      <p className="muted" style={{ marginTop: 0 }}>
+    <Section title="Conecta el servidor de cuentas">
+      <p className="muted" style={{ maxWidth: "66ch" }}>
         Esta página es un sitio estático: para tener cuentas de verdad hace falta un servidor
         donde vivan los usuarios y su progreso. En el repositorio viene listo, en
         <span className="mono"> server/cloudflare-worker.js</span>, con las instrucciones para
         publicarlo gratis en Cloudflare en unos minutos. Cuando lo tengas, pega aquí su dirección.
       </p>
 
-      <form className="stack" style={{ gap: 12 }} onSubmit={conectar}>
+      <form className="stack" style={{ gap: 12, marginTop: 16, maxWidth: 460 }} onSubmit={conectar}>
         <label className="field">
           <span>Dirección del servidor</span>
           <input
@@ -153,16 +131,15 @@ function ServidorCard({ toast }) {
         {error && <p className="hint-text hint-danger">{error}</p>}
         <div className="row-gap">
           <Button type="submit" variant="primary" icon="link" disabled={ocupado || !url.trim()}>
-            {ocupado ? "Comprobando…" : "Conectar"}
+            {ocupado ? "Comprobando…" : "Conectar servidor"}
           </Button>
         </div>
+        <p className="hint-text">
+          Mientras tanto puedes seguir estudiando como invitado: tu avance se guarda en este
+          dispositivo y, cuando te registres, se queda en tu cuenta.
+        </p>
       </form>
-
-      <p className="hint-text">
-        Mientras tanto puedes seguir estudiando como invitado: tu avance se guarda en este
-        dispositivo y, cuando te registres, se queda en tu cuenta.
-      </p>
-    </Card>
+    </Section>
   );
 }
 
@@ -219,7 +196,7 @@ function AccesoCard({ toast }) {
   };
 
   return (
-    <Card>
+    <Sheet style={{ maxWidth: 460 }}>
       <div className="auth-tabs" role="tablist" aria-label="Acceso">
         <button
           role="tab"
@@ -305,7 +282,7 @@ function AccesoCard({ toast }) {
             : "Al entrar, el progreso de esa cuenta reemplaza al que tengas ahora en este dispositivo."}
         </p>
       </form>
-    </Card>
+    </Sheet>
   );
 }
 
@@ -338,28 +315,24 @@ function SesionCard({ toast }) {
   };
 
   return (
-    <Card>
-      <div className="card-head">
-        <h3 className="card-title">Sesión de {user.nombre}</h3>
-      </div>
-
-      <p className="muted" style={{ marginTop: 0 }}>
+    <Section title={`Sesión de ${user.nombre}`}>
+      <p className="muted" style={{ maxWidth: "66ch" }}>
         Todo lo que estudies se guarda solo en tu cuenta. Para verlo en otro dispositivo, entra
         ahí con <span className="mono">@{user.usuario}</span> y tu contraseña.
       </p>
 
       {estado.modo === "error" && (
-        <p className="hint-text hint-danger">
+        <p className="hint-text hint-danger" style={{ marginTop: 10 }}>
           Último intento: {String(estado.mensaje).replace(/\.$/, "")}. Tu avance está a salvo en
           este dispositivo; se vuelve a intentar solo.
         </p>
       )}
 
-      <div className="row-gap" style={{ marginTop: 14 }}>
+      <div className="row-gap" style={{ marginTop: 16 }}>
         <Button variant="primary" icon="refresh" onClick={guardar} disabled={ocupado}>
           {ocupado ? "Guardando…" : "Guardar ahora"}
         </Button>
-        <Button variant="ghost" icon="settings" onClick={() => setCambiando((v) => !v)}>
+        <Button variant="solid" icon="settings" onClick={() => setCambiando((v) => !v)}>
           Cambiar contraseña
         </Button>
         <Button variant="ghost" icon="logout" onClick={cerrar} disabled={ocupado}>
@@ -368,7 +341,7 @@ function SesionCard({ toast }) {
       </div>
 
       {cambiando && <CambioPassword toast={toast} onListo={() => setCambiando(false)} />}
-    </Card>
+    </Section>
   );
 }
 
@@ -394,7 +367,7 @@ function CambioPassword({ toast, onListo }) {
   };
 
   return (
-    <form className="stack pass-form" style={{ gap: 12 }} onSubmit={enviar}>
+    <form className="stack" style={{ gap: 12, marginTop: 20, maxWidth: 420 }} onSubmit={enviar}>
       <label className="field">
         <span>Contraseña actual</span>
         <input
