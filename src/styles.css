@@ -41,9 +41,9 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* Literata: cara de lectura (Google, licencia OFL). Solo la usa el material
-   de estudio, así que no se precarga: entra con `swap` sobre Georgia, que
-   tiene un ancho parecido, y no bloquea el primer pintado. */
+/* Literata (Google, licencia OFL). Es la voz del material de estudio y la de
+   los titulares de pantalla, así que sí entra en el primer pintado: el
+   index.html la precarga junto con la sans. */
 @font-face {
   font-family: "Literata var";
   font-style: normal;
@@ -61,146 +61,185 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* ---------------- Tokens ---------------- */
+/* ---------------- Tokens ----------------
+
+   Papel cálido, tinta oscura y una tinta azul que solo llevan las cosas que
+   se hacen. Los siete colores de área son la otra mitad del sistema: sirven
+   para reconocer una materia de un vistazo, nunca para decorar.
+   ------------------------------------------------------------ */
 
 :root {
   color-scheme: light;
 
   /* Papel y hojas */
-  --bg: #e9eaec;
-  --surface: #ffffff;
-  --surface-2: #f3f4f6;
-  --surface-3: #e6e8ec;
-  --line: #dcdee3;
-  --line-2: #bfc4ce;
+  --bg: #f1ebe0;
+  --bg-2: #e7dfd1;
+  --surface: #fffdf9;
+  --surface-2: #f8f3ea;
+  --surface-3: #efe7d9;
+  --line: #e5dbc9;
+  --line-2: #c9bca4;
 
   /* Tinta */
-  --text: #14161b;
-  --text-2: #454b57;
-  --text-3: #616874;
-  --on-ink: #ffffff;
+  --text: #1a1712;
+  --text-2: #4c463b;
+  --text-3: #6f6757;
+  --on-ink: #fffdf9;
 
-  /* Único color de interfaz: enlaces y foco. Todo lo demás es tinta. */
-  --accent: #17539e;
-  --accent-soft: rgba(23, 83, 158, 0.09);
+  /* Tinta azul: lo que se hace (botón de arranque, enlaces, foco, práctica). */
+  --accent: #2e42b8;
+  --accent-deep: #1e2c86;
+  --accent-soft: rgba(46, 66, 184, 0.08);
+  --accent-line: rgba(46, 66, 184, 0.24);
+
+  /* Subrayador: marca una palabra, nunca un bloque entero. */
+  --hl: #ffdf7a;
+
+  /* Los tres tipos de trabajo de una sesión. */
+  --w-repasar: #0b6f78;
+  --w-aprender: #a2570f;
+  --w-practicar: #2e42b8;
 
   /* Estados: acierto, error y aviso. */
-  --ok: #16744a;
-  --ok-soft: rgba(22, 116, 74, 0.1);
-  --bad: #ad2a20;
-  --bad-soft: rgba(173, 42, 32, 0.09);
-  --hold: #8a5a08;
-  --hold-soft: rgba(138, 90, 8, 0.1);
+  --ok: #14705a;
+  --ok-soft: rgba(20, 112, 90, 0.1);
+  --bad: #b03020;
+  --bad-soft: rgba(176, 48, 32, 0.09);
+  --hold: #8f5d08;
+  --hold-soft: rgba(143, 93, 8, 0.11);
 
   /* Las siete áreas del examen. */
-  --a1: #2b62a8;
-  --a2: #0e7a86;
-  --a3: #8a6212;
-  --a4: #86407e;
-  --a5: #47762f;
-  --a6: #a94430;
-  --a7: #6e4a9c;
+  --a1: #1f5ca8;
+  --a2: #0b6f78;
+  --a3: #8a5b12;
+  --a4: #8c3c79;
+  --a5: #3f7030;
+  --a6: #a8402c;
+  --a7: #6a45a0;
 
-  /* Sombra: casi no se usa. Solo flota lo que de verdad flota. */
-  --lift: 0 1px 2px rgba(20, 22, 27, 0.06);
-  --lift-2: 0 10px 24px -12px rgba(20, 22, 27, 0.32), 0 2px 6px rgba(20, 22, 27, 0.06);
-  --lift-3: 0 24px 60px -24px rgba(20, 22, 27, 0.44), 0 4px 12px rgba(20, 22, 27, 0.1);
+  /* Relieve: el papel apenas levanta; solo la hoja del día pesa de verdad. */
+  --lift: 0 1px 2px rgba(64, 50, 26, 0.07);
+  --lift-2: 0 12px 28px -14px rgba(64, 50, 26, 0.32), 0 2px 6px rgba(64, 50, 26, 0.07);
+  --lift-3: 0 28px 64px -26px rgba(52, 40, 20, 0.45), 0 4px 12px rgba(52, 40, 20, 0.12);
 
-  /* Forma: recto = hoja, curva media = control, círculo = marca. */
-  --r-sheet: 4px;
-  --r-control: 7px;
+  /* Forma: cuanto más grande el contenedor, más redondo. Los controles y las
+     marcas pequeñas se quedan tensos para no parecer globos. */
+  --r-zona: 22px;
+  --r-sheet: 14px;
+  --r-control: 10px;
+  --r-chip: 8px;
   --r-mark: 999px;
 
   --ease: cubic-bezier(0.2, 0.6, 0.35, 1);
   --dur: 140ms;
 
   --page: 880px;
-  --page-wide: 1120px;
+  --page-wide: 1240px;
   --measure: 68ch;
 
   --font: "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Literata var", Georgia, "Iowan Old Style", "Noto Serif", serif;
   --font-read: "Literata var", Georgia, "Iowan Old Style", "Noto Serif", "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
-/* Tinta invertida. El bloque va dos veces a propósito: una para el tema del
-   sistema y otra para la preferencia guardada, que tiene que poder ganarle. */
+/* Tinta invertida: el mismo cuaderno de noche. Va dos veces a propósito: una
+   para el tema del sistema y otra para la preferencia guardada, que tiene que
+   poder ganarle. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --bg: #101216;
-    --surface: #171a1f;
-    --surface-2: #1e2229;
-    --surface-3: #262b33;
-    --line: #272c34;
-    --line-2: #3d4450;
+    --bg: #16140f;
+    --bg-2: #1d1a15;
+    --surface: #221f19;
+    --surface-2: #2b2721;
+    --surface-3: #35302a;
+    --line: #35302a;
+    --line-2: #4d463c;
 
-    --text: #e8eaee;
-    --text-2: #a7aeba;
-    --text-3: #7d8695;
-    --on-ink: #0f1115;
+    --text: #f4eee3;
+    --text-2: #c0b8a8;
+    --text-3: #968d7d;
+    --on-ink: #16140f;
 
-    --accent: #86b3ee;
-    --accent-soft: rgba(134, 179, 238, 0.14);
+    --accent: #9fb0ff;
+    --accent-deep: #8496ef;
+    --accent-soft: rgba(159, 176, 255, 0.14);
+    --accent-line: rgba(159, 176, 255, 0.3);
 
-    --ok: #46b884;
-    --ok-soft: rgba(70, 184, 132, 0.14);
-    --bad: #f0736a;
-    --bad-soft: rgba(240, 115, 106, 0.14);
-    --hold: #ddad51;
-    --hold-soft: rgba(221, 173, 81, 0.14);
+    --hl: rgba(216, 174, 74, 0.34);
 
-    --a1: #6ea3e0;
-    --a2: #46b8c0;
-    --a3: #c9a24a;
-    --a4: #c87fc0;
-    --a5: #85bd6d;
-    --a6: #e8886e;
-    --a7: #a98fe0;
+    --w-repasar: #4dbdb3;
+    --w-aprender: #e0a35a;
+    --w-practicar: #9fb0ff;
 
-    --lift: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --lift-2: 0 10px 24px -12px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
-    --lift-3: 0 24px 60px -24px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.5);
+    --ok: #4bbd88;
+    --ok-soft: rgba(75, 189, 136, 0.14);
+    --bad: #f07d70;
+    --bad-soft: rgba(240, 125, 112, 0.14);
+    --hold: #ddb05a;
+    --hold-soft: rgba(221, 176, 90, 0.14);
+
+    --a1: #77a8e2;
+    --a2: #4dbdc2;
+    --a3: #cda555;
+    --a4: #cd85c3;
+    --a5: #8cc073;
+    --a6: #ec8b71;
+    --a7: #ac93e2;
+
+    --lift: 0 1px 2px rgba(0, 0, 0, 0.45);
+    --lift-2: 0 12px 28px -14px rgba(0, 0, 0, 0.72), 0 2px 6px rgba(0, 0, 0, 0.4);
+    --lift-3: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.5);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #101216;
-  --surface: #171a1f;
-  --surface-2: #1e2229;
-  --surface-3: #262b33;
-  --line: #272c34;
-  --line-2: #3d4450;
+  --bg: #16140f;
+  --bg-2: #1d1a15;
+  --surface: #221f19;
+  --surface-2: #2b2721;
+  --surface-3: #35302a;
+  --line: #35302a;
+  --line-2: #4d463c;
 
-  --text: #e8eaee;
-  --text-2: #a7aeba;
-  --text-3: #7d8695;
-  --on-ink: #0f1115;
+  --text: #f4eee3;
+  --text-2: #c0b8a8;
+  --text-3: #968d7d;
+  --on-ink: #16140f;
 
-  --accent: #86b3ee;
-  --accent-soft: rgba(134, 179, 238, 0.14);
+  --accent: #9fb0ff;
+  --accent-deep: #8496ef;
+  --accent-soft: rgba(159, 176, 255, 0.14);
+  --accent-line: rgba(159, 176, 255, 0.3);
 
-  --ok: #46b884;
-  --ok-soft: rgba(70, 184, 132, 0.14);
-  --bad: #f0736a;
-  --bad-soft: rgba(240, 115, 106, 0.14);
-  --hold: #ddad51;
-  --hold-soft: rgba(221, 173, 81, 0.14);
+  --hl: rgba(216, 174, 74, 0.34);
 
-  --a1: #6ea3e0;
-  --a2: #46b8c0;
-  --a3: #c9a24a;
-  --a4: #c87fc0;
-  --a5: #85bd6d;
-  --a6: #e8886e;
-  --a7: #a98fe0;
+  --w-repasar: #4dbdb3;
+  --w-aprender: #e0a35a;
+  --w-practicar: #9fb0ff;
 
-  --lift: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --lift-2: 0 10px 24px -12px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
-  --lift-3: 0 24px 60px -24px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.5);
+  --ok: #4bbd88;
+  --ok-soft: rgba(75, 189, 136, 0.14);
+  --bad: #f07d70;
+  --bad-soft: rgba(240, 125, 112, 0.14);
+  --hold: #ddb05a;
+  --hold-soft: rgba(221, 176, 90, 0.14);
+
+  --a1: #77a8e2;
+  --a2: #4dbdc2;
+  --a3: #cda555;
+  --a4: #cd85c3;
+  --a5: #8cc073;
+  --a6: #ec8b71;
+  --a7: #ac93e2;
+
+  --lift: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --lift-2: 0 12px 28px -14px rgba(0, 0, 0, 0.72), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --lift-3: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* ---------------- Base ---------------- */
@@ -222,6 +261,9 @@ body {
   overflow-x: hidden;
 }
 
+/* Dos voces: los titulares de pantalla se componen en la serif de lectura
+   (es la voz del material de estudio), y todo lo que es interfaz —secciones,
+   controles, cifras— se queda en la sans. */
 h1, h2, h3, h4 {
   margin: 0;
   font-weight: 650;
@@ -229,10 +271,25 @@ h1, h2, h3, h4 {
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
-h1 { font-size: 1.55rem; letter-spacing: -0.025em; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.1rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+}
 h2 { font-size: 1.2rem; }
 h3 { font-size: 1rem; }
 h4 { font-size: 0.9rem; }
+
+/* Subrayador. Una franja de marcatextos por detrás de la palabra que importa,
+   no un bloque de color de fondo. */
+mark {
+  background: linear-gradient(to bottom, transparent 8%, var(--hl) 8%, var(--hl) 86%, transparent 86%);
+  color: inherit;
+  padding: 0 0.12em;
+  border-radius: 2px;
+}
 
 p { margin: 0 0 0.7em; }
 p:last-child { margin-bottom: 0; }
@@ -254,7 +311,7 @@ button { cursor: pointer; }
 :focus:not(:focus-visible) { outline: none; }
 
 /* Números: siempre tabulares, para que las cifras no bailen al cambiar. */
-.tnum, .figure-value, .index-value, .session-row-count, .band-num, .meter-value,
+.tnum, .figure-value, .index-value, .meter-value,
 .runner-step, .exam-timer strong, .result-score, .mast-count, .tab-count {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
@@ -380,13 +437,19 @@ button { cursor: pointer; }
 .stack { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .row-gap { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
-/* ---------------- Cabecera ---------------- */
+/* ---------------- Cabecera ----------------
+
+   Una cinta de cuaderno: la marca a la izquierda, las secciones como
+   pestañas de separador y los dos controles que hacen falta. No hay barra
+   lateral (el temario se lee a ancho completo) y en móvil manda la barra
+   inferior. */
 
 .masthead {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(10px);
   border-bottom: 1px solid var(--line);
   padding-top: env(safe-area-inset-top);
 }
@@ -396,7 +459,7 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   gap: 14px;
-  height: 58px;
+  height: 62px;
 }
 
 .brand {
@@ -404,17 +467,19 @@ button { cursor: pointer; }
   min-width: 0; text-decoration: none; color: inherit;
 }
 .brand-mark {
-  width: 30px; height: 30px; flex: none;
+  width: 32px; height: 32px; flex: none;
   display: grid; place-items: center;
-  border: 1.5px solid var(--text);
-  border-radius: 3px;
-  color: var(--text);
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--lift);
 }
+:root[data-theme="dark"] .brand-mark { color: var(--on-ink); }
 .brand-text { display: flex; flex-direction: column; min-width: 0; }
 .brand-text b {
-  font-size: 0.82rem;
+  font-size: 0.83rem;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   line-height: 1.15;
   white-space: nowrap;
 }
@@ -425,30 +490,35 @@ button { cursor: pointer; }
   white-space: nowrap;
 }
 
-/* Navegación de escritorio: pestañas de documento, no barra lateral de SaaS.
-   La sección activa se marca con una regla gruesa bajo la etiqueta. */
-.mast-nav { display: none; margin-left: 12px; gap: 2px; }
+/* Pestañas de sección. La activa se rellena, como una lengüeta de cartón. */
+.mast-nav { display: none; margin-left: 14px; gap: 3px; }
 .mast-item {
   position: relative;
   display: inline-flex; align-items: center; gap: 7px;
-  height: 57px;
-  padding: 0 12px;
-  border: 0; background: none;
+  height: 36px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: none;
   color: var(--text-2);
   font-size: 0.88rem; font-weight: 550;
-  border-bottom: 2px solid transparent;
-  transition: color var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.mast-item:hover { color: var(--text); }
-.mast-item.is-active { color: var(--text); font-weight: 650; border-bottom-color: var(--text); }
+.mast-item:hover { color: var(--text); background: var(--surface-2); }
+.mast-item.is-active {
+  color: var(--accent);
+  font-weight: 650;
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
 .mast-count {
   min-width: 19px; height: 19px; padding: 0 5px;
   display: inline-grid; place-items: center;
   border-radius: var(--r-mark);
-  background: var(--text); color: var(--on-ink);
-  font-size: 0.7rem; font-weight: 650;
+  background: var(--accent); color: #fff;
+  font-size: 0.7rem; font-weight: 700;
 }
-.mast-item.is-active .mast-count { background: var(--accent); color: #fff; }
+:root[data-theme="dark"] .mast-count { color: var(--on-ink); }
 
 .mast-tools { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 
@@ -456,12 +526,14 @@ button { cursor: pointer; }
 .streak {
   display: none;
   align-items: baseline; gap: 5px;
-  padding-right: 12px; margin-right: 4px;
-  border-right: 1px solid var(--line);
+  padding: 4px 10px; margin-right: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-mark);
+  background: var(--surface);
   color: var(--text-2);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
-.streak b { font-size: 0.95rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.streak b { font-size: 0.92rem; color: var(--text); font-variant-numeric: tabular-nums; }
 
 .account-btn {
   position: relative;
@@ -479,10 +551,11 @@ button { cursor: pointer; }
 .avatar {
   display: grid; place-items: center;
   border-radius: var(--r-mark);
-  background: var(--text); color: var(--on-ink);
+  background: var(--accent); color: #fff;
   font-weight: 650;
   letter-spacing: 0;
 }
+:root[data-theme="dark"] .avatar { color: var(--on-ink); }
 .avatar-sm { width: 24px; height: 24px; font-size: 0.75rem; }
 .avatar-lg { width: 46px; height: 46px; font-size: 1.15rem; }
 .avatar-guest { background: none; border: 1px solid var(--line-2); color: var(--text-3); }
@@ -506,37 +579,41 @@ button { cursor: pointer; }
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
 }
 .tab {
   position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px;
-  min-height: 56px;
-  padding: 8px 2px 7px;
+  gap: 4px;
+  min-height: 58px;
+  padding: 9px 2px 8px;
   border: 0; background: none;
   color: var(--text-3);
   font-size: 0.68rem; font-weight: 550;
   transition: color var(--dur) var(--ease);
 }
-.tab.is-active { color: var(--text); font-weight: 650; }
-/* La sección activa se marca con una regla arriba: el mismo gesto que en
-   escritorio, girado. */
-.tab.is-active::before {
-  content: "";
-  position: absolute; top: -1px; left: 22%; right: 22%;
-  height: 2px; background: var(--text);
+.tab .icon {
+  padding: 3px 14px;
+  border-radius: var(--r-mark);
+  transition: background var(--dur) var(--ease);
+  box-sizing: content-box;
 }
+.tab.is-active { color: var(--accent); font-weight: 650; }
+.tab.is-active .icon { background: var(--accent-soft); }
 .tab-count {
-  position: absolute; top: 6px; left: 50%; margin-left: 6px;
+  position: absolute; top: 6px; left: 50%; margin-left: 8px;
   min-width: 16px; height: 16px; padding: 0 4px;
   display: grid; place-items: center;
   border-radius: var(--r-mark);
   background: var(--accent); color: #fff;
   font-size: 0.62rem; font-weight: 700;
+  border: 1.5px solid var(--surface);
 }
+:root[data-theme="dark"] .tab-count { color: var(--on-ink); }
+
 @media (min-width: 900px) {
   .tabbar { display: none; }
   .mast-nav { display: flex; }
@@ -552,8 +629,6 @@ button { cursor: pointer; }
   padding: 20px;
 }
 .sheet-quiet { background: var(--surface-2); border-color: transparent; }
-.sheet-inset { background: none; border: 0; padding: 0; }
-.sheet-flush { padding: 0; }
 
 /* Encabezado de sección: título + acción, separados por una regla.
    Es lo que sustituye a envolver cada bloque en otra tarjeta. */
@@ -589,13 +664,6 @@ button { cursor: pointer; }
 .muted { color: var(--text-2); }
 .faint { color: var(--text-3); font-size: 0.82rem; }
 
-.eyebrow {
-  font-size: 0.69rem;
-  font-weight: 650;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
 
 /* ---------------- Botones ---------------- */
 
@@ -617,9 +685,11 @@ button { cursor: pointer; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn .icon { flex: none; }
 
-/* Primario: tinta llena. Es el mismo gesto que rellenar una burbuja. */
-.btn-primary { background: var(--text); color: var(--on-ink); }
-.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--text) 86%, var(--bg)); }
+/* Primario: tinta azul llena. Es el color que solo llevan las cosas que se
+   hacen, así que el botón de arranque es lo más saturado de la pantalla. */
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-deep); }
+:root[data-theme="dark"] .btn-primary, :root:not([data-theme="light"]) .btn-primary { color: var(--on-ink); }
 
 .btn-solid { background: var(--surface); border-color: var(--line-2); }
 .btn-solid:hover:not(:disabled) { background: var(--surface-2); border-color: var(--text-3); }
@@ -638,12 +708,16 @@ button { cursor: pointer; }
 
 /* Enlace dentro de un párrafo, con aspecto de enlace. */
 .link-btn {
+  display: inline-flex; align-items: center; gap: 5px;
   border: 0; background: none; padding: 0;
   color: var(--accent);
   font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
+.link-btn:hover { color: var(--accent-deep); }
 
 .back-link {
   display: inline-flex; align-items: center; gap: 5px;
@@ -911,29 +985,6 @@ button { cursor: pointer; }
   color: var(--text-3);
 }
 
-/* ---------------- Avisos ----------------
-   Regla de color al costado y nada más: no compiten con el contenido. */
-
-.notice {
-  display: flex;
-  gap: 13px;
-  padding: 15px 16px 15px 15px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--tone, var(--text-3));
-  border-radius: var(--r-sheet);
-}
-.notice-warn { --tone: var(--hold); }
-.notice-danger { --tone: var(--bad); }
-.notice-ok { --tone: var(--ok); }
-.notice-accent { --tone: var(--accent); }
-.notice > .icon { flex: none; color: var(--tone, var(--text-3)); margin-top: 1px; }
-.notice-body { flex: 1; min-width: 0; }
-.notice-body h3 { font-size: 0.95rem; margin-bottom: 4px; }
-.notice-body p { margin: 0 0 6px; font-size: 0.87rem; color: var(--text-2); text-wrap: pretty; }
-.notice-body p:last-child { margin-bottom: 0; }
-.notice-close { flex: none; margin: -6px -8px -6px 0; }
-
 /* ---------------- Formularios ---------------- */
 
 .field { display: flex; flex-direction: column; gap: 6px; }
@@ -1046,148 +1097,646 @@ button { cursor: pointer; }
 .empty p { font-size: 0.88rem; max-width: 46ch; margin-inline: auto; text-wrap: pretty; }
 
 /* ============================================================
-   Pantalla: Hoy
+   Pantalla: Hoy · el cuaderno de trabajo
+
+   Tres zonas con densidad distinta a propósito:
+     · LA HOJA. Superficie blanca, grande, con relieve real. Es lo único
+       que pide una decisión y por eso es lo más pesado de la página.
+     · LA REGLETA. Una banda de papel con la regla graduada del plan.
+       Ancha, tranquila, casi sin texto: se mira, no se lee.
+     · LAS MATERIAS. Siete fichas con la pestaña de color de su área.
    ============================================================ */
 
-/* Banda de cuenta regresiva: el dato que fija el contexto de todo.
-   No es un hero: es el encabezado del documento. */
-.band {
-  display: grid;
-  gap: 14px 40px;
-  padding-bottom: 18px;
-  margin-bottom: 24px;
-  border-bottom: 2px solid var(--text);
-}
-.band-count { display: flex; align-items: baseline; gap: 14px; min-width: 0; margin: 0; }
-.band-num {
-  font-size: clamp(2.8rem, 12vw, 4.4rem);
-  font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 0.86;
-}
-.band-unit {
-  font-size: 0.98rem;
-  font-weight: 600;
-  color: var(--text-2);
-  line-height: 1.25;
-  max-width: 8ch;
-}
-.band-side { min-width: 0; }
-.band-date {
-  margin: 0 0 12px;
-  font-size: 0.83rem;
-  color: var(--text-3);
-}
-.band-date b { display: block; color: var(--text); font-weight: 650; font-size: 0.95rem; }
+.avisos { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
 
-.band-note {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 0.87rem;
-  color: var(--text-2);
-}
-.band-note > .icon { color: var(--text-3); flex: none; }
-.band-note.is-warn { color: var(--hold); font-weight: 550; }
-.band-note.is-warn > .icon { color: var(--hold); }
+.hoy { display: grid; gap: 24px; align-items: start; }
 
-.band-track-labels {
-  display: flex; justify-content: space-between; gap: 10px;
-  margin-top: 6px;
-  font-size: 0.74rem;
-  color: var(--text-3);
-  font-variant-numeric: tabular-nums;
-}
+/* ---------------- 1. La hoja de hoy ---------------- */
 
-@media (min-width: 760px) {
-  .band { grid-template-columns: auto minmax(260px, 1fr); align-items: end; }
-  .band-count { grid-column: 1; grid-row: 1; }
-  .band-side { grid-column: 2; grid-row: 1; }
-  .band-note { grid-column: 1 / -1; grid-row: 2; }
-}
-
-/* Reparto de la pantalla: la sesión manda, lo demás acompaña. */
-.today-grid { display: grid; gap: 26px; align-items: start; }
-@media (min-width: 1000px) {
-  .today-grid { grid-template-columns: minmax(0, 1.55fr) minmax(280px, 1fr); gap: 34px; }
-}
-
-/* Panel de la sesión: el objeto principal del producto. */
-.session {
+.hoja {
+  position: relative;
   background: var(--surface);
-  border: 1px solid var(--line-2);
-  border-radius: var(--r-sheet);
-  box-shadow: var(--lift);
+  border: 1px solid var(--line);
+  border-radius: var(--r-zona);
+  box-shadow: var(--lift-2);
   overflow: hidden;
 }
-.session-head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 16px;
-  padding: 18px 20px 16px;
+/* Filo de color en el canto superior: los tres trabajos del día, en orden. */
+.hoja::before {
+  content: "";
+  position: absolute; inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--w-repasar) 0 33.33%, var(--w-aprender) 33.33% 66.66%, var(--w-practicar) 66.66%);
+}
+
+.hoja-cab { padding: 30px 26px 0; }
+
+.fecha {
+  margin: 0 0 10px;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.hoja-cab h1 { font-size: clamp(1.85rem, 1.2rem + 2.4vw, 2.7rem); max-width: 18ch; }
+
+.hoja-tiempo {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  margin: 12px 0 0;
+  font-size: 0.92rem;
+  color: var(--text-2);
+}
+.hoja-tiempo b { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+
+/* Reparto del día: una sola barra, tres tramos proporcionales. */
+.reparto { padding: 20px 26px 0; }
+.reparto-barra {
+  display: flex; gap: 4px;
+  height: 46px;
+}
+.tramo {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 34px;
+  display: grid; place-items: center;
+  border-radius: var(--r-chip);
+  background: var(--t, var(--text-3));
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  animation: tramoIn 420ms var(--ease) both;
+}
+@keyframes tramoIn { from { transform: scaleX(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
+.tramo b { line-height: 1; }
+.tramo-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  opacity: 0.9;
+}
+/* En la barra el número manda; la etiqueta solo aparece si el tramo da de sí. */
+.tramo { flex-direction: row; gap: 7px; display: flex; align-items: center; justify-content: center; }
+.t-repasar { --t: var(--w-repasar); }
+.t-aprender { --t: var(--w-aprender); }
+.t-practicar { --t: var(--w-practicar); }
+:root[data-theme="dark"] .tramo, :root:not([data-theme="light"]) .tramo { color: var(--on-ink); }
+
+.reparto-leyenda {
+  display: flex; flex-wrap: wrap; gap: 6px 18px;
+  margin: 10px 0 0; padding: 0;
+  list-style: none;
+  font-size: 0.83rem;
+  color: var(--text-2);
+}
+.reparto-leyenda li { display: inline-flex; align-items: center; gap: 6px; }
+.reparto-leyenda b { color: var(--text-3); font-weight: 600; }
+.punto {
+  width: 9px; height: 9px; border-radius: var(--r-mark);
+  background: var(--t, var(--text-3));
+}
+
+/* El arranque vive dentro de la hoja, antes del detalle: la decisión se toma
+   arriba y el desglose queda para quien quiera leerlo. */
+.hoja-arranque { padding: 22px 26px 24px; }
+.hoja-arranque .btn-lg {
+  min-height: 60px;
+  font-size: 1.05rem;
+  border-radius: var(--r-sheet);
+  box-shadow: 0 10px 20px -12px var(--accent);
+}
+.hoja-pista {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-3);
+  text-align: center;
+}
+
+/* Detalle del trabajo: tres bloques sobre papel, no tres tarjetas. */
+.trabajo {
+  margin: 0; padding: 0 26px 8px;
+  list-style: none;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.trabajo-item {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 14px;
+  padding: 18px 0;
   border-bottom: 1px solid var(--line);
 }
-.session-head h2 { font-size: 1.25rem; }
-.session-sub { margin: 3px 0 0; font-size: 0.84rem; color: var(--text-3); }
-.session-total { text-align: right; flex: none; }
-.session-total b {
-  display: block;
-  font-size: 1.85rem;
-  font-weight: 650;
-  letter-spacing: -0.035em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+.trabajo-item:last-child { border-bottom: 0; }
+.trabajo-marca {
+  display: grid; place-items: center;
+  width: 38px; height: 38px;
+  border-radius: var(--r-mark);
+  background: color-mix(in srgb, var(--t) 14%, var(--surface));
+  color: var(--t);
 }
-.session-total span { font-size: 0.72rem; color: var(--text-3); }
-
-.session-list { padding: 4px 0; }
-.session-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: 14px;
-  padding: 11px 20px;
+.trabajo-cuerpo h2 {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  font-size: 1rem;
+  letter-spacing: 0;
 }
-.session-row + .session-row { border-top: 1px solid var(--line); }
-.session-row b { display: block; font-size: 0.91rem; font-weight: 600; }
-.session-row span {
-  display: block;
-  margin-top: 1px;
-  font-size: 0.79rem;
-  color: var(--text-3);
+.trabajo-cuerpo h2 b {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--t);
+}
+.trabajo-unidad { font-size: 0.82rem; font-weight: 500; color: var(--text-3); }
+.trabajo-cuerpo > p {
+  margin: 4px 0 0;
+  font-size: 0.87rem;
+  color: var(--text-2);
   text-wrap: pretty;
 }
-.session-row-count {
-  font-size: 1.05rem;
+.trabajo-item.is-vacio { opacity: 0.6; }
+.trabajo-item.is-vacio .trabajo-marca { background: var(--surface-3); color: var(--text-3); }
+
+.trabajo-detalle { margin: 12px 0 0; padding: 0; list-style: none; }
+.trabajo-detalle > li + li { margin-top: 10px; }
+.detalle-etiqueta {
+  font-size: 0.84rem;
   font-weight: 650;
-  letter-spacing: -0.02em;
+  color: var(--text);
 }
-.session-row.is-empty { color: var(--text-3); }
-.session-row.is-empty b { font-weight: 500; color: var(--text-3); }
-.session-row.is-empty .session-row-count { color: var(--text-3); font-weight: 400; }
+.detalle-nota { font-size: 0.8rem; color: var(--text-3); }
+.detalle-nota::before { content: " · "; }
 
-.session-foot { padding: 16px 20px 18px; border-top: 1px solid var(--line); }
-.session-foot .btn-lg { min-height: 54px; font-size: 1.02rem; }
-.session-foot p { font-size: 0.87rem; color: var(--text-2); text-wrap: pretty; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  max-width: 100%;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--c, var(--line-2)) 30%, var(--line));
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  font-size: 0.79rem;
+  color: var(--text-2);
+}
+.chip::before {
+  content: "";
+  width: 4px; height: 14px; flex: none;
+  border-radius: 2px;
+  background: var(--c, var(--text-3));
+}
 
-/* Bloques de la columna de apoyo. */
-.aside-block + .aside-block { margin-top: 26px; }
+/* Día sin pendientes. */
+.hoja-libre { padding: 22px 26px 26px; }
+.hoja-libre p { font-size: 0.95rem; color: var(--text-2); max-width: 54ch; margin-bottom: 16px; }
 
-.welcome-list { counter-reset: paso; }
-.welcome-step {
+/* ---------------- Columna de apoyo ---------------- */
+
+.apoyo { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+.bloque {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sheet);
+  box-shadow: var(--lift);
+}
+.bloque-cab {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  margin-bottom: 3px;
+}
+.bloque-cab h2 { font-size: 1.02rem; letter-spacing: -0.005em; }
+.bloque-nota { margin: 0 0 14px; font-size: 0.82rem; color: var(--text-3); text-wrap: pretty; }
+
+/* Fichas de tema flojo: una tarjeta de estudio con el color de su área. */
+.fichas { display: flex; flex-direction: column; gap: 10px; }
+.ficha {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
+  gap: 7px;
+  padding: 13px 14px 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--c, var(--text-3));
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  text-align: left;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.ficha:hover { background: var(--surface); border-color: var(--line-2); border-left-color: var(--c); transform: translateX(2px); }
+.ficha-area {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--c, var(--text-3));
+}
+.ficha-tema { font-size: 0.94rem; font-weight: 600; line-height: 1.3; color: var(--text); }
+.ficha-barra {
+  height: 5px;
+  border-radius: var(--r-mark);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.ficha-barra > span {
+  display: block; height: 100%;
+  border-radius: inherit;
+  background: var(--c, var(--text-3));
+  transition: width 500ms var(--ease);
+}
+.ficha-pie {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.79rem;
+  color: var(--text-3);
+}
+.ficha-nivel { font-weight: 650; }
+.ficha-nivel.n-danger { color: var(--bad); }
+.ficha-nivel.n-warn { color: var(--hold); }
+.ficha-nivel.n-success { color: var(--ok); }
+.ficha-pct { color: var(--text-2); }
+.ficha-ir {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-left: auto;
+  color: var(--accent);
+  font-weight: 600;
+}
+.ficha:hover .ficha-ir { text-decoration: underline; }
+
+/* Avisos de la columna. */
+.nota {
+  display: flex; gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--tono, var(--text-3));
+  border-radius: var(--r-sheet);
+  background: var(--surface);
+}
+.nota-ok { --tono: var(--ok); }
+.nota-info { --tono: var(--accent); }
+.nota-aviso { --tono: var(--hold); }
+.nota-riesgo { --tono: var(--c, var(--bad)); background: color-mix(in srgb, var(--bad) 5%, var(--surface)); }
+.nota > .icon { flex: none; color: var(--tono); margin-top: 2px; }
+.nota h3 { font-size: 0.95rem; margin-bottom: 5px; }
+.nota p { margin: 0 0 8px; font-size: 0.87rem; color: var(--text-2); text-wrap: pretty; }
+.nota p:last-child { margin-bottom: 0; }
+.nota-pie { color: var(--text-3) !important; font-size: 0.82rem !important; }
+.nota-cerrar {
+  flex: none; align-self: start;
+  display: grid; place-items: center;
+  width: 30px; height: 30px; margin: -4px -6px 0 0;
+  border: 0; border-radius: var(--r-mark);
+  background: none; color: var(--text-3);
+}
+.nota-cerrar:hover { background: var(--surface-3); color: var(--text); }
+
+/* Cómo funciona el plan (solo la primera vez). */
+.pasos { margin: 0 0 14px; padding: 0; list-style: none; }
+.pasos > li {
+  display: grid; grid-template-columns: 30px 1fr; gap: 12px;
   padding: 12px 0;
   border-top: 1px solid var(--line);
 }
-.welcome-step:first-child { border-top: 0; padding-top: 0; }
-.welcome-num {
-  font-size: 0.8rem;
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-3);
-  padding-top: 2px;
+.pasos > li:first-child { border-top: 0; padding-top: 4px; }
+.pasos-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); }
+.pasos b { display: block; font-size: 0.9rem; }
+.pasos p { margin: 3px 0 0; font-size: 0.84rem; color: var(--text-2); text-wrap: pretty; }
+
+/* ---------------- 2. La regleta ---------------- */
+
+.regleta-zona {
+  margin-top: 30px;
+  padding: 26px 26px 22px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-zona);
 }
-.welcome-step b { display: block; font-size: 0.9rem; }
-.welcome-step p { margin: 3px 0 0; font-size: 0.84rem; color: var(--text-2); text-wrap: pretty; }
+
+.rotulo {
+  margin: 0 0 8px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.regleta-cab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 28px;
+  margin-bottom: 30px;
+}
+.regleta-cab .rotulo { grid-column: 1; }
+.regleta-cab .cuenta { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+.veredicto-bloque { grid-column: 1; }
+.veredicto {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 1rem + 0.9vw, 1.6rem);
+  letter-spacing: -0.015em;
+}
+.veredicto > .icon { flex: none; color: var(--text-3); }
+.veredicto.v-ok > .icon { color: var(--ok); }
+.veredicto.v-atras > .icon { color: var(--hold); }
+.veredicto-detalle {
+  margin: 7px 0 0;
+  max-width: 62ch;
+  font-size: 0.9rem;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+.cuenta {
+  flex: none;
+  display: flex; align-items: baseline; gap: 10px;
+  margin: 0;
+  text-align: right;
+}
+.cuenta b {
+  font-size: clamp(2rem, 1.4rem + 2vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text);
+}
+.cuenta span {
+  white-space: pre-line;
+  font-size: 0.76rem;
+  line-height: 1.2;
+  color: var(--text-3);
+  text-align: left;
+}
+
+/* La regla graduada: dos cintas sobre el mismo eje. Arriba los días, abajo
+   el temario visto. Comparar sus longitudes es toda la lectura. */
+.regleta { position: relative; }
+.regleta-cuerpo { position: relative; padding-top: 26px; }
+
+.regleta-pin {
+  position: absolute; top: 0; bottom: 0;
+  width: 0;
+  z-index: 2;
+}
+.pin-etiqueta {
+  position: absolute; top: 0; left: 0;
+  transform: translateX(-50%);
+  transition: none;
+  padding: 3px 9px;
+  border-radius: var(--r-mark);
+  background: var(--text); color: var(--on-ink);
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.regleta-pin.is-inicio .pin-etiqueta { transform: none; margin-left: -6px; }
+.regleta-pin.is-final .pin-etiqueta { transform: translateX(-100%); margin-left: 6px; }
+
+.pin-linea {
+  position: absolute; top: 22px; bottom: 0; left: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  opacity: 0.85;
+}
+
+.cinta { position: relative; height: 26px; }
+.cinta-fondo {
+  position: absolute; inset: 0;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  /* Graduación: una raya fina por día, como una regla de verdad. */
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--text) 12%, transparent) 0 1px,
+    transparent 1px var(--dia)
+  );
+}
+.cinta-llena {
+  position: absolute; inset: 0 auto 0 0;
+  border-radius: 6px 3px 3px 6px;
+  background: color-mix(in srgb, var(--text) 78%, var(--bg));
+  transition: width 700ms var(--ease);
+}
+.cinta-dias .cinta-llena {
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.16) 0 1px,
+    transparent 1px var(--dia)
+  );
+}
+/* La regla termina en el examen: el tope rojo cierra el recorrido. */
+.marca-examen {
+  position: absolute; top: -5px; bottom: -5px; right: -2px;
+  width: 7px;
+  border-radius: 3px;
+  background: var(--bad);
+  z-index: 1;
+}
+
+.cinta .corte {
+  position: absolute; top: -4px; bottom: -4px;
+  width: 1px;
+  background: var(--line-2);
+  z-index: 1;
+}
+
+.cinta-temario { height: 14px; margin-top: 8px; }
+.cinta-temario .cinta-fondo { background-image: none; background: var(--surface); }
+.cinta-temario .cinta-llena {
+  background: var(--accent);
+  background-image: none;
+}
+
+.regleta-fases {
+  display: flex;
+  margin-top: 9px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-3);
+}
+.regleta-fases > span {
+  position: relative;
+  padding-left: 8px;
+  border-left: 1px solid var(--line-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.regleta-fases .fase-examen { flex: none; color: var(--bad); }
+
+.regleta-pies {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px;
+  margin-top: 14px;
+}
+.regleta-pies p { margin: 0; font-size: 0.83rem; color: var(--text-2); }
+.pie-temario { display: inline-flex; align-items: baseline; gap: 6px; }
+.pie-temario b { color: var(--text); font-weight: 700; }
+.pie-pct { color: var(--accent) !important; }
+.pie-temario::before {
+  content: "";
+  width: 10px; height: 10px; margin-right: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  align-self: center;
+}
+.pie-examen { display: inline-flex; align-items: center; gap: 8px; color: var(--text-3) !important; }
+.bandera {
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  background: var(--bad);
+}
+
+.regleta-meses { position: relative; height: 18px; margin-top: 6px; }
+.regleta-meses > span {
+  position: absolute; top: 0;
+  padding-left: 5px;
+  border-left: 1px solid var(--line-2);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* ---------------- 3. Las siete áreas ---------------- */
+
+.materias-zona { margin-top: 34px; }
+.zona-cab { margin-bottom: 18px; }
+.zona-cab h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.32rem; }
+.zona-nota { margin: 6px 0 0; font-size: 0.87rem; color: var(--text-2); max-width: 66ch; }
+
+.materias {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.materia {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  gap: 6px;
+  padding: 16px 14px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sheet);
+  background: var(--surface);
+  text-align: left;
+  box-shadow: var(--lift);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.materia:hover { transform: translateY(-3px); box-shadow: var(--lift-2); border-color: var(--line-2); }
+/* Pestaña de separador de cuaderno: dice de qué materia es la ficha. */
+.materia-tab {
+  position: absolute; top: -1px; left: 14px;
+  width: 44px; height: 5px;
+  border-radius: 0 0 4px 4px;
+  background: var(--c, var(--text-3));
+}
+.materia-num {
+  font-size: 0.76rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--c, var(--text-3));
+}
+.materia-nombre { font-size: 0.95rem; font-weight: 650; line-height: 1.25; color: var(--text); }
+/* Una hoja pautada que se va llenando: el área estudiada queda entintada por
+   debajo y las rayas siguen viéndose encima, como una página a medio escribir. */
+.materia-barra {
+  position: relative;
+  align-self: end;
+  display: flex; align-items: flex-end;
+  height: 46px; width: 100%;
+  margin: 10px 0 6px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.materia-barra > span {
+  display: block;
+  width: 100%;
+  background: color-mix(in srgb, var(--c, var(--text-3)) 42%, var(--surface));
+  transition: height 600ms var(--ease);
+}
+.materia-barra::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    to top, color-mix(in srgb, var(--c, var(--text-3)) 40%, transparent) 0 1px, transparent 1px 20%
+  );
+}
+.materia-datos { font-size: 0.8rem; color: var(--text-3); }
+.materia-datos b { color: var(--text); font-weight: 700; }
+.materia-estado {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.76rem; font-weight: 650;
+}
+.materia-estado::before {
+  content: ""; width: 7px; height: 7px; border-radius: var(--r-mark); background: currentColor;
+}
+.materia-estado.e-alto { color: var(--bad); }
+.materia-estado.e-medio { color: var(--hold); }
+.materia-estado.e-bajo { color: var(--ok); }
+.materia-reactivos { font-size: 0.72rem; color: var(--text-3); }
+
+/* ---------------- Constancia ---------------- */
+
+.constancia {
+  display: grid;
+  gap: 14px 28px;
+  margin-top: 30px;
+  padding: 20px 4px 0;
+  border-top: 2px solid var(--text);
+}
+.constancia p { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.constancia b { font-size: 0.95rem; font-weight: 650; }
+.constancia span { font-size: 0.83rem; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.constancia .link-btn { justify-self: start; align-self: center; }
+
+@media (min-width: 700px) {
+  .constancia { grid-template-columns: repeat(3, 1fr) auto; align-items: center; }
+}
+
+/* ---------------- Reparto de la pantalla ---------------- */
+
+@media (min-width: 1040px) {
+  .hoy { grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 28px; }
+  .hoja-cab { padding: 36px 34px 0; }
+  .reparto { padding: 26px 34px 0; }
+  .hoja-arranque { padding: 26px 34px 28px; }
+  .trabajo { padding: 0 34px 10px; }
+  .hoja-libre { padding: 26px 34px 30px; }
+  .regleta-zona { padding: 32px 36px 26px; }
+}
+
+/* En móvil la hoja se aprieta, la regleta se simplifica y el botón queda
+   siempre a un pulgar de distancia. */
+@media (max-width: 700px) {
+  .hoja-cab { padding: 24px 18px 0; }
+  .reparto { padding: 18px 18px 0; }
+  .hoja-arranque { padding: 18px 18px 22px; }
+  .trabajo { padding: 0 18px 6px; }
+  .hoja-libre { padding: 18px 18px 22px; }
+  .hoja-arranque .btn-lg { min-height: 56px; }
+  .reparto-barra { height: 40px; }
+  .tramo-label { display: none; }
+
+  .regleta-zona { margin-top: 22px; padding: 20px 16px 18px; border-radius: var(--r-sheet); }
+  .regleta-cab { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-bottom: 22px; }
+  .regleta-cab .cuenta { grid-column: 1; grid-row: auto; }
+  .cuenta { text-align: left; }
+  .cuenta b { font-size: 2.1rem; }
+  .regleta-cuerpo { padding-top: 24px; }
+  .cinta { height: 30px; }
+  .cinta-temario { height: 16px; }
+  .regleta-fases { font-size: 0.68rem; }
+  .regleta-fases > span:not(:first-child) { color: transparent; }
+  .regleta-fases .fase-examen { display: none; }
+  .regleta-pies { flex-direction: column; gap: 8px; }
+  .pie-examen { align-items: flex-start; line-height: 1.35; }
+  .bandera { margin-top: 4px; flex: none; }
+
+  .materias-zona { margin-top: 26px; }
+  .materias { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .materia { padding: 14px 12px 12px; }
+  .materia-barra { height: 30px; }
+}
+
+@media (max-width: 380px) {
+  .materias { grid-template-columns: minmax(0, 1fr); }
+  .materia { grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; }
+  .materia-barra { display: none; }
+  .materia-num { grid-row: 1; }
+  .materia-nombre { grid-row: 1; }
+  .materia-datos, .materia-estado { grid-column: 2; }
+  .materia-reactivos { display: none; }
+}
 
 /* ============================================================
    Pantalla: Repasar (temario)

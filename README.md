@@ -263,13 +263,13 @@ avisa cuántas se agregaron.
 | `src/lib/accounts.js` · `cloud.js` | Sesión de la cuenta y diálogo con el servidor (registro, login, guardado). |
 | `src/screens/` | Las pantallas: Hoy, Repasar, Simulacro, Progreso, Guía y Cuenta. |
 | `src/ui/` | Sistema de componentes (botones, hojas, secciones, medidores, modal, toasts, iconos). |
-| `src/styles.css` | Tokens de diseño y estilos. Temas claro y oscuro completos. |
+| `src/styles.css` | Tokens de diseño y estilos: papel cálido, tinta azul para lo que se hace y un color por área. Temas claro y oscuro completos. |
 | `data/` | El temario base (177 temas) y el contenido de la guía oficial. |
 | `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales. Cada uno forma un **bloque** dentro del tema, con su `leccion` cuando agrega conceptos que la nota no explica. |
 | `data/formato/` | Reactivos de relación de elementos y de ordenamiento, para los temas donde la guía marca esos formatos. |
 | `scripts/` | El validador del temario y las pruebas de los generadores y del motor. |
 | `server/cloudflare-worker.js` | El servidor de cuentas, listo para pegar en Cloudflare Workers. |
-| `fonts/` | Inter (interfaz) y Literata (material de estudio), subconjunto latino, servidas desde el repo. |
+| `fonts/` | Inter (interfaz y cifras) y Literata (titulares y material de estudio), subconjunto latino, servidas desde el repo. |
 | `assets/` · `index.html` | **Generados por el build.** No se editan a mano. |
 
 Los archivos de `data/` se cargan como scripts normales, no se empaquetan: así puedes

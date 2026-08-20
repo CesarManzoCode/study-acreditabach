@@ -111,9 +111,9 @@ export default function Info() {
         </div>
       </Section>
 
-      <div className="notice notice-warn" style={{ marginTop: 30 }}>
+      <div className="nota nota-aviso" style={{ marginTop: 30 }}>
         <Icon name="alert" size={18} />
-        <div className="notice-body">
+        <div>
           <h3>Herramienta independiente</h3>
           <p>
             Esta app no está afiliada al Ceneval ni avalada por él, y no puede garantizar ningún resultado.

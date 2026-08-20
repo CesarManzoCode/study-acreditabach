@@ -241,9 +241,9 @@ function TopicScreen({ topicId, onPractice, onCards, onDrill }) {
       </Section>
 
       {!introduced ? (
-        <div className="notice notice-accent" style={{ marginTop: 26 }}>
+        <div className="nota nota-info" style={{ marginTop: 26 }}>
           <Icon name="sparkles" size={18} />
-          <div className="notice-body">
+          <div>
             <h3>Este tema aún no entra en tu plan</h3>
             <p>
               Si lo agregas ahora, sus tarjetas entran a tu repaso espaciado y aparecerán en tus

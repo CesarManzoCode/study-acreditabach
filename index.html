@@ -6,17 +6,18 @@
 <title>ACREDITA-BACH · Plan de estudio</title>
 <meta name="description" content="Plan de estudio diario para el examen ACREDITA-BACH (Ceneval): repetición espaciada, práctica activa y simulacros.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#e9eaec" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101216" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f1ebe0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16140f" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 
-<!-- Solo se precarga la sans de la interfaz. La serif de lectura (Literata)
-     entra con `swap` sobre Georgia y no bloquea el primer pintado. -->
+<!-- Se precargan las dos caras que aparecen en el primer pintado: la sans de
+     la interfaz y la serif con la que se componen los titulares. -->
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/main-3GYG7SWB.css">
+<link rel="preload" href="fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/main-CHIXE2MR.css">
 
 <script>
   /* Aplica el tema guardado antes del primer pintado para que no haya parpadeo.
@@ -86,6 +87,6 @@
   <script defer src="data/poda.js"></script>
 
 <!-- App -->
-<script type="module" src="assets/main-RBYNMWPG.js"></script>
+<script type="module" src="assets/main-ML6Y6ADY.js"></script>
 </body>
 </html>
