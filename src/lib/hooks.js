@@ -69,31 +69,6 @@ export function useKeys(map, deps = []) {
   }, deps);
 }
 
-/** Anima un número de 0 (o del valor previo) al valor final. */
-export function useCountUp(value, duration = 900) {
-  const [display, setDisplay] = useState(value);
-  const fromRef = useRef(value);
-  useEffect(() => {
-    if (prefersReducedMotion()) { setDisplay(value); return; }
-    const from = fromRef.current;
-    const to = value;
-    if (from === to) return;
-    let raf;
-    const start = performance.now();
-    const tick = (now) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setDisplay(Math.round(from + (to - from) * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else fromRef.current = to;
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value, duration]);
-  useEffect(() => { fromRef.current = display; });
-  return display;
-}
-
 export function prefersReducedMotion() {
   return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -106,16 +81,6 @@ export function useScrollLock(active) {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
   }, [active]);
-}
-
-/** Devuelve true una vez que el componente montó (para animaciones de entrada). */
-export function useMounted() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-  return mounted;
 }
 
 /** Estado local persistido (solo preferencias de interfaz, nunca progreso). */

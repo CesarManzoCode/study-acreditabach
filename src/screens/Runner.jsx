@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import Icon from "../ui/Icon.jsx";
-import { Button, Card, Bar, Badge, Ring, Stat, Modal, Stack } from "../ui/kit.jsx";
+import { Button, Meter, Badge, Figures, Figure, Modal, Stack, Section, Mark } from "../ui/kit.jsx";
 import Calculator from "../ui/Calculator.jsx";
 import Figura from "../ui/Figura.jsx";
 import { RichText, Inline } from "../lib/text.jsx";
@@ -33,6 +33,13 @@ function QuestionStem({ text, figura }) {
   );
 }
 
+/* La burbuja de la hoja de lector óptico. Es el gesto que el sustentante hace
+   el día del examen —rellenar un círculo con lápiz— y aquí se usa igual: la
+   opción elegida se rellena. */
+function Bubble({ letter }) {
+  return <span className="bubble" aria-hidden="true">{letter}</span>;
+}
+
 /* ============================================================
    Contenedor común
    ============================================================ */
@@ -54,10 +61,10 @@ function RunnerShell({ title, step, total, onExit, children, footer, exitConfirm
             <span>{title}</span>
             <span className="tnum">{Math.min(step + 1, total)} / {total}</span>
           </div>
-          <Bar value={pct} height={5} />
+          <Meter value={pct} height={3} label="Avance de la sesión" />
         </div>
         <button className="btn btn-ghost btn-icon" onClick={tryExit} aria-label="Salir de la sesión">
-          <Icon name="x" size={20} />
+          <Icon name="x" size={19} />
         </button>
       </header>
 
@@ -172,13 +179,13 @@ function SkippedStep({ onNext }) {
   useKeys({ Enter: onNext, " ": onNext }, []);
   return (
     <Stack>
-      <Card>
-        <h2 className="intro-title">Este paso ya no está en el temario</h2>
+      <div className="lesson">
+        <h2 className="lesson-title" style={{ marginTop: 0 }}>Este paso ya no está en el temario</h2>
         <p className="muted" style={{ margin: 0 }}>
           La tarjeta que tocaba aquí se quitó al ajustar el contenido. Tu progreso no se perdió:
           sigue con lo que falta de la sesión.
         </p>
-      </Card>
+      </div>
       <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={onNext}>
         Continuar
       </Button>
@@ -207,20 +214,21 @@ function LessonStep({ step, onNext }) {
 
   return (
     <Stack>
-      <Card className="intro-card" style={areaStyle(topic.area)}>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <Badge tone="area">{v.short}</Badge>
-          <Badge tone="brand" icon="sparkles">{TITULO_BLOQUE[step.bloque] || "Ampliación del tema"}</Badge>
+      <div className="lesson" style={areaStyle(topic.area)}>
+        <div className="badge-row">
+          <Badge tone="area"><Mark />{v.short}</Badge>
+          <Badge tone="accent">{TITULO_BLOQUE[step.bloque] || "Ampliación del tema"}</Badge>
         </div>
-        <h2 className="intro-title">{topic.tema}</h2>
-        <p className="intro-sub">{topic.subarea}</p>
-        <div className="intro-note">
+        <h2 className="lesson-title">{topic.tema}</h2>
+        <p className="lesson-sub">{topic.subarea}</p>
+        <div className="lesson-note">
           <RichText>{step.leccion}</RichText>
         </div>
         <p className="flash-hint">
-          Esto es lo que se te va a preguntar de aquí en adelante · <span className="kbd">espacio</span>
+          Esto es lo que se te va a preguntar de aquí en adelante
+          <span className="kbd-only"> · <span className="kbd">espacio</span></span>
         </p>
-      </Card>
+      </div>
       <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={listo}>
         Ya entendí
       </Button>
@@ -249,20 +257,21 @@ function LearnStep({ step, onLearned }) {
 
   return (
     <Stack>
-      <Card className="flash is-learning" style={areaStyle(topic.area)}>
+      <div className="flash" style={areaStyle(topic.area)}>
         <div className="flash-tag">
-          <Badge tone="area">{v.short}</Badge>
-          <Badge tone="brand" icon="sparkles">material nuevo</Badge>
+          <Badge tone="area"><Mark />{v.short}</Badge>
+          <Badge tone="accent">material nuevo</Badge>
         </div>
 
         <div className="flash-front"><Inline>{fc.front}</Inline></div>
-        <div className="flash-divider" />
+        <div className="flash-rule" />
         <div className="flash-back"><Inline>{fc.back}</Inline></div>
 
         <p className="flash-hint">
-          Solo léela. Mañana te toca recordarla · <span className="kbd">espacio</span>
+          Solo léela. Mañana te toca recordarla
+          <span className="kbd-only"> · <span className="kbd">espacio</span></span>
         </p>
-      </Card>
+      </div>
 
       <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={listo}>
         Entendido
@@ -295,27 +304,28 @@ function ReviewStep({ step, onGraded }) {
 
   return (
     <Stack>
-      <Card className="flash" style={areaStyle(topic.area)}>
+      <div className="flash" style={areaStyle(topic.area)}>
         <div className="flash-tag">
-          <Badge tone="area">{v.short}</Badge>
-          {step.isNew && <Badge tone="success" icon="sparkles">nuevo</Badge>}
+          <Badge tone="area"><Mark />{v.short}</Badge>
+          {step.isNew && <Badge tone="success">nuevo</Badge>}
         </div>
 
         <div className="flash-front"><Inline>{fc.front}</Inline></div>
 
         {revealed && (
           <>
-            <div className="flash-divider" />
+            <div className="flash-rule" />
             <div className="flash-back"><Inline>{fc.back}</Inline></div>
           </>
         )}
 
         {!revealed && (
           <p className="flash-hint">
-            Intenta responder de memoria antes de ver la respuesta · <span className="kbd">espacio</span>
+            Intenta responder de memoria antes de ver la respuesta
+            <span className="kbd-only"> · <span className="kbd">espacio</span></span>
           </p>
         )}
-      </Card>
+      </div>
 
       {!revealed ? (
         <Button variant="primary" size="lg" block onClick={() => setRevealed(true)}>
@@ -337,7 +347,7 @@ function ReviewStep({ step, onGraded }) {
               <small>{nextIntervalPreview(step.cardId, 2)}</small>
             </button>
           </div>
-          <p className="faint" style={{ textAlign: "center", margin: 0 }}>
+          <p className="faint kbd-only" style={{ textAlign: "center", margin: 0 }}>
             <span className="kbd">1</span> <span className="kbd">2</span> <span className="kbd">3</span> para calificar
           </p>
         </>
@@ -355,18 +365,21 @@ function IntroStep({ topic, onNext }) {
 
   return (
     <Stack>
-      <Card className="intro-card" style={areaStyle(topic.area)}>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <Badge tone="area">{v.short}{topic.lang ? ` · ${topic.lang === "en" ? "Inglés" : "Español"}` : ""}</Badge>
-          <Badge tone="brand" icon="sparkles">tema nuevo</Badge>
+      <div className="lesson" style={areaStyle(topic.area)}>
+        <div className="badge-row">
+          <Badge tone="area">
+            <Mark />
+            {v.short}{topic.lang ? ` · ${topic.lang === "en" ? "Inglés" : "Español"}` : ""}
+          </Badge>
+          <Badge tone="accent">tema nuevo</Badge>
         </div>
-        <h2 className="intro-title">{topic.tema}</h2>
-        <p className="intro-sub">{topic.subarea}</p>
-        <div className="intro-note">
+        <h2 className="lesson-title">{topic.tema}</h2>
+        <p className="lesson-sub">{topic.subarea}</p>
+        <div className="lesson-note">
           <RichText>{topic.note}</RichText>
           {topic.figura && <Figura spec={topic.figura} />}
         </div>
-      </Card>
+      </div>
       <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={onNext}>
         Ya entendí, a practicar
       </Button>
@@ -374,7 +387,7 @@ function IntroStep({ topic, onNext }) {
   );
 }
 
-/* --- Paso: pregunta con retroalimentación --- */
+/* --- Paso: reactivo con retroalimentación --- */
 
 function QuizStep({ topic, question, onAnswered, onNext }) {
   const [chosen, setChosen] = useState(null);
@@ -406,9 +419,9 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
 
   return (
     <Stack>
-      <Card style={areaStyle(topic.area)}>
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <Badge tone="area">{v.short}</Badge>
+      <div className="quiz" style={areaStyle(topic.area)}>
+        <div className="quiz-head">
+          <Badge tone="area"><Mark />{v.short}</Badge>
           <span className="faint">{topic.tema}</span>
         </div>
 
@@ -416,9 +429,9 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
 
         {withCalc && !calcOpen && (
           <button className="calc-open" onClick={() => setCalcOpen(true)}>
-            <Icon name="calc" size={17} />
+            <Icon name="calc" size={16} />
             Abrir calculadora
-            <span className="kbd">C</span>
+            <span className="kbd kbd-only">C</span>
           </button>
         )}
 
@@ -432,16 +445,21 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
             }
             return (
               <button key={i} className={cls} onClick={() => choose(i)} disabled={chosen !== null}>
-                <span className="option-letter">{LETTERS[i]}</span>
+                <Bubble letter={LETTERS[i]} />
                 <span className="option-text"><Inline>{opt}</Inline></span>
-                {chosen !== null && i === question.correct && <Icon name="check" size={18} />}
+                {chosen !== null && i === question.correct && (
+                  <Icon name="check" size={17} className="option-flag" />
+                )}
+                {chosen === i && i !== question.correct && (
+                  <Icon name="x" size={17} className="option-flag" />
+                )}
               </button>
             );
           })}
         </div>
 
         {chosen === null && (
-          <p className="faint" style={{ textAlign: "center", marginTop: 14, marginBottom: 0 }}>
+          <p className="faint kbd-only" style={{ textAlign: "center", marginTop: 14, marginBottom: 0 }}>
             <span className="kbd">1</span> <span className="kbd">2</span> <span className="kbd">3</span> para responder
           </p>
         )}
@@ -449,13 +467,13 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
         {chosen !== null && (
           <div className={`feedback ${correct ? "is-ok" : "is-bad"}`}>
             <div className="feedback-head">
-              <Icon name={correct ? "check" : "x"} size={18} strokeWidth={2.2} />
+              <Icon name={correct ? "check" : "x"} size={17} strokeWidth={2.2} />
               {correct ? "Correcto" : `Era la ${LETTERS[question.correct]}`}
             </div>
             <RichText>{question.explanation}</RichText>
           </div>
         )}
-      </Card>
+      </div>
 
       {chosen !== null && (
         <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={onNext}>
@@ -483,30 +501,32 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
   useKeys({ Enter: onExit }, []);
 
   return (
-    <Stack>
-      <Card className="summary-hero">
-        <div className="summary-emoji"><Icon name="check" size={30} strokeWidth={2.4} /></div>
+    <Stack gap={26}>
+      <div className="summary">
+        <div className="summary-mark is-ok"><Icon name="check" size={26} strokeWidth={2.4} /></div>
         <h2 className="summary-title">
           {kind === "practice" ? "Práctica terminada" : "Sesión completada"}
         </h2>
-        <p className="muted">
+        <p>
           {kind === "practice"
             ? "Cada intento refuerza el recuerdo, aunque falles."
             : `Faltan ${Math.max(0, plan.daysToExam)} días para el examen. Nos vemos mañana.`}
         </p>
-      </Card>
+      </div>
 
-      <Card>
-        <div className="stats">
-          <Stat value={stats.cardsReviewed} label="tarjetas repasadas" />
-          <Stat value={stats.cardsLearned} label="tarjetas aprendidas" tone="brand" />
-          <Stat value={stats.newTopics} label="temas nuevos" tone="brand" />
-          <Stat value={accuracy == null ? "—" : accuracy + "%"} label="aciertos" tone={accuracy != null && accuracy >= 70 ? "success" : undefined} />
-        </div>
-      </Card>
+      <Figures>
+        <Figure value={stats.cardsReviewed} label="tarjetas repasadas" />
+        <Figure value={stats.cardsLearned} label="tarjetas aprendidas" />
+        <Figure value={stats.newTopics} label="temas nuevos" />
+        <Figure
+          value={accuracy == null ? "—" : accuracy + "%"}
+          label="aciertos"
+          tone={accuracy != null && accuracy >= 70 ? "success" : undefined}
+        />
+      </Figures>
 
       {onAgain ? (
-        <div className="chips">
+        <div className="row-gap">
           <Button variant="primary" size="lg" icon="infinity" onClick={onAgain}>Otra ronda</Button>
           <Button variant="solid" size="lg" onClick={onExit}>Listo</Button>
         </div>
@@ -611,20 +631,23 @@ export function MockRunner({ mock, onExit }) {
         <ExamTimer minutes={mock.minutes} total={questions.length} answered={answers.length} />
       )}
       <div className="step-anim" key={idx}>
-        <Card style={areaStyle(topic.area)}>
-          <Badge tone="area">{v.short}</Badge>
+        <div className="quiz" style={areaStyle(topic.area)}>
+          <div className="quiz-head">
+            <Badge tone="area"><Mark />{v.short}</Badge>
+            <span className="faint">reactivo {idx + 1} de {questions.length}</span>
+          </div>
           <QuestionStem text={question.q} figura={question.figura} />
           {withCalc && !calcOpen && (
             <button className="calc-open" onClick={() => setCalcOpen(true)}>
-              <Icon name="calc" size={17} />
+              <Icon name="calc" size={16} />
               Abrir calculadora
-              <span className="kbd">C</span>
+              <span className="kbd kbd-only">C</span>
             </button>
           )}
           <div className="options">
             {question.options.map((opt, i) => (
               <button key={i} className="option" onClick={() => answer(i)}>
-                <span className="option-letter">{LETTERS[i]}</span>
+                <Bubble letter={LETTERS[i]} />
                 <span className="option-text"><Inline>{opt}</Inline></span>
               </button>
             ))}
@@ -632,7 +655,7 @@ export function MockRunner({ mock, onExit }) {
           <p className="faint" style={{ textAlign: "center", marginTop: 14, marginBottom: 0 }}>
             Como en el examen real: las respuestas se revisan al final
           </p>
-        </Card>
+        </div>
         <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />
       </div>
     </RunnerShell>
@@ -669,84 +692,90 @@ function MockResults({ mock, answers, onExit }) {
       <header className="runner-head">
         <div className="runner-progress">
           <div className="runner-step"><span>{mock.title}</span><span>resultado</span></div>
-          <Bar value={100} height={5} />
+          <Meter value={100} height={3} label="Simulacro terminado" />
         </div>
         <button className="btn btn-ghost btn-icon" onClick={onExit} aria-label="Cerrar resultados">
-          <Icon name="x" size={20} />
+          <Icon name="x" size={19} />
         </button>
       </header>
 
       <div className="runner-body">
         <div className="runner-inner">
-          <Stack>
-            <Card className="summary-hero">
-              <div className="summary-emoji" style={{ background: pct >= 60 ? "linear-gradient(135deg,var(--success),var(--brand-3))" : undefined }}>
-                <Icon name={pct >= 60 ? "check" : "target"} size={30} strokeWidth={2.2} />
+          <Stack gap={30}>
+            <div className="summary">
+              <div className={`summary-mark${pct >= 60 ? " is-ok" : ""}`}>
+                <Icon name={pct >= 60 ? "check" : "target"} size={26} strokeWidth={2.2} />
               </div>
-              <div className="result-score">{pct}%</div>
-              <p className="muted" style={{ marginTop: 6 }}>
+              <div className="result-score tnum">{pct}%</div>
+              <p>
                 {correct} de {total} correctas
                 {pilotos > 0 && ` · ${pilotos} reactivos piloto contestados que no puntúan`}
               </p>
-            </Card>
+            </div>
 
-            <Card>
-              <h3>Desempeño por área</h3>
+            <Section title="Desempeño por área">
               {areaNumbers().filter((a) => byArea[a]).map((a) => {
                 const st = byArea[a];
                 const p = Math.round((st.correct / st.total) * 100);
                 const v = areaVisual(a);
                 return (
-                  <div key={a} style={{ marginBottom: 14 }}>
-                    <div className="bar-row">
-                      <span className="lbl">
-                        <span className="topic-dot" style={{ "--c": v.color }} />
+                  <div key={a} style={areaStyle(a)} className="meter-block">
+                    <div className="meter-row">
+                      <span className="meter-label">
+                        <Mark />
                         {v.short}
                         {p < 56 && <Badge tone="danger">reforzar</Badge>}
                       </span>
-                      <span className="val">{st.correct}/{st.total} · {p}%</span>
+                      <span className="meter-value tnum">{st.correct}/{st.total} · {p}%</span>
                     </div>
-                    <Bar value={p} color={v.color} />
+                    <Meter value={p} color={v.color} label={`Aciertos en ${v.short}`} />
                   </div>
                 );
               })}
-              <p className="faint" style={{ marginTop: 4 }}>
+              <p className="faint" style={{ marginTop: 14 }}>
                 Este porcentaje es una referencia de estudio: <strong>no es</strong> el Índice Ceneval ni se convierte a él.
                 El Ceneval califica cada área de 700 a 1300 puntos y pide 1000 para acreditarla, con una escala que no se hace
                 pública. Un 70 % aquí no equivale a 1000 puntos allá.
               </p>
-            </Card>
+            </Section>
 
             {missed.length > 0 && (
-              <Card>
-                <div className="card-title-row">
-                  <h3>Preguntas falladas</h3>
-                  <Button variant="ghost" size="sm" iconRight={review ? "chevronDown" : "chevronRight"} onClick={() => setReview(!review)}>
+              <Section
+                title="Reactivos fallados"
+                action={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    iconRight={review ? "chevronDown" : "chevronRight"}
+                    onClick={() => setReview(!review)}
+                  >
                     {review ? "Ocultar" : `Revisar ${missed.length}`}
                   </Button>
-                </div>
+                }
+              >
                 {review && (
-                  <div className="stack" style={{ gap: 12 }}>
+                  <div>
                     {missed.map((a, i) => (
-                      <div key={i} className="intro-note" style={areaStyle(a.topic.area)}>
-                        <div className="faint" style={{ marginBottom: 6 }}>{a.topic.tema}</div>
-                        <div style={{ fontWeight: 600, marginBottom: 8 }}><Inline>{a.question.q}</Inline></div>
+                      <div key={i} className="missed-item" style={areaStyle(a.topic.area)}>
+                        <p className="faint" style={{ margin: 0 }}>{a.topic.tema}</p>
+                        <p className="missed-q"><Inline>{a.question.q}</Inline></p>
                         {a.question.figura && <Figura spec={a.question.figura} />}
-                        <div className="muted" style={{ marginBottom: 6 }}>
-                          <strong>Correcta:</strong> {LETTERS[a.question.correct]}) <Inline>{a.question.options[a.question.correct]}</Inline>
-                        </div>
+                        <p className="missed-answer">
+                          <b>Correcta {LETTERS[a.question.correct]}</b>{" · "}
+                          <Inline>{a.question.options[a.question.correct]}</Inline>
+                        </p>
                         <RichText>{a.question.explanation}</RichText>
                       </div>
                     ))}
                   </div>
                 )}
-              </Card>
+              </Section>
             )}
 
-            <div className="chips">
+            <div className="row-gap">
               <Button variant="primary" icon="check" onClick={onExit}>Terminar</Button>
               <Button variant="solid" icon="repasar" onClick={() => { onExit(); navigate("repasar"); }}>
-                Ir a repasar
+                Ir al temario
               </Button>
             </div>
           </Stack>

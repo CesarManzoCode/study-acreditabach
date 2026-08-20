@@ -17,7 +17,7 @@
 
 const T = "var(--text)";
 const M = "var(--text-2)";
-const B = "var(--brand)";
+const B = "var(--accent)";
 const L = "var(--line)";
 
 function Marco({ children, alto = 150, ancho = 320, caption, viewBox }) {

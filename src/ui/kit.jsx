@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from "react";
 import Icon from "./Icon.jsx";
-import { useScrollLock, prefersReducedMotion } from "../lib/hooks.js";
+import { useScrollLock } from "../lib/hooks.js";
+
+/* Primitivas de la interfaz.
+
+   Son pocas a propósito: una hoja, una sección con regla, una lista, un
+   medidor y una cifra. Casi todo lo que antes era "otra tarjeta" se resuelve
+   ahora con una regla y con espacio. */
 
 /* ---------------- Botones ---------------- */
 
@@ -9,55 +15,58 @@ export function Button({
 }) {
   return (
     <button
-      className={`btn btn-${variant} btn-${size}${block ? " btn-block" : ""} ${className}`}
+      className={`btn btn-${variant} btn-${size}${block ? " btn-block" : ""}${className ? " " + className : ""}`}
       {...rest}
     >
-      {icon && <Icon name={icon} size={size === "sm" ? 16 : 18} />}
+      {icon && <Icon name={icon} size={size === "sm" ? 15 : 17} />}
       {children != null && <span className="btn-label">{children}</span>}
-      {iconRight && <Icon name={iconRight} size={size === "sm" ? 16 : 18} />}
+      {iconRight && <Icon name={iconRight} size={size === "sm" ? 15 : 17} />}
     </button>
   );
 }
 
 /* ---------------- Contenedores ---------------- */
 
-export function Card({ as: Tag = "div", tone, interactive, className = "", style, children, ...rest }) {
+/** Hoja de papel: superficie con una regla de un pixel. Sin sombra ni relieve. */
+export function Sheet({ as: Tag = "div", tone, className = "", children, ...rest }) {
   return (
-    <Tag
-      className={`card${tone ? " card-" + tone : ""}${interactive ? " card-interactive" : ""} ${className}`}
-      style={style}
-      {...rest}
-    >
+    <Tag className={`sheet${tone ? " sheet-" + tone : ""}${className ? " " + className : ""}`} {...rest}>
       {children}
     </Tag>
   );
 }
 
-export function SectionTitle({ children, action, hint }) {
+/** Sección con encabezado sobre una regla: la alternativa a envolver todo en cajas. */
+export function Section({ title, action, note, children, className = "", ...rest }) {
   return (
-    <div className="section-title">
-      <div>
-        <h2>{children}</h2>
-        {hint && <p className="section-hint">{hint}</p>}
-      </div>
-      {action}
-    </div>
+    <section className={`section${className ? " " + className : ""}`} {...rest}>
+      {(title || action) && (
+        <div className="section-head">
+          <div style={{ minWidth: 0 }}>
+            <h2>{title}</h2>
+            {note && <p className="section-note">{note}</p>}
+          </div>
+          {action}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
+
+/** Título de pantalla. */
+export function PageHead({ title, children }) {
+  return (
+    <header className="page-head">
+      <h1>{title}</h1>
+      {children && <p>{children}</p>}
+    </header>
   );
 }
 
 export function Stack({ gap, className = "", children, style }) {
   return (
-    <div className={`stack ${className}`} style={{ ...(gap ? { gap } : null), ...style }}>
-      {children}
-    </div>
-  );
-}
-
-/** Entrada escalonada de los bloques de una pantalla. */
-export function Reveal({ delay = 0, className = "", children, ...rest }) {
-  const style = prefersReducedMotion() ? undefined : { animationDelay: `${Math.min(delay, 420)}ms` };
-  return (
-    <div className={`reveal ${className}`} style={style} {...rest}>
+    <div className={`stack${className ? " " + className : ""}`} style={{ ...(gap ? { gap } : null), ...style }}>
       {children}
     </div>
   );
@@ -65,82 +74,72 @@ export function Reveal({ delay = 0, className = "", children, ...rest }) {
 
 /* ---------------- Indicadores ---------------- */
 
-export function Bar({ value, color, height = 8, track = true, className = "" }) {
+/** Medidor lineal. `color` colorea el relleno (se usa para las áreas). */
+export function Meter({ value, color, height, className = "", label }) {
   const pct = Math.max(0, Math.min(100, value || 0));
   return (
     <div
-      className={`bar ${track ? "" : "bar-flat"} ${className}`}
-      style={{ height }}
+      className={`meter${className ? " " + className : ""}`}
+      style={height ? { height } : undefined}
       role="progressbar"
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
       aria-valuemax={100}
+      aria-label={label}
     >
-      <div className="bar-fill" style={{ width: pct + "%", ...(color ? { "--fill": color } : null) }} />
+      <div className="meter-fill" style={{ width: pct + "%", ...(color ? { "--fill": color } : null) }} />
     </div>
   );
 }
 
-export function Ring({ value = 0, size = 68, stroke = 7, color, label, sublabel, className = "" }) {
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const pct = Math.max(0, Math.min(100, value));
+/** Medidor con su etiqueta y su cifra encima. */
+export function MeterBlock({ label, value, display, color }) {
   return (
-    <div className={`ring ${className}`} style={{ width: size, height: size, ...(color ? { "--ring": color } : null) }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        <circle className="ring-track" cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} fill="none" />
-        <circle
-          className="ring-value"
-          cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} fill="none"
-          strokeDasharray={c}
-          strokeDashoffset={c - (c * pct) / 100}
-          strokeLinecap="round"
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
-      </svg>
-      <div className="ring-center">
-        <span className="ring-label">{label}</span>
-        {sublabel && <span className="ring-sub">{sublabel}</span>}
+    <div className="meter-block">
+      <div className="meter-row">
+        <span className="meter-label">{label}</span>
+        <span className="meter-value tnum">{display}</span>
       </div>
+      <Meter value={value} color={color} label={typeof label === "string" ? label : undefined} />
     </div>
   );
 }
 
-export function Badge({ tone = "neutral", icon, children, className = "" }) {
+/** Cuadrito de color del área. Nunca decorativo: dice de qué área es la fila. */
+export function Mark({ style, className = "" }) {
+  return <span className={`mark${className ? " " + className : ""}`} style={style} aria-hidden="true" />;
+}
+
+export function Badge({ tone = "neutral", icon, children, className = "", ...rest }) {
   return (
-    <span className={`badge badge-${tone} ${className}`}>
-      {icon && <Icon name={icon} size={13} strokeWidth={2} />}
+    <span className={`badge badge-${tone}${className ? " " + className : ""}`} {...rest}>
+      {icon && <Icon name={icon} size={12} strokeWidth={2} />}
       {children}
     </span>
   );
 }
 
-export function Chip({ icon, value, label, tone }) {
+/** Fila de cifras separadas por reglas verticales. */
+export function Figures({ children, className = "" }) {
+  return <div className={`figures${className ? " " + className : ""}`}>{children}</div>;
+}
+
+export function Figure({ value, label, tone }) {
   return (
-    <div className={`chip${tone ? " chip-" + tone : ""}`}>
-      {icon && <Icon name={icon} size={16} />}
-      <span className="chip-value">{value}</span>
-      <span className="chip-label">{label}</span>
+    <div className={`figure${tone ? " figure-" + tone : ""}`}>
+      <strong className="figure-value">{value}</strong>
+      <span className="figure-label">{label}</span>
     </div>
   );
 }
 
-export function Stat({ value, label, tone }) {
-  return (
-    <div className={`stat${tone ? " stat-" + tone : ""}`}>
-      <strong>{value}</strong>
-      <span>{label}</span>
-    </div>
-  );
-}
-
-export function EmptyState({ icon = "sparkles", title, children, action }) {
+export function EmptyState({ icon = "clock", title, children, action }) {
   return (
     <div className="empty">
-      <div className="empty-icon"><Icon name={icon} size={26} /></div>
+      <div className="empty-icon"><Icon name={icon} size={20} /></div>
       <h3>{title}</h3>
       {children && <p>{children}</p>}
-      {action}
+      {action && <div style={{ marginTop: 16 }}>{action}</div>}
     </div>
   );
 }
@@ -156,7 +155,7 @@ export function Segmented({ options, value, onChange, ariaLabel }) {
           className={`segmented-item${value === o.value ? " is-active" : ""}`}
           onClick={() => onChange(o.value)}
         >
-          {o.icon && <Icon name={o.icon} size={15} />}
+          {o.icon && <Icon name={o.icon} size={14} />}
           {o.label}
         </button>
       ))}
@@ -166,7 +165,7 @@ export function Segmented({ options, value, onChange, ariaLabel }) {
 
 /* ---------------- Modal ---------------- */
 
-export function Modal({ open, title, description, children, onClose, actions, tone }) {
+export function Modal({ open, title, description, children, onClose, actions }) {
   const ref = useRef(null);
 
   /* `onClose` suele llegar como función nueva en cada render. Se guarda en una
@@ -196,8 +195,8 @@ export function Modal({ open, title, description, children, onClose, actions, to
   if (!open) return null;
   return (
     <div className="modal-scrim" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
-      <div className={`modal${tone ? " modal-" + tone : ""}`} role="dialog" aria-modal="true" aria-label={title} ref={ref}>
-        <h3 className="modal-title">{title}</h3>
+      <div className="modal" role="dialog" aria-modal="true" aria-label={title} ref={ref}>
+        <h2 className="modal-title">{title}</h2>
         {description && <p className="modal-desc">{description}</p>}
         {children}
         <div className="modal-actions">{actions}</div>
@@ -229,7 +228,7 @@ export function ToastProvider({ children }) {
       <div className="toast-stack" aria-live="polite">
         {items.map((t) => (
           <div key={t.id} className={`toast toast-${t.tone}`}>
-            {t.icon && <Icon name={t.icon} size={17} />}
+            {t.icon && <Icon name={t.icon} size={16} />}
             <span>{t.message}</span>
           </div>
         ))}

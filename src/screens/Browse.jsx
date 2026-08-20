@@ -1,6 +1,6 @@
 import { useState, useMemo, useDeferredValue } from "react";
 import Icon from "../ui/Icon.jsx";
-import { Button, Card, Ring, Bar, Badge, SectionTitle, Reveal, EmptyState, useToast } from "../ui/kit.jsx";
+import { Button, Meter, Badge, PageHead, Section, EmptyState, Mark, useToast } from "../ui/kit.jsx";
 import { RichText } from "../lib/text.jsx";
 import { navigate, useEngine } from "../lib/hooks.js";
 import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
@@ -9,6 +9,11 @@ import {
   introduceTopic, quizStatsFor, searchTopics, peekCard, cardsForTopic, fromISO, fmtDateShort,
   todayDate, topicHasGenerator, isLearned, quizProgress
 } from "../lib/engine.js";
+
+/* Pantalla Repasar: el temario completo, en tres niveles (áreas → temas →
+   tema). Son 177 temas comparables entre sí, así que se presentan como el
+   índice numerado de una guía —una fila por tema, con su pestaña de color y
+   su porcentaje alineado— y no como una pared de tarjetas. */
 
 export default function Browse({ route, onPractice, onCards, onDrill }) {
   const [kind, value] = route.params;
@@ -27,13 +32,14 @@ function AreaList() {
   const areas = areaNumbers();
 
   return (
-    <div className="stack">
-      <SectionTitle hint="Explora el temario completo, consulta cualquier tema y practica cuando quieras.">
-        Repasar
-      </SectionTitle>
+    <>
+      <PageHead title="Temario">
+        Las siete áreas del examen, con sus 177 temas. Consulta cualquiera y practica cuando quieras,
+        esté o no en el plan de hoy.
+      </PageHead>
 
-      <div className="search">
-        <Icon name="search" size={18} />
+      <div className="search" style={{ marginBottom: 22 }}>
+        <Icon name="search" size={17} />
         <input
           type="search"
           value={query}
@@ -43,51 +49,56 @@ function AreaList() {
         />
         {query && (
           <button className="btn btn-ghost btn-icon btn-sm" onClick={() => setQuery("")} aria-label="Limpiar búsqueda">
-            <Icon name="x" size={16} />
+            <Icon name="x" size={15} />
           </button>
         )}
       </div>
 
       {deferred.trim().length >= 2 ? (
         results.length ? (
-          <div className="topic-list">
-            {results.map((t) => <TopicRow key={t.id} topic={t} showArea />)}
-          </div>
+          <Section title={`${results.length} ${results.length === 1 ? "resultado" : "resultados"}`}>
+            <div className="topic-list">
+              {results.map((t) => <TopicRow key={t.id} topic={t} showArea />)}
+            </div>
+          </Section>
         ) : (
-          <Card>
-            <EmptyState icon="search" title="Sin resultados">
-              No encontramos temas con “{deferred}”. Prueba con otra palabra o revisa las áreas.
-            </EmptyState>
-          </Card>
+          <EmptyState icon="search" title="Sin resultados">
+            No encontramos temas con “{deferred}”. Prueba con otra palabra o revisa las áreas.
+          </EmptyState>
         )
       ) : (
-        areas.map((areaNum, i) => <AreaCard key={areaNum} areaNum={areaNum} delay={i * 45} />)
+        <div className="index">
+          {areas.map((areaNum) => <AreaRow key={areaNum} areaNum={areaNum} />)}
+        </div>
       )}
-    </div>
+    </>
   );
 }
 
-function AreaCard({ areaNum, delay }) {
+function AreaRow({ areaNum }) {
   const v = areaVisual(areaNum);
   const st = areaStats(areaNum);
   return (
-    <Reveal delay={delay}>
-      <Card
-        as="button"
-        interactive
-        className="area-card"
-        style={areaStyle(areaNum)}
-        onClick={() => navigate(`repasar/a/${areaNum}`)}
-      >
-        <span className="area-badge"><Icon name={"a" + areaNum} size={22} /></span>
-        <span className="area-body">
-          <span className="area-name">{v.name}</span>
-          <span className="area-meta">{st.total} temas · {v.reactivos} reactivos · sesión {v.session}</span>
-          <Bar value={st.coverage} color={v.color} height={6} />
+    <button className="index-row" style={areaStyle(areaNum)} onClick={() => navigate(`repasar/a/${areaNum}`)}>
+      <span className="index-num">{v.num}</span>
+      <span className="index-body">
+        <span className="index-name">{v.name}</span>
+        <span className="index-meta">
+          {st.total} temas · {v.reactivos} reactivos del examen · sesión {v.session}
         </span>
-        <Ring value={st.mastery} size={50} stroke={5} color={v.color} label={`${st.mastery}%`} />
-      </Card>
-    </Reveal>
+      </span>
+      <span className="index-tail">
+        {st.introducedCount > 0 && (
+          <span className="index-meterwrap">
+            <Meter value={st.mastery} color={v.color} height={5} label={`Repaso de ${v.short}`} />
+          </span>
+        )}
+        <span className={`index-value${st.introducedCount === 0 ? " is-empty" : ""}`}>
+          {st.introducedCount === 0 ? "sin ver" : `${st.mastery}%`}
+        </span>
+        <Icon name="chevronRight" size={15} />
+      </span>
+    </button>
   );
 }
 
@@ -109,85 +120,81 @@ function AreaScreen({ areaNum }) {
   }, [topics]);
 
   return (
-    <div className="stack">
+    <>
       <button className="back-link" onClick={() => navigate("repasar")}>
-        <Icon name="chevronLeft" size={16} /> Áreas
+        <Icon name="chevronLeft" size={15} /> Temario
       </button>
 
-      <Reveal>
-        <Card style={areaStyle(areaNum)}>
-          <div className="detail-head">
-            <span className="area-badge"><Icon name={"a" + areaNum} size={22} /></span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h2 style={{ fontSize: "1.25rem" }}>{v.name}</h2>
-              <p className="faint" style={{ margin: "3px 0 0" }}>
-                {st.total} temas · {v.reactivos} reactivos en el examen
-              </p>
-            </div>
-            <Ring value={st.mastery} size={62} stroke={6} color={v.color} label={`${st.mastery}%`} sublabel="repasado" />
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <div className="bar-row">
-              <span className="lbl">Temas vistos</span>
-              <span className="val">{st.introducedCount} / {st.total}</span>
-            </div>
-            <Bar value={st.coverage} color={v.color} />
-          </div>
-        </Card>
-      </Reveal>
+      <header className="topic-head" style={areaStyle(areaNum)}>
+        <Badge tone="area"><Mark />Área {v.num}</Badge>
+        <h1>{v.name}</h1>
+        <div className="topic-facts">
+          <p className="topic-fact"><b>{st.introducedCount} / {st.total}</b> temas vistos</p>
+          <p className="topic-fact"><b>{v.reactivos}</b> reactivos en el examen</p>
+          <p className="topic-fact"><b>{st.introducedCount ? st.mastery + "%" : "—"}</b> de repaso</p>
+          <p className="topic-fact"><b>Sesión {v.session}</b> del día del examen</p>
+        </div>
+      </header>
 
       {grouped.map(([subarea, list]) => (
         <section key={subarea}>
-          <h3 className="subarea-head">{subarea}</h3>
+          <h2 className="subarea-head">{subarea}</h2>
           <div className="topic-list">
             {list.map((t) => <TopicRow key={t.id} topic={t} />)}
           </div>
         </section>
       ))}
-    </div>
+    </>
   );
 }
 
+/* En la lista de un área el subárea ya es el encabezado del grupo, así que la
+   fila lleva el número del tema en el temario: identifica y no repite. En los
+   resultados de búsqueda, en cambio, hace falta decir de dónde sale cada uno. */
 function TopicRow({ topic, showArea }) {
   const introduced = isIntroduced(topic.id);
   const mastery = introduced ? topicMastery(topic.id) : 0;
-  const label = introduced ? masteryLabel(mastery) : { text: "Sin ver", tone: "neutral" };
   const v = areaVisual(topic.area);
   return (
     <button className="topic-row" style={areaStyle(topic.area)} onClick={() => navigate(`repasar/t/${topic.id}`)}>
-      <span className="topic-dot" />
+      {!showArea && <span className="topic-code tnum">{topic.id}</span>}
       <span className="topic-name">
         {topic.tema}{topic.lang ? ` (${topic.lang === "en" ? "EN" : "ES"})` : ""}
-        <small>{showArea ? `${v.short} · ${topic.subarea}` : topic.subarea}</small>
+        {showArea && <small>{v.short} · {topic.subarea}</small>}
       </span>
-      <Badge tone={label.tone}>{introduced ? `${mastery}%` : label.text}</Badge>
-      <Icon name="chevronRight" size={16} className="icon-chev" />
+      <span className={`topic-value${introduced ? "" : " is-new"}`}>
+        {introduced ? `${mastery}%` : "sin ver"}
+      </span>
+      <Icon name="chevronRight" size={15} className="icon-chev" />
     </button>
   );
 }
 
 /* ---------------- Nivel 3: detalle del tema ---------------- */
 
-function TopicScreen({ topicId, onPractice, onDrill }) {
-  const rev = useEngine();
+function TopicScreen({ topicId, onPractice, onCards, onDrill }) {
+  useEngine();
   const toast = useToast();
   const topic = topicsById()[topicId];
   const [openCard, setOpenCard] = useState(null);
 
   if (!topic) {
     return (
-      <div className="stack">
+      <>
         <button className="back-link" onClick={() => navigate("repasar")}>
-          <Icon name="chevronLeft" size={16} /> Repasar
+          <Icon name="chevronLeft" size={15} /> Temario
         </button>
-        <Card><EmptyState icon="alert" title="Tema no encontrado">Puede que el enlace esté mal escrito.</EmptyState></Card>
-      </div>
+        <EmptyState icon="alert" title="Tema no encontrado">
+          Puede que el enlace esté mal escrito.
+        </EmptyState>
+      </>
     );
   }
 
   const v = areaVisual(topic.area);
   const introduced = isIntroduced(topic.id);
   const mastery = introduced ? topicMastery(topic.id) : 0;
+  const label = masteryLabel(mastery);
   const qs = quizStatsFor(topic.id);
   const infinito = topicHasGenerator(topic.id);
   const banco = quizProgress(topic.id);
@@ -197,119 +204,75 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
   const nextReview = dues.length ? fromISO(dues[0]) : null;
 
   return (
-    <div className="stack" style={areaStyle(topic.area)}>
+    <div style={areaStyle(topic.area)}>
       <button className="back-link" onClick={() => navigate(`repasar/a/${topic.area}`)}>
-        <Icon name="chevronLeft" size={16} /> {v.short}
+        <Icon name="chevronLeft" size={15} /> {v.short}
       </button>
 
-      <Reveal>
-        <Card>
-          <div className="detail-head">
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="badge-row">
-                <Badge tone="area">
-                  {v.short}{topic.lang ? ` · ${topic.lang === "en" ? "Inglés" : "Español"}` : ""}
-                </Badge>
-                {infinito && <Badge tone="brand" icon="shuffle">problemas aleatorios</Badge>}
-              </div>
-              <h2 style={{ fontSize: "1.35rem", margin: "10px 0 3px" }}>{topic.tema}</h2>
-              <p className="faint" style={{ margin: 0 }}>{topic.subarea}</p>
-            </div>
-            {introduced && <Ring value={mastery} size={62} stroke={6} color={v.color} label={`${mastery}%`} sublabel="repasado" />}
+      <header className="topic-head">
+        <div className="badge-row">
+          <Badge tone="area">
+            <Mark />
+            {v.short}{topic.lang ? ` · ${topic.lang === "en" ? "Inglés" : "Español"}` : ""}
+          </Badge>
+          {infinito && <Badge tone="accent" icon="shuffle">problemas aleatorios</Badge>}
+          {introduced && <Badge>{label.text}</Badge>}
+        </div>
+        <h1>{topic.tema}</h1>
+        <p className="faint">{topic.subarea}</p>
+
+        {introduced && (
+          <div className="topic-facts">
+            <p className="topic-fact"><b>{mastery}%</b> de repaso</p>
+            <p className="topic-fact">
+              <b>{nextReview ? (nextReview <= todayDate() ? "Hoy" : fmtDateShort(nextReview)) : "—"}</b>
+              próximo repaso
+            </p>
+            <p className="topic-fact">
+              <b>{qs.seen ? Math.round((qs.correct / qs.seen) * 100) + "%" : "—"}</b>
+              aciertos en práctica
+            </p>
           </div>
+        )}
+      </header>
 
-          {introduced && (
-            <div className="chips" style={{ marginTop: 16 }}>
-              <div className="chip">
-                <Icon name="clock" size={15} />
-                <span className="chip-label">Próximo repaso</span>
-                <span className="chip-value">
-                  {nextReview
-                    ? (nextReview <= todayDate() ? "hoy" : fmtDateShort(nextReview))
-                    : "—"}
-                </span>
-              </div>
-              <div className="chip">
-                <Icon name="target" size={15} />
-                <span className="chip-label">Aciertos</span>
-                <span className="chip-value">{qs.seen ? Math.round((qs.correct / qs.seen) * 100) + "%" : "—"}</span>
-              </div>
-            </div>
-          )}
-        </Card>
-      </Reveal>
-
-      <Reveal delay={60}>
-        <Card>
-          <h3>Explicación</h3>
-          <RichText>{topic.note}</RichText>
-        </Card>
-      </Reveal>
+      <Section title="Explicación">
+        <RichText>{topic.note}</RichText>
+      </Section>
 
       {!introduced ? (
-        <Reveal delay={120}>
-          <Card>
-            <EmptyState
-              icon="sparkles"
-              title="Este tema aún no entra en tu plan"
-              action={
-                <Button
-                  variant="primary"
-                  icon="play"
-                  onClick={() => {
-                    introduceTopic(topic.id);
-                    toast("Tema agregado a tu repaso espaciado", { tone: "success", icon: "check" });
-                  }}
-                >
-                  Empezar a estudiarlo
-                </Button>
-              }
+        <div className="notice notice-accent" style={{ marginTop: 26 }}>
+          <Icon name="sparkles" size={18} />
+          <div className="notice-body">
+            <h3>Este tema aún no entra en tu plan</h3>
+            <p>
+              Si lo agregas ahora, sus tarjetas entran a tu repaso espaciado y aparecerán en tus
+              sesiones diarias.
+            </p>
+            <Button
+              variant="primary"
+              size="sm"
+              icon="play"
+              onClick={() => {
+                introduceTopic(topic.id);
+                toast("Tema agregado a tu repaso espaciado", { tone: "success", icon: "check" });
+              }}
             >
-              Si lo agregas ahora, sus tarjetas entran a tu repaso espaciado y aparecerán en tus sesiones diarias.
-            </EmptyState>
-          </Card>
-        </Reveal>
+              Empezar a estudiarlo
+            </Button>
+          </div>
+        </div>
       ) : (
         <>
-          <Reveal delay={120}>
-            <Card>
-              <div className="card-title-row">
-                <h3>Tarjetas</h3>
-                <Badge>{topic.flashcards.length}</Badge>
-              </div>
-              <div className="fc-list">
-                {topic.flashcards.map((fc, i) => (
-                  <button
-                    key={i}
-                    className={`fc-item${openCard === i ? " is-open" : ""}`}
-                    onClick={() => setOpenCard(openCard === i ? null : i)}
-                    aria-expanded={openCard === i}
-                  >
-                    <div className="fc-item-front">
-                      <span>{fc.front}</span>
-                      {!isLearned(`${topic.id}::fc${i}`) && <Badge tone="brand">por aprender</Badge>}
-                      <Icon name="chevronDown" size={16} />
-                    </div>
-                    <div className="fc-reveal">
-                      <div className="fc-reveal-inner">
-                        <RichText>{fc.back}</RichText>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </Card>
-          </Reveal>
-
-          <Reveal delay={180}>
-            <div className="chips">
+          <div style={{ margin: "26px 0" }}>
+            <div className="row-gap">
               {infinito ? (
                 <Button variant="primary" icon="infinity" onClick={() => onDrill(topic, 10)}>
                   Práctica infinita
                 </Button>
               ) : (
                 <Button variant="primary" icon="target" onClick={() => onPractice(topic)}>
-                  Practicar preguntas
+                  Practicar reactivos
                 </Button>
               )}
               {infinito && (
@@ -321,16 +284,40 @@ function TopicScreen({ topicId, onPractice, onDrill }) {
                 Repasar tarjetas
               </Button>
             </div>
-          </Reveal>
-
-          {banco.disponibles < banco.total && (
-            <Reveal delay={220}>
-              <p className="faint" style={{ margin: 0, textAlign: "center" }}>
+            {banco.disponibles < banco.total && (
+              <p className="faint" style={{ marginTop: 12 }}>
                 {banco.total - banco.disponibles} de los {banco.total} reactivos de este tema todavía no se
                 preguntan: primero se enseñan sus tarjetas.
               </p>
-            </Reveal>
-          )}
+            )}
+          </div>
+
+          <Section
+            title="Tarjetas"
+            action={<Badge>{topic.flashcards.length}</Badge>}
+            note="Toca una para ver el reverso."
+          >
+            <div className="fc-list">
+              {topic.flashcards.map((fc, i) => (
+                <div key={i} className={`fc-item${openCard === i ? " is-open" : ""}`}>
+                  <button
+                    className="fc-front"
+                    onClick={() => setOpenCard(openCard === i ? null : i)}
+                    aria-expanded={openCard === i}
+                  >
+                    <span>{fc.front}</span>
+                    {!isLearned(`${topic.id}::fc${i}`) && <Badge>por aprender</Badge>}
+                    <Icon name="chevronDown" size={15} />
+                  </button>
+                  <div className="fc-reveal">
+                    <div className="fc-reveal-inner">
+                      <RichText>{fc.back}</RichText>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
         </>
       )}
     </div>
