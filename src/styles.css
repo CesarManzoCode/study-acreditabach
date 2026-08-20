@@ -71,34 +71,32 @@
 :root {
   color-scheme: light;
 
-  /* Papel y hojas */
-  --bg: #f1ebe0;
-  --bg-2: #e7dfd1;
-  --surface: #fffdf9;
-  --surface-2: #f8f3ea;
-  --surface-3: #efe7d9;
-  --line: #e5dbc9;
-  --line-2: #c9bca4;
+  /* Papel y hojas: grises neutros, sin beige. */
+  --bg: #eef0f3;
+  --bg-2: #e4e7eb;
+  --surface: #ffffff;
+  --surface-2: #f6f7f9;
+  --surface-3: #eceef2;
+  --line: #e0e3e8;
+  --line-2: #c2c7cf;
 
   /* Tinta */
-  --text: #1a1712;
-  --text-2: #4c463b;
-  --text-3: #6f6757;
-  --on-ink: #fffdf9;
+  --text: #14171b;
+  --text-2: #454b54;
+  --text-3: #6a717b;
+  --on-ink: #ffffff;
+  --on-accent: #ffffff;
 
   /* Tinta azul: lo que se hace (botón de arranque, enlaces, foco, práctica). */
-  --accent: #2e42b8;
-  --accent-deep: #1e2c86;
-  --accent-soft: rgba(46, 66, 184, 0.08);
-  --accent-line: rgba(46, 66, 184, 0.24);
-
-  /* Subrayador: marca una palabra, nunca un bloque entero. */
-  --hl: #ffdf7a;
+  --accent: #2d4ad0;
+  --accent-deep: #1f3399;
+  --accent-soft: rgba(45, 74, 208, 0.08);
+  --accent-line: rgba(45, 74, 208, 0.24);
 
   /* Los tres tipos de trabajo de una sesión. */
   --w-repasar: #0b6f78;
   --w-aprender: #a2570f;
-  --w-practicar: #2e42b8;
+  --w-practicar: #2d4ad0;
 
   /* Estados: acierto, error y aviso. */
   --ok: #14705a;
@@ -117,10 +115,10 @@
   --a6: #a8402c;
   --a7: #6a45a0;
 
-  /* Relieve: el papel apenas levanta; solo la hoja del día pesa de verdad. */
-  --lift: 0 1px 2px rgba(64, 50, 26, 0.07);
-  --lift-2: 0 12px 28px -14px rgba(64, 50, 26, 0.32), 0 2px 6px rgba(64, 50, 26, 0.07);
-  --lift-3: 0 28px 64px -26px rgba(52, 40, 20, 0.45), 0 4px 12px rgba(52, 40, 20, 0.12);
+  /* Relieve: sombras neutras. */
+  --lift: 0 1px 2px rgba(16, 18, 21, 0.08);
+  --lift-2: 0 12px 28px -14px rgba(16, 18, 21, 0.3), 0 2px 6px rgba(16, 18, 21, 0.08);
+  --lift-3: 0 28px 64px -26px rgba(16, 18, 21, 0.42), 0 4px 12px rgba(16, 18, 21, 0.14);
 
   /* Forma: cuanto más grande el contenedor, más redondo. Los controles y las
      marcas pequeñas se quedan tensos para no parecer globos. */
@@ -150,96 +148,96 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --bg: #16140f;
-    --bg-2: #1d1a15;
-    --surface: #221f19;
-    --surface-2: #2b2721;
-    --surface-3: #35302a;
-    --line: #35302a;
-    --line-2: #4d463c;
+    /* Carbón neutro: cuatro niveles de superficie claramente distinguibles. */
+    --bg: #101215;
+    --bg-2: #15181c;
+    --surface: #1a1e22;
+    --surface-2: #22262b;
+    --surface-3: #2b3036;
+    --line: #2e343a;
+    --line-2: #414951;
 
-    --text: #f4eee3;
-    --text-2: #c0b8a8;
-    --text-3: #968d7d;
-    --on-ink: #16140f;
+    --text: #edeff2;
+    --text-2: #bdc4cc;
+    --text-3: #98a1aa;
+    --on-ink: #101215;
+    --on-accent: #101215;
 
-    --accent: #9fb0ff;
-    --accent-deep: #8496ef;
-    --accent-soft: rgba(159, 176, 255, 0.14);
-    --accent-line: rgba(159, 176, 255, 0.3);
+    --accent: #8aa6ff;
+    --accent-deep: #a7bcff;
+    --accent-soft: rgba(138, 166, 255, 0.15);
+    --accent-line: rgba(138, 166, 255, 0.34);
 
-    --hl: rgba(216, 174, 74, 0.34);
+    --w-repasar: #4cc7bd;
+    --w-aprender: #efa662;
+    --w-practicar: #8aa6ff;
 
-    --w-repasar: #4dbdb3;
-    --w-aprender: #e0a35a;
-    --w-practicar: #9fb0ff;
+    --ok: #52c98d;
+    --ok-soft: rgba(82, 201, 141, 0.15);
+    --bad: #f4877a;
+    --bad-soft: rgba(244, 135, 122, 0.15);
+    --hold: #e5b563;
+    --hold-soft: rgba(229, 181, 99, 0.15);
 
-    --ok: #4bbd88;
-    --ok-soft: rgba(75, 189, 136, 0.14);
-    --bad: #f07d70;
-    --bad-soft: rgba(240, 125, 112, 0.14);
-    --hold: #ddb05a;
-    --hold-soft: rgba(221, 176, 90, 0.14);
+    --a1: #74a9ec;
+    --a2: #4cc3c9;
+    --a3: #d5a95d;
+    --a4: #d78ac9;
+    --a5: #8dc878;
+    --a6: #f0907b;
+    --a7: #ae97ee;
 
-    --a1: #77a8e2;
-    --a2: #4dbdc2;
-    --a3: #cda555;
-    --a4: #cd85c3;
-    --a5: #8cc073;
-    --a6: #ec8b71;
-    --a7: #ac93e2;
-
-    --lift: 0 1px 2px rgba(0, 0, 0, 0.45);
-    --lift-2: 0 12px 28px -14px rgba(0, 0, 0, 0.72), 0 2px 6px rgba(0, 0, 0, 0.4);
-    --lift-3: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.5);
+    --lift: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --lift-2: 0 12px 28px -14px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.45);
+    --lift-3: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.55);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #16140f;
-  --bg-2: #1d1a15;
-  --surface: #221f19;
-  --surface-2: #2b2721;
-  --surface-3: #35302a;
-  --line: #35302a;
-  --line-2: #4d463c;
+  /* Carbón neutro: cuatro niveles de superficie claramente distinguibles. */
+  --bg: #101215;
+  --bg-2: #15181c;
+  --surface: #1a1e22;
+  --surface-2: #22262b;
+  --surface-3: #2b3036;
+  --line: #2e343a;
+  --line-2: #414951;
 
-  --text: #f4eee3;
-  --text-2: #c0b8a8;
-  --text-3: #968d7d;
-  --on-ink: #16140f;
+  --text: #edeff2;
+  --text-2: #bdc4cc;
+  --text-3: #98a1aa;
+  --on-ink: #101215;
+  --on-accent: #101215;
 
-  --accent: #9fb0ff;
-  --accent-deep: #8496ef;
-  --accent-soft: rgba(159, 176, 255, 0.14);
-  --accent-line: rgba(159, 176, 255, 0.3);
+  --accent: #8aa6ff;
+  --accent-deep: #a7bcff;
+  --accent-soft: rgba(138, 166, 255, 0.15);
+  --accent-line: rgba(138, 166, 255, 0.34);
 
-  --hl: rgba(216, 174, 74, 0.34);
+  --w-repasar: #4cc7bd;
+  --w-aprender: #efa662;
+  --w-practicar: #8aa6ff;
 
-  --w-repasar: #4dbdb3;
-  --w-aprender: #e0a35a;
-  --w-practicar: #9fb0ff;
+  --ok: #52c98d;
+  --ok-soft: rgba(82, 201, 141, 0.15);
+  --bad: #f4877a;
+  --bad-soft: rgba(244, 135, 122, 0.15);
+  --hold: #e5b563;
+  --hold-soft: rgba(229, 181, 99, 0.15);
 
-  --ok: #4bbd88;
-  --ok-soft: rgba(75, 189, 136, 0.14);
-  --bad: #f07d70;
-  --bad-soft: rgba(240, 125, 112, 0.14);
-  --hold: #ddb05a;
-  --hold-soft: rgba(221, 176, 90, 0.14);
+  --a1: #74a9ec;
+  --a2: #4cc3c9;
+  --a3: #d5a95d;
+  --a4: #d78ac9;
+  --a5: #8dc878;
+  --a6: #f0907b;
+  --a7: #ae97ee;
 
-  --a1: #77a8e2;
-  --a2: #4dbdc2;
-  --a3: #cda555;
-  --a4: #cd85c3;
-  --a5: #8cc073;
-  --a6: #ec8b71;
-  --a7: #ac93e2;
-
-  --lift: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --lift-2: 0 12px 28px -14px rgba(0, 0, 0, 0.72), 0 2px 6px rgba(0, 0, 0, 0.4);
-  --lift-3: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.5);
+  --lift: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --lift-2: 0 12px 28px -14px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.45);
+  --lift-3: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.55);
 }
 
 /* ---------------- Base ---------------- */
@@ -282,13 +280,12 @@ h2 { font-size: 1.2rem; }
 h3 { font-size: 1rem; }
 h4 { font-size: 0.9rem; }
 
-/* Subrayador. Una franja de marcatextos por detrás de la palabra que importa,
-   no un bloque de color de fondo. */
+/* Énfasis en titulares: sin resaltado decorativo. La jerarquía la da la
+   tipografía, no un bloque de color detrás de las palabras. */
 mark {
-  background: linear-gradient(to bottom, transparent 8%, var(--hl) 8%, var(--hl) 86%, transparent 86%);
+  background: none;
   color: inherit;
-  padding: 0 0.12em;
-  border-radius: 2px;
+  padding: 0;
 }
 
 p { margin: 0 0 0.7em; }
@@ -299,7 +296,7 @@ a { color: var(--accent); text-underline-offset: 0.18em; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 
-::selection { background: var(--accent-soft); }
+::selection { background: var(--accent-line); color: var(--text); }
 
 /* Foco: un marco de dos pixeles separado del control, visible en ambos temas.
    Nunca se quita el outline sin poner algo mejor en su lugar. */
@@ -471,10 +468,9 @@ button { cursor: pointer; }
   display: grid; place-items: center;
   border-radius: 9px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--lift);
 }
-:root[data-theme="dark"] .brand-mark { color: var(--on-ink); }
 .brand-text { display: flex; flex-direction: column; min-width: 0; }
 .brand-text b {
   font-size: 0.83rem;
@@ -515,10 +511,9 @@ button { cursor: pointer; }
   min-width: 19px; height: 19px; padding: 0 5px;
   display: inline-grid; place-items: center;
   border-radius: var(--r-mark);
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--on-accent);
   font-size: 0.7rem; font-weight: 700;
 }
-:root[data-theme="dark"] .mast-count { color: var(--on-ink); }
 
 .mast-tools { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 
@@ -551,11 +546,10 @@ button { cursor: pointer; }
 .avatar {
   display: grid; place-items: center;
   border-radius: var(--r-mark);
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--on-accent);
   font-weight: 650;
   letter-spacing: 0;
 }
-:root[data-theme="dark"] .avatar { color: var(--on-ink); }
 .avatar-sm { width: 24px; height: 24px; font-size: 0.75rem; }
 .avatar-lg { width: 46px; height: 46px; font-size: 1.15rem; }
 .avatar-guest { background: none; border: 1px solid var(--line-2); color: var(--text-3); }
@@ -608,11 +602,10 @@ button { cursor: pointer; }
   min-width: 16px; height: 16px; padding: 0 4px;
   display: grid; place-items: center;
   border-radius: var(--r-mark);
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--on-accent);
   font-size: 0.62rem; font-weight: 700;
   border: 1.5px solid var(--surface);
 }
-:root[data-theme="dark"] .tab-count { color: var(--on-ink); }
 
 @media (min-width: 900px) {
   .tabbar { display: none; }
@@ -687,9 +680,8 @@ button { cursor: pointer; }
 
 /* Primario: tinta azul llena. Es el color que solo llevan las cosas que se
    hacen, así que el botón de arranque es lo más saturado de la pantalla. */
-.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
 .btn-primary:hover:not(:disabled) { background: var(--accent-deep); }
-:root[data-theme="dark"] .btn-primary, :root:not([data-theme="light"]) .btn-primary { color: var(--on-ink); }
 
 .btn-solid { background: var(--surface); border-color: var(--line-2); }
 .btn-solid:hover:not(:disabled) { background: var(--surface-2); border-color: var(--text-3); }
@@ -697,7 +689,7 @@ button { cursor: pointer; }
 .btn-ghost { color: var(--text-2); }
 .btn-ghost:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
 
-.btn-danger { background: var(--bad); color: #fff; }
+.btn-danger { background: var(--bad); color: var(--on-accent); }
 .btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--bad) 85%, #000); }
 
 .btn-sm { min-height: 32px; padding: 0 10px; font-size: 0.82rem; }
@@ -1164,7 +1156,7 @@ button { cursor: pointer; }
   display: grid; place-items: center;
   border-radius: var(--r-chip);
   background: var(--t, var(--text-3));
-  color: #fff;
+  color: var(--on-accent);
   font-size: 0.95rem;
   font-weight: 700;
   animation: tramoIn 420ms var(--ease) both;
@@ -1182,7 +1174,6 @@ button { cursor: pointer; }
 .t-repasar { --t: var(--w-repasar); }
 .t-aprender { --t: var(--w-aprender); }
 .t-practicar { --t: var(--w-practicar); }
-:root[data-theme="dark"] .tramo, :root:not([data-theme="light"]) .tramo { color: var(--on-ink); }
 
 .reparto-leyenda {
   display: flex; flex-wrap: wrap; gap: 6px 18px;
@@ -2259,7 +2250,7 @@ button { cursor: pointer; }
 .option.is-correct .bubble { background: var(--ok); border-color: var(--ok); color: var(--on-ink); }
 .option.is-correct .option-flag { color: var(--ok); }
 .option.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
-.option.is-wrong .bubble { background: var(--bad); border-color: var(--bad); color: #fff; }
+.option.is-wrong .bubble { background: var(--bad); border-color: var(--bad); color: var(--on-accent); }
 .option.is-wrong .option-flag { color: var(--bad); }
 .option.is-dim { opacity: 0.62; }
 
@@ -2324,7 +2315,7 @@ button { cursor: pointer; }
   background: var(--text);
   color: var(--on-ink);
 }
-.summary-mark.is-ok { background: var(--ok); color: #fff; }
+.summary-mark.is-ok { background: var(--ok); color: var(--on-accent); }
 .summary-title { font-size: 1.4rem; }
 .summary p { margin-top: 8px; color: var(--text-2); font-size: 0.92rem; text-wrap: pretty; }
 .result-score {
