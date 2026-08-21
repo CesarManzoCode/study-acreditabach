@@ -473,6 +473,11 @@ export function factorizacion(h) {
     const p = h.int(2, 6);
     const q = h.int(2, 6);
     if (p === q) return null;
+    /* El enunciado pide factorizar POR COMPLETO, así que `f`x tiene que ser
+       de verdad el factor común máximo. Con p y q compartiendo un divisor
+       (20x² + 30x con f=5, p=4, q=6) la respuesta "correcta" era 5x(4x + 6),
+       que todavía se puede factorizar: la completa es 10x(2x + 3). */
+    if (h.gcd(p, q) !== 1) return null;
     const expr = poly([[f * p, pw("x", 2)], [f * q, "x"]]);
     const ans = `${f}x(${p}x + ${q})`;
     const opts = h.choice3(ans, [`${f}(${p}x² + ${q}x)`, `x(${f * p}x + ${f * q})`, `${f}x(${p}x + ${q * f})`]);
@@ -1440,6 +1445,56 @@ export function optimizacion(h) {
 /* ============================================================
    Registro: id de tema → generadores disponibles
    ============================================================ */
+
+/* ------------------------------------------------------------------
+   Lo que cada generador da por enseñado
+
+   Un reactivo del banco vive dentro de un bloque y el bloque no se abre hasta
+   que su lección se leyó. Un reactivo GENERADO no pasa por esa compuerta: sale
+   directo del tema, así que la única garantía de que no pregunte algo sin
+   explicar es que la `note` del tema lo explique.
+
+   Aquí se declara, por tema, lo que sus reactivos generados dan por sabido.
+   `npm run validate` falla si alguno de esos términos no aparece en la nota.
+   Si le agregas un caso nuevo a un generador —una regla, una fórmula, un
+   nombre—, decláralo aquí y enséñalo en la nota. Así fue como se colaron la
+   regla de la cadena en 1.6.5 y las masas atómicas de 5.4.1.
+
+   Cada entrada es un término que la nota debe contener; las alternativas
+   aceptables se separan con "|". ------------------------------------------ */
+
+export const CONCEPTOS_MATH = {
+  "1.1.1": ["cualitativa", "discreta", "continua"],
+  "1.1.2": ["sistemático", "estratificado", "conglomerados"],
+  "1.1.3": ["media", "mediana", "moda"],
+  "1.1.4": ["varianza", "desviación estándar"],
+  "1.2.1": ["permutación", "combinación", "factorial"],
+  "1.2.2": ["favorables", "posibles|totales"],
+  "1.2.3": ["condicional", "sin reemplazo|no la regresas|no regresar"],
+  "1.3.1": ["doble", "triple", "mitad", "cuadrado de un número", "consecutivo", "paréntesis"],
+  "1.3.2": ["factor común", "diferencia de cuadrados", "trinomio|dos números"],
+  "1.3.3": ["conjugados", "término común", "cuadrado completado|completar el cuadrado", "mínimo", "máximo"],
+  "1.3.4": ["despeja"],
+  "1.3.5": ["raíces", "factoriza"],
+  "1.3.6": ["suma y resta", "sustituyendo|sustituir"],
+  "1.3.7": ["interés simple", "monto"],
+  "1.3.8": ["interés compuesto", "monto"],
+  "1.4.1": ["mínimo común múltiplo"],
+  "1.4.2": ["máximo común divisor"],
+  "1.4.3": ["aritmética", "geométrica", "razón"],
+  "1.4.4": ["directa", "inversa", "regla de tres"],
+  "1.4.5": ["descuento", "aumento", "precio original|precio ya rebajado"],
+  "1.5.1": ["triángulo", "trapecio", "altura", "despeja|despejar"],
+  "1.5.2": ["semejantes", "sombra", "proporcion"],
+  "1.5.3": ["hipotenusa", "cateto", "diagonal|rectángulo"],
+  "1.5.4": ["plano cartesiano", "vértices", "coordenadas"],
+  "1.6.1": ["corchete", "paréntesis", "desigualdad", "invierte"],
+  "1.6.2": ["pendiente", "vértice", "ordenada al origen", "parábola", "exponencial", "recta"],
+  "1.6.3": ["sustitución directa", "factoriza"],
+  "1.6.4": ["regla de la potencia", "constante"],
+  "1.6.5": ["sen(x)", "cos(x)", "ln(x)", "regla de la cadena", "regla del producto"],
+  "1.6.6": ["derivada", "iguala|igualar", "perímetro", "máxima|máximo"]
+};
 
 export const MATH_GENERATORS = {
   "1.1.1": [tiposDeVariable],

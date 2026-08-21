@@ -68,7 +68,7 @@ export default function Today({ plan, stats, onStart }) {
           temas: plan.newTopics.map((t) => ({ id: t.id, nombre: t.tema, area: t.area }))
         },
         plan.blockLessons.length && {
-          etiqueta: `${plan.blockLessons.length} ${plan.blockLessons.length === 1 ? "lección de ampliación" : "lecciones de ampliación"}`,
+          etiqueta: `${plan.blockLessons.length} ${plan.blockLessons.length === 1 ? "lección nueva" : "lecciones nuevas"}`,
           temas: plan.blockLessons.map((b) => ({ id: b.topicId + b.bloque, nombre: b.topic.tema, area: b.topic.area }))
         },
         plan.learnCards.length && {

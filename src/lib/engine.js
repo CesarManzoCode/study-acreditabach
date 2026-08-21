@@ -766,6 +766,14 @@ export function cardsOfBlock(topicId, block) {
   return out;
 }
 
+/** Los reactivos de un bloque concreto del tema. */
+export function quizOfBlock(topic, block) {
+  const bank = (topic && topic.quiz) || [];
+  const out = [];
+  for (let q = block.qFrom; q < block.qTo; q++) if (bank[q]) out.push(bank[q]);
+  return out;
+}
+
 /* ---------------- Lección de cada bloque ----------------
 
    Un bloque con `leccion` no se toca hasta haberla leído. Es la llave nueva
@@ -823,6 +831,23 @@ export function availableQuiz(topic) {
     if (!bloqueEnPlan(b)) return;
     if (!blockUnlocked(topic, b, i)) return;
     for (let q = b.qFrom; q < b.qTo; q++) if (bank[q]) out.push(bank[q]);
+  });
+  return out;
+}
+
+/** Bloques del tema que solo esperan su lección para abrirse.
+
+   Son los que no traen tarjetas: su única condición es que la lección se lea.
+   La sesión del día los agenda, y la práctica manual de un tema los enseña
+   antes de preguntar, para que su banco no quede inalcanzable. */
+export function pendingLessons(topic) {
+  if (!topic || !topic.blocks) return [];
+  const out = [];
+  topic.blocks.forEach((b, i) => {
+    if (!bloqueEnPlan(b)) return;
+    if (b.fcTo > b.fcFrom) return;
+    if (isLessonSeen(topic.id, b, i)) return;
+    out.push({ topicId: topic.id, topic, bloque: b.nombre, leccion: b.leccion, block: b, index: i });
   });
   return out;
 }
@@ -1183,6 +1208,14 @@ export function computeTodayPlan() {
        si entrara al plan, la sesión tendría un paso en blanco. La
        reconciliación del arranque las quita, esto es la red por si acaso. */
     if (!flashcardOf(cardId)) return;
+    /* Y una tarjeta de un bloque que hoy no está en el plan tampoco sale. El
+       modo esencial promete que las tarjetas de ampliación ya programadas
+       "dejan de proponerse mientras el modo esté activo" —guardadas, con su
+       intervalo intacto, pero fuera de la sesión—. Sin esta comprobación
+       seguían apareciendo en cuanto vencían, que es material de ampliación
+       colándose en un plan que dice no incluirlo. */
+    const bloque = blockOfCard(cardId);
+    if (bloque && !bloqueEnPlan(bloque.block)) return;
     const card = STATE.cards[cardId];
     if (card.due > todayISO) return;
     vencidas.push({ cardId, topicId, due: card.due });
@@ -1192,18 +1225,41 @@ export function computeTodayPlan() {
   /* Las tarjetas de un bloque cuya lección todavía no se ha leído no pueden
      salir hoy… salvo que hoy toque justamente esa lección. Se eligen las de las
      tarjetas más atrasadas y el resto espera su turno: preguntar antes de
-     explicar es exactamente lo que se quiere evitar. */
+     explicar es exactamente lo que se quiere evitar.
+
+     Un bloque SIN tarjetas también necesita su turno. Antes las lecciones se
+     sacaban solo de las tarjetas vencidas, así que un bloque que únicamente
+     trae reactivos —los de `formato` y `refuerzo`, que son justo los que el
+     modo esencial conserva— no podía enseñar su lección nunca: `blockUnlocked`
+     la pedía, la sesión no la ofrecía y su banco quedaba cerrado para siempre.
+     Eso dejaba a esos paquetes sin manera de explicar lo que preguntan, que es
+     la razón por la que se escribieron dando por hecho que no introducen nada
+     nuevo. Ahora se recorren también los bloques sin tarjetas de los temas ya
+     conocidos, después de las lecciones que sí tienen tarjetas atrasadas. */
   const leccionesPendientes = [];
   const vistaHoy = new Set();
-  vencidas.forEach((e) => {
-    const bc = blockOfCard(e.cardId);
-    if (!bc || isLessonSeen(e.topicId, bc.block, bc.index)) return;
-    const key = lessonKey(e.topicId, bc.block.nombre);
+  const apuntarLeccion = (topicId, topic, block, index) => {
+    if (!bloqueEnPlan(block)) return;
+    if (isLessonSeen(topicId, block, index)) return;
+    const key = lessonKey(topicId, block.nombre);
     if (vistaHoy.has(key)) return;
     vistaHoy.add(key);
     if (leccionesPendientes.length < MAX_LECCIONES_POR_DIA) {
-      leccionesPendientes.push({ topicId: e.topicId, topic: bc.topic, bloque: bc.block.nombre, leccion: bc.block.leccion });
+      leccionesPendientes.push({ topicId, topic, bloque: block.nombre, leccion: block.leccion });
     }
+  };
+  vencidas.forEach((e) => {
+    const bc = blockOfCard(e.cardId);
+    if (!bc) return;
+    apuntarLeccion(e.topicId, bc.topic, bc.block, bc.index);
+  });
+  getAllTopics().forEach((t) => {
+    if (!isIntroduced(t.id)) return;
+    if (newTopics.some((nt) => nt.id === t.id)) return; // hoy ya trae bastante con su nota
+    (t.blocks || []).forEach((b, i) => {
+      if (b.fcTo > b.fcFrom) return;   // los de tarjetas ya pasaron por el recorrido de arriba
+      apuntarLeccion(t.id, t, b, i);
+    });
   });
   const seEnseñaHoy = new Set(leccionesPendientes.map((l) => lessonKey(l.topicId, l.bloque)));
   const conLeccion = (e) => {

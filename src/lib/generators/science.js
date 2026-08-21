@@ -864,6 +864,31 @@ export function redesTroficas(h) {
   };
 }
 
+/* Lo que cada generador da por enseñado. Ver la nota larga en math.js: los
+   reactivos generados no pasan por la compuerta de bloques, así que la nota del
+   tema tiene que explicar todo lo que pueden preguntar, y `npm run validate` lo
+   comprueba. Las listas que salen de los propios datos del generador (organelos,
+   niveles, espectro, masas atómicas) se derivan aquí para que agregar un caso
+   obligue a completar la nota. */
+
+export const CONCEPTOS_SCIENCE = {
+  "5.1.3": ["balanceada", "conserva|conservación", "átomos"],
+  "5.1.4": ["Fahrenheit", "Celsius"],
+  "5.1.5": ["Coulomb", "repelen", "atraen", "cuadrado de la distancia"],
+  "5.2.1": ["longitud de onda", "frecuencia", "energía", "rojo", "violeta"].concat(ESPECTRO.map((e) => e[0])),
+  "5.2.2": ["calor específico"],
+  "5.2.4": ["energía cinética", "energía potencial", "conserva", "2gh"],
+  "5.3.3": ["productor", "consumidores primarios", "consumidores secundarios", "consumidores terciarios", "descomponedor"],
+  "5.4.1": ["masa molar", "moles|mol"].concat(Object.keys(MASAS).map((el) => el + "=")),
+  "5.5.1": ["elástico", "perfectamente inelástico", "parcialmente inelástico", "momento lineal"],
+  "5.5.2": ["momento lineal", "conserva"],
+  "5.5.3": ["frecuencia", "longitud de onda"].concat(ESPECTRO.map((e) => e[0])),
+  "5.5.4": ["caída libre", "gravedad|g =", "vacío"],
+  "5.6.1": ORGANELOS.map((o) => o[0].replace(" rugoso", "")),
+  "5.6.2": NIVELES,
+  "5.7.3": ["dominante", "recesivo", "homocigoto", "heterocigoto", "genotip", "fenotip"]
+};
+
 export const SCIENCE_GENERATORS = {
   "5.1.3": [conservacionMateria],
   "5.1.4": [escalasTermometricas],

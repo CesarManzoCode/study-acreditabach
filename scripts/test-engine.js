@@ -479,5 +479,115 @@ console.log("\n16) Cada tarjeta guardada sigue a su contenido");
   check(adoptada && adoptada.h === E.huellaDeFrente(fronts[1]), "y se le pone la huella de lo que hay en esa posición");
 }
 
+/* ------------------------------------------------------------------
+   17) Ninguna lección queda inalcanzable
+
+   La compuerta que impide preguntar antes de explicar es la lección del
+   bloque: mientras no se lea, ni sus tarjetas ni sus reactivos entran. Pero
+   el plan del día sacaba las lecciones pendientes SOLO de las tarjetas
+   vencidas, así que un bloque que únicamente trae reactivos —los de `formato`
+   y `refuerzo`, justo los dos que el modo esencial conserva además del base—
+   no podía enseñar su lección jamás y su banco quedaba cerrado para siempre.
+
+   Por eso esos paquetes se escribieron dando por hecho que no introducen nada
+   nuevo: era la única forma de que sus reactivos llegaran a verse.
+   ------------------------------------------------------------------ */
+console.log("\n17) Ninguna lección queda inalcanzable");
+{
+  E.replaceState({ createdAt: "2026-09-01", podaAplicada: true });
+  E.setModoEsencial(false);
+
+  /* Un bloque con lección propia y sin tarjetas: el caso que no se podía abrir. */
+  let objetivo = null;
+  E.getAllTopics().forEach((t) => {
+    (t.blocks || []).forEach((b, i) => {
+      if (objetivo || i === 0 || !b.leccion || b.fcTo > b.fcFrom || b.qTo === b.qFrom) return;
+      objetivo = { topic: t, block: b, index: i };
+    });
+  });
+  check(!!objetivo, "el temario tiene bloques que solo traen reactivos y una lección propia");
+
+  E.introduceTopic(objetivo.topic.id);
+  const cerrado = E.availableQuiz(objetivo.topic).length;
+  check(
+    !E.blockUnlocked(objetivo.topic, objetivo.block, objetivo.index),
+    `${objetivo.topic.id}/${objetivo.block.nombre}: arranca cerrado esperando su lección`
+  );
+
+  const planL = E.computeTodayPlan();
+  const agendada = planL.blockLessons.some(
+    (bl) => bl.topicId === objetivo.topic.id && bl.bloque === objetivo.block.nombre
+  );
+  check(agendada, "y la sesión del día sí la agenda, aunque el bloque no tenga ni una tarjeta");
+  check(
+    planL.blockLessons.every((bl) => !!bl.leccion),
+    "ninguna lección del plan llega vacía"
+  );
+
+  E.markLessonSeen(objetivo.topic.id, objetivo.block.nombre);
+  check(
+    E.availableQuiz(objetivo.topic).length === cerrado + (objetivo.block.qTo - objetivo.block.qFrom),
+    `al leerla entran sus ${objetivo.block.qTo - objetivo.block.qFrom} reactivos, ni uno más`
+  );
+
+  /* Y a lo ancho del temario: todo bloque con lección propia y sin tarjetas
+     tiene que aparecer entre las lecciones pendientes de su tema. Si alguno no
+     apareciera, su banco no podría abrirse nunca y su contenido sería
+     inalcanzable, que es exactamente el caso que se corrigió. */
+  const inalcanzables = [];
+  let conLeccionSinTarjetas = 0;
+  E.getAllTopics().forEach((t) => {
+    const candidatos = (t.blocks || []).filter((b, i) => i > 0 && E.bloqueEnPlan(b) && b.leccion && b.fcTo === b.fcFrom);
+    if (!candidatos.length) return;
+    conLeccionSinTarjetas += candidatos.length;
+    E.introduceTopic(t.id);
+    const pendientes = new Set(E.pendingLessons(t).map((pl) => pl.bloque));
+    candidatos.forEach((b) => {
+      if (!E.isLessonSeen(t.id, b, t.blocks.indexOf(b)) && !pendientes.has(b.nombre)) {
+        inalcanzables.push(t.id + "/" + b.nombre);
+      }
+    });
+  });
+  check(conLeccionSinTarjetas > 0, `hay ${conLeccionSinTarjetas} bloques con lección y sin tarjetas que revisar`);
+  check(inalcanzables.length === 0, `ninguno queda sin manera de abrirse (${inalcanzables.join(", ") || "0"})`);
+
+  /* La práctica manual de un tema también enseña antes de preguntar: los
+     bloques que solo esperan su lección la reciben ahí mismo. */
+  E.replaceState({ createdAt: "2026-09-01", podaAplicada: true });
+  E.introduceTopic(objetivo.topic.id);
+  const pend = E.pendingLessons(objetivo.topic);
+  check(
+    pend.some((pl) => pl.bloque === objetivo.block.nombre),
+    "la práctica manual del tema encuentra la lección pendiente de ese bloque"
+  );
+  check(
+    pend.every((pl) => !!pl.leccion && pl.block.fcTo === pl.block.fcFrom),
+    "y solo propone las de bloques sin tarjetas, que son las que nadie más agenda"
+  );
+
+  E.setModoEsencial(true);
+}
+
+/* ------------------------------------------------------------------
+   18) Los reactivos generados no se adelantan a la nota
+
+   Un reactivo del banco vive dentro de un bloque y espera su lección. Un
+   reactivo GENERADO no pasa por esa compuerta: sale directo del tema, y en
+   modo esencial la nota del tema es lo ÚNICO que se ha explicado. Por eso
+   cada generador declara lo que da por sabido y la nota tiene que enseñarlo
+   (`npm run validate` lo comprueba término por término).
+   ------------------------------------------------------------------ */
+console.log("\n18) Los reactivos generados no se adelantan a la nota");
+{
+  const { CONCEPTOS_GENERADOS, GENERATED_TOPIC_IDS } = await import(
+    pathToFileURL(path.join(ROOT, "src/lib/generators/index.js")).href
+  );
+  const sinDeclarar = GENERATED_TOPIC_IDS.filter((id) => !CONCEPTOS_GENERADOS[id]);
+  check(sinDeclarar.length === 0, `los ${GENERATED_TOPIC_IDS.length} temas con generador declaran lo que dan por sabido (${sinDeclarar.join(", ")})`);
+
+  const sinTema = Object.keys(CONCEPTOS_GENERADOS).filter((id) => !E.topicsById()[id]);
+  check(sinTema.length === 0, `y todos apuntan a un tema que existe (${sinTema.join(", ")})`);
+}
+
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);
 process.exit(fallos === 0 ? 0 : 1);

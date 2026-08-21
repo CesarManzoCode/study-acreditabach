@@ -12,10 +12,16 @@
    ============================================================ */
 
 import { makeRng, helpers, hashSeed, randomSeed } from "../rng.js";
-import { MATH_GENERATORS } from "./math.js";
-import { SCIENCE_GENERATORS } from "./science.js";
+import { MATH_GENERATORS, CONCEPTOS_MATH } from "./math.js";
+import { SCIENCE_GENERATORS, CONCEPTOS_SCIENCE } from "./science.js";
 
 const REGISTRY = Object.assign({}, MATH_GENERATORS, SCIENCE_GENERATORS);
+
+/* Lo que los reactivos generados de cada tema dan por enseñado. Un reactivo
+   generado no pasa por la compuerta de bloques —sale directo del tema—, así que
+   la única garantía de que no pregunte algo sin explicar es que la `note` del
+   tema lo explique. `npm run validate` comprueba término por término. */
+export const CONCEPTOS_GENERADOS = Object.assign({}, CONCEPTOS_MATH, CONCEPTOS_SCIENCE);
 
 export const GENERATED_TOPIC_IDS = Object.keys(REGISTRY);
 

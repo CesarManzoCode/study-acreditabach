@@ -6,7 +6,7 @@ import { getStoredTheme, applyTheme } from "./lib/prefs.js";
 import {
   computeTodayPlan, overallStats, cardsForTopic, cardsOfBlock, buildDrill,
   shuffleOptions, subscribe, isLearned, availableQuiz, blockOfCard, isLessonSeen,
-  pasoConContenido
+  pasoConContenido, pendingLessons, quizOfBlock
 } from "./lib/engine.js";
 import { getActiveUser } from "./lib/accounts.js";
 import { startCloud, getCloudStatus } from "./lib/cloud.js";
@@ -107,12 +107,34 @@ function Shell() {
       const base = t.blocks && t.blocks.length ? cardsOfBlock(t.id, t.blocks[0]) : cardsForTopic(t.id);
       base.forEach((cid) => steps.push({ type: "learn", cardId: cid, topicId: t.id, isNew: true }));
     });
+
+    /* Lecciones de bloques que no tienen tarjetas donde engancharse —los de
+       `formato` y `refuerzo` solo traen reactivos—. Van antes de la práctica
+       porque es justo su banco el que abren: si no se emitieran aquí, el plan
+       las contaría, la sesión no las mostraría y su lección jamás se marcaría
+       como leída. */
+    plan.blockLessons.forEach((bl) => {
+      const key = bl.topicId + "::" + bl.bloque;
+      if (dadas.has(key)) return;
+      dadas.add(key);
+      steps.push({ type: "lesson", topic: bl.topic, bloque: bl.bloque, leccion: bl.leccion });
+    });
+
     plan.quizQuestions.forEach((qq) => steps.push({ type: "quiz", topic: qq.topic, question: qq.question }));
     abrirSesion({ kind: "study", title: "Sesión de hoy", steps });
   }, [plan, abrirSesion]);
 
+  /* Practicar un tema a mano. Los bloques que solo esperan su lección —los que
+     traen reactivos y ninguna tarjeta— la reciben aquí mismo y entran a la
+     práctica: si no, su banco solo podría abrirse en la sesión del día. */
   const startTopicPractice = useCallback((topic) => {
-    const steps = availableQuiz(topic).map((q, i) => ({
+    const steps = [];
+    const banco = availableQuiz(topic).slice();
+    pendingLessons(topic).forEach((pl) => {
+      steps.push({ type: "lesson", topic, bloque: pl.bloque, leccion: pl.leccion });
+      quizOfBlock(topic, pl.block).forEach((q) => banco.push(q));
+    });
+    banco.forEach((q, i) => steps.push({
       type: "quiz",
       topic,
       question: shuffleOptions(q, topic.id + "|" + i + "|" + Date.now())

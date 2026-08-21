@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,7 +35,8 @@ function registrar(id, origen, entry) {
     origen,
     base: !!entry.note,
     leccion: entry.note || entry.leccion || "",
-    flashcards: entry.flashcards || []
+    flashcards: entry.flashcards || [],
+    quiz: entry.quiz || []
   });
   porTema.set(id, acc);
 }
@@ -255,9 +256,18 @@ const DEFINICION = new RegExp(
   "i"
 );
 
+/* «¿Qué significa la notación P(A|B)?» no pregunta por un concepto llamado
+   "notación": pregunta por P(A|B). Estas palabras de andamiaje se quitan para
+   quedarse con lo que de verdad hay que haber explicado. */
+const ANDAMIO = /^(?:la|el|los|las)?\s*(?:notaci[óo]n|f[óo]rmula|sigla|siglas|s[íi]mbolo|abreviatura|expresi[óo]n)\s+(?:de\s+|del\s+|para\s+)?/i;
+
 function conceptoDefinido(front) {
   const m = String(front).match(DEFINICION);
-  return m ? m[1].replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, "").trim() : null;
+  if (!m) return null;
+  return m[1]
+    .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, "")
+    .replace(ANDAMIO, "")
+    .trim();
 }
 
 /** ¿El texto explicativo nombra ese concepto? (tolera plurales y variantes) */
@@ -277,17 +287,21 @@ for (const [id, acc] of porTema) {
 
   acc.bloques.filter((b) => !b.base).forEach((b) => {
     const explica = notaBase + " " + b.leccion;
-    b.flashcards.forEach((fc) => {
-      const concepto = conceptoDefinido(fc.front);
+    const revisar = (texto, que) => {
+      const concepto = conceptoDefinido(texto);
       if (!concepto) return;
-      if (!loExplica(concepto, explica)) {
-        sinExplicar.push(
-          `${id}: ${b.origen} define «${concepto}» pero ni la nota del tema ni la ` +
-          `leccion de ese paquete lo mencionan. Agrégalo a la leccion del paquete: ` +
-          `la app pregunta lo que no explicó.`
-        );
-      }
-    });
+      if (loExplica(concepto, explica)) return;
+      sinExplicar.push(
+        `${id}: ${b.origen} (${que}) pregunta por «${concepto}» pero ni la nota del tema ni la ` +
+        `leccion de ese paquete lo mencionan. Agrégalo a la leccion del paquete: ` +
+        `la app pregunta lo que no explicó.`
+      );
+    };
+    b.flashcards.forEach((fc) => revisar(fc.front, "tarjeta"));
+    /* Los paquetes de `formato` y `refuerzo` no traen tarjetas: TODO lo que
+       aportan son reactivos. Revisarlos solo a ellas dejaba fuera precisamente
+       los dos bloques que el modo esencial conserva. */
+    b.quiz.forEach((q) => revisar(q && q.q, "reactivo"));
   });
 }
 
@@ -298,6 +312,60 @@ if (sinExplicar.length) {
   totalErrors += sinExplicar.length;
 } else {
   console.log("[nada se pregunta antes de explicarse] OK — cada concepto que se pregunta está en un texto que la app muestra");
+}
+
+/* ---------------- Lo que los reactivos generados dan por enseñado ----------
+
+   Un reactivo del banco vive dentro de un bloque, y el bloque no se abre hasta
+   que su lección se leyó. Un reactivo GENERADO no pasa por esa compuerta: sale
+   directo del tema cada vez que toca practicarlo, así que la única garantía de
+   que no pregunte algo sin explicar es que la `note` del tema lo explique.
+
+   Nadie lo comprobaba, y por ahí se colaron la regla de la cadena en 1.6.5, las
+   masas atómicas de 5.4.1, los organelos que la nota de 5.6.1 no nombraba y los
+   niveles anteriores a la célula en 5.6.2: preguntas perfectamente correctas
+   sobre material que el modo esencial nunca enseñó.
+
+   Cada generador declara en CONCEPTOS_GENERADOS lo que sus reactivos dan por
+   sabido; aquí se exige que la nota del tema lo contenga. */
+
+const sinEnseñar = [];
+{
+  const { CONCEPTOS_GENERADOS, GENERATED_TOPIC_IDS } = await import(
+    pathToFileURL(path.join(__dirname, "..", "src/lib/generators/index.js")).href
+  );
+
+  GENERATED_TOPIC_IDS.forEach((id) => {
+    if (!CONCEPTOS_GENERADOS[id]) {
+      sinEnseñar.push(`${id}: tiene generador pero no declara sus conceptos en CONCEPTOS_GENERADOS.`);
+    }
+  });
+
+  Object.keys(CONCEPTOS_GENERADOS).forEach((id) => {
+    const acc = porTema.get(id);
+    if (!acc) {
+      sinEnseñar.push(`${id}: declara conceptos de generador pero no existe en el catálogo base.`);
+      return;
+    }
+    const nota = sinAcentos(acc.bloques.filter((b) => b.base).map((b) => b.leccion).join(" "));
+    CONCEPTOS_GENERADOS[id].forEach((termino) => {
+      const alternativas = String(termino).split("|");
+      if (alternativas.some((t) => nota.includes(sinAcentos(t).trim()))) return;
+      sinEnseñar.push(
+        `${id}: sus reactivos generados dan por sabido «${termino}» y la nota del tema no lo enseña. ` +
+        `Agrégalo a la note del tema o quita ese caso del generador.`
+      );
+    });
+  });
+}
+
+if (sinEnseñar.length) {
+  console.log(`\n[los generadores no se adelantan a la nota] ${sinEnseñar.length} problema(s):`);
+  sinEnseñar.slice(0, 60).forEach((e) => console.log("  - " + e));
+  if (sinEnseñar.length > 60) console.log(`  ... y ${sinEnseñar.length - 60} más`);
+  totalErrors += sinEnseñar.length;
+} else {
+  console.log("[los generadores no se adelantan a la nota] OK — la nota del tema enseña todo lo que su generador pregunta");
 }
 
 if (cruzados.length) {

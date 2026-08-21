@@ -203,7 +203,9 @@ function SkippedStep({ onNext }) {
 
 const TITULO_BLOQUE = {
   ampliacion: "Ampliación del tema",
-  ampliacion2: "Más sobre este tema"
+  ampliacion2: "Más sobre este tema",
+  formato: "Cómo lo pregunta el examen",
+  refuerzo: "Lo que falta del tema"
 };
 
 function LessonStep({ step, onNext }) {
