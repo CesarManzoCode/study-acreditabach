@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 452" width="1280" height="452" role="img" aria-label="Cómo se abre un tema: primero se lee la lección del bloque, después las tarjetas se enseñan con la respuesta a la vista, al día siguiente entran al repaso espaciado y sólo entonces se abren los reactivos de ese bloque.">
+  <style>
+    .paper { fill:#ffffff; stroke:#dfe3e9; stroke-width:1.5; }
+    .ink   { fill:#14171b; font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+    .serif { fill:#14171b; font-family:Georgia,'Times New Roman',serif; }
+    .muted { fill:#6a717b; font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+    .step  { fill:#6a717b; font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:1.3px; }
+    .gate  { fill:#2d4ad0; font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:12.5px; text-anchor:middle; }
+  </style>
+  <rect width="1280" height="452" fill="#f4f5f7"/>
+  <text class="muted" x="44" y="44" font-size="12" letter-spacing="1.6">NADA SE PREGUNTA ANTES DE ENSEÑARSE</text>
+  <text class="serif" x="44" y="80" font-size="27">Cómo se abre un tema</text>
+  <line x1="44" y1="102" x2="1236" y2="102" stroke="#e6e9ee" stroke-width="1"/>
+  <g transform="translate(44,132)">
+    <rect class="paper" width="220" height="168" rx="12"/>
+    <rect width="220" height="4" rx="2" fill="#a8402c"/>
+    <text class="step" x="18" y="36">PASO 1 · LECCIÓN</text>
+    <text class="serif" x="18" y="66" font-size="16.5">La nota del tema</text>
+    <line x1="18" y1="84" x2="202" y2="84" stroke="#e6e9ee"/>
+    <line x1="18" y1="102" x2="202" y2="102" stroke="#ccd2da" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="18" y1="118" x2="202" y2="118" stroke="#ccd2da" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="18" y1="134" x2="138" y2="134" stroke="#ccd2da" stroke-width="4.5" stroke-linecap="round"/>
+    <text class="muted" x="18" y="152" font-size="12.5">Se lee. Nada se pregunta.</text>
+  </g>
+  <g transform="translate(368,132)">
+    <rect class="paper" width="220" height="168" rx="12"/>
+    <rect width="220" height="4" rx="2" fill="#a2570f"/>
+    <text class="step" x="18" y="36">PASO 2 · APRENDER</text>
+    <text class="serif" x="18" y="66" font-size="16.5">Tarjeta con la</text>
+    <text class="serif" x="18" y="88" font-size="16.5">respuesta a la vista</text>
+    <line x1="18" y1="106" x2="202" y2="106" stroke="#e6e9ee"/>
+    <rect x="18" y="116" width="104" height="28" rx="8" fill="#f4ebde" stroke="#e2d4bf"/>
+    <text class="ink" x="36" y="135" font-size="13">Entendido</text>
+    <text class="muted" x="18" y="152" font-size="12.5">No se califica todavía.</text>
+  </g>
+  <g transform="translate(692,132)">
+    <rect class="paper" width="220" height="168" rx="12"/>
+    <rect width="220" height="4" rx="2" fill="#0b6f78"/>
+    <text class="step" x="18" y="36">PASO 3 · REPASAR</text>
+    <text class="serif" x="18" y="66" font-size="16.5">Ahora sí: de memoria</text>
+    <line x1="18" y1="84" x2="202" y2="84" stroke="#e6e9ee"/>
+    <g transform="translate(18,94)">
+      <rect width="60" height="28" rx="8" fill="#f6f7f9" stroke="#dfe3e9"/><text class="ink" x="11" y="18.5" font-size="12">otra vez</text>
+      <rect x="68" width="50" height="28" rx="8" fill="#f6f7f9" stroke="#dfe3e9"/><text class="ink" x="80" y="18.5" font-size="12">costó</text>
+      <rect x="126" width="46" height="28" rx="8" fill="#e9f1ef" stroke="#b9d3cd"/><text class="ink" x="140" y="18.5" font-size="12">bien</text>
+    </g>
+    <text class="muted" x="18" y="152" font-size="12.5">SM-2 fija la próxima fecha.</text>
+  </g>
+  <g transform="translate(1016,132)">
+    <rect class="paper" width="220" height="168" rx="12"/>
+    <rect width="220" height="4" rx="2" fill="#2d4ad0"/>
+    <text class="step" x="18" y="36">PASO 4 · PREGUNTAR</text>
+    <text class="serif" x="18" y="66" font-size="16.5">Reactivo del bloque</text>
+    <line x1="18" y1="84" x2="202" y2="84" stroke="#e6e9ee"/>
+    <g transform="translate(18,94)">
+      <circle cx="10" cy="11" r="10" fill="#f6f7f9" stroke="#c9cfd8"/><text class="ink" x="6" y="15" font-size="11.5">A</text>
+      <line x1="30" y1="11" x2="190" y2="11" stroke="#e3e6ec" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="10" cy="39" r="10" fill="#eef1fb" stroke="#2d4ad0"/><text class="ink" x="6" y="43" font-size="11.5">B</text>
+      <line x1="30" y1="39" x2="170" y2="39" stroke="#c7d0ef" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="10" cy="67" r="10" fill="#f6f7f9" stroke="#c9cfd8"/><text class="ink" x="6" y="71" font-size="11.5">C</text>
+      <line x1="30" y1="67" x2="150" y2="67" stroke="#e3e6ec" stroke-width="4" stroke-linecap="round"/>
+    </g>
+  </g>
+  <g><text class="gate" x="316" y="200">Ya entendí</text>
+    <line x1="282" y1="214" x2="340" y2="214" stroke="#14171b" stroke-width="1.5"/>
+    <path d="M340 209 L350 214 L340 219 Z" fill="#14171b"/></g>
+  <g><text class="gate" x="640" y="200">al día siguiente</text>
+    <line x1="606" y1="214" x2="664" y2="214" stroke="#14171b" stroke-width="1.5"/>
+    <path d="M664 209 L674 214 L664 219 Z" fill="#14171b"/></g>
+  <g><text class="gate" x="964" y="200">sólo entonces</text>
+    <line x1="930" y1="214" x2="988" y2="214" stroke="#14171b" stroke-width="1.5"/>
+    <path d="M988 209 L998 214 L988 219 Z" fill="#14171b"/></g>
+  <g transform="translate(44,334)">
+    <rect width="1192" height="86" rx="12" fill="#ffffff" stroke="#cdd3db" stroke-width="1.5" stroke-dasharray="7 6"/>
+    <text class="ink" x="24" y="32" font-size="14" font-weight="600">Mientras el paso 1 no ocurra, el bloque entero está cerrado</text>
+    <text class="muted" x="24" y="55" font-size="12.5">Sus tarjetas y sus reactivos no entran a la sesión del día, ni a la práctica por tema, ni al simulacro.</text>
+    <text class="muted" x="24" y="74" font-size="12.5">Cada paquete de ampliación de un tema es otro bloque, con su propia lección y su propio candado.</text>
+  </g>
+</svg>
