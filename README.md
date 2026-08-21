@@ -29,13 +29,18 @@ a la sesión del día, ni a la práctica por tema, ni al simulacro. La primera v
 tarjeta aparece se muestra **con la respuesta a la vista** y un solo botón; recién al día
 siguiente se te pide recordarla.
 
-| Primero se explica | Después —y sólo después— se pregunta |
-| --- | --- |
-| ![Paso 16 de 32 de la sesión: la app presenta un tema nuevo de Lengua y comunicación con su nota y el botón "Ya entendí, a practicar"](docs/media/leccion.png) | ![Paso 22 de 32: reactivo de relación de elementos de Matemáticas, con calculadora disponible, respuesta correcta y explicación inmediata](docs/media/reactivo.png) |
+**Paso 16 de 32 — primero se explica.** El tema nuevo llega con su nota y un solo botón.
 
-Dos pasos consecutivos de la misma sesión. El material de estudio va en serif y la
-interfaz en sans: se distingue de un vistazo qué está diciendo la app y qué es contenido
-del temario.
+![Paso 16 de 32 de la sesión: la app presenta un tema nuevo de Lengua y comunicación con su nota y el botón "Ya entendí, a practicar"](docs/media/leccion.png)
+
+**Paso 22 de 32 — después se pregunta.** Un reactivo de relación de elementos, con el
+formato que marca la guía, calculadora cuando el reactivo la necesita y explicación al
+momento.
+
+![Paso 22 de 32: reactivo de relación de elementos de Matemáticas, con calculadora disponible, respuesta correcta y explicación inmediata](docs/media/reactivo.png)
+
+Dos pasos de la misma sesión. El material de estudio va en serif y la interfaz en sans:
+se distingue de un vistazo qué está diciendo la app y qué es contenido del temario.
 
 `npm run test:motor` falla si un bloque cerrado suelta una pregunta, si una tarjeta
 aparece antes que la lección de su bloque o si aprender y repasar se mezclan.
@@ -46,7 +51,7 @@ la lección de su paquete explican, con el nombre del concepto en el error.
 
 ## Qué contiene
 
-|  |  |
+| Qué | Cuánto |
 | --- | --- |
 | Áreas del examen | 7, cada una se acredita por separado |
 | Temas | 177 — los 177 de la *Guía para el sustentante* (Ceneval, junio 2026) |

@@ -6,7 +6,7 @@ Qué hay dentro de `data/`, de dónde sale y qué comprueba el validador antes d
 
 ## Qué contiene el temario
 
-| | |
+| Qué | Cuánto |
 | --- | --- |
 | Temas | 177 (los 177 de la guía oficial) |
 | Tarjetas de repaso | 1 032 |
