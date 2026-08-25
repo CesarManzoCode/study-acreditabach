@@ -1160,6 +1160,16 @@ const MAX_APRENDER_POR_DIA = 12;
    se convertiría en una lectura interminable. */
 const MAX_LECCIONES_POR_DIA = 4;
 
+/* Piso de temas nuevos por sesión. El reparto por calendario divide lo que
+   falta entre los días que quedan, así que ir adelantado lo hace bajar hasta
+   un solo tema por día: el plan se frena justo cuando hay ritmo de sobra.
+   Mientras queden temas sin conocer, la sesión trae al menos estos dos. */
+const MIN_TEMAS_NUEVOS_POR_DIA = 2;
+
+/* Tope de temas nuevos por sesión, para que un atraso grande no convierta un
+   día en una maratón de notas. */
+const MAX_TEMAS_NUEVOS_POR_DIA = 8;
+
 export function planPhase(today) {
   if (today < STUDY_START) return "before";
   if (today > LAST_STUDY_DAY) return "after";
@@ -1181,8 +1191,12 @@ export function computeTodayPlan() {
     quota = Math.min(3, notIntroduced.length); // por si va atrasado, para no dejar temas fuera
   } else {
     const daysLeft = Math.max(1, daysBetween(today, LEARNING_END) + 1);
-    quota = Math.min(8, Math.max(1, Math.ceil(notIntroduced.length / daysLeft)));
-    if (notIntroduced.length === 0) quota = 0;
+    const porCalendario = Math.ceil(notIntroduced.length / daysLeft);
+    quota = Math.min(
+      MAX_TEMAS_NUEVOS_POR_DIA,
+      Math.max(MIN_TEMAS_NUEVOS_POR_DIA, porCalendario),
+      notIntroduced.length
+    );
   }
   /* Qué temas nuevos entran hoy. El orden base entrelaza las siete áreas de
      forma pareja, pero el examen se aprueba área por área: si una va por

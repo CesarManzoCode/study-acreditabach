@@ -101,7 +101,9 @@ preguntan de lo que ya estudiaste.
 3. **El área en riesgo manda.** El examen se acredita área por área, así que la práctica
    del día se pondera por área: la que va peor recibe más turnos.
 
-Si un día no estudias, lo pendiente se reparte solo entre los días que quedan.
+Si un día no estudias, lo pendiente se reparte solo entre los días que quedan. Si vas
+adelantado, el reparto no te frena: la sesión trae entre 2 y 8 temas nuevos mientras
+queden temas por conocer.
 
 ![Vista del calendario y las siete áreas: aviso de que vas por detrás del calendario, regleta de agosto a noviembre y una tarjeta por área con los temas vistos](docs/media/areas-y-calendario.png)
 

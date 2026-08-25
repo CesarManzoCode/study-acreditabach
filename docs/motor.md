@@ -64,7 +64,9 @@ Lo que impide que vuelva a pasar está en [las validaciones](contenido.md#valida
    y, si el tema tiene generador, cambian los números en cada intento. Se priorizan los
    temas donde menos aciertas.
 
-Si un día no estudias, lo pendiente se reparte solo entre los días restantes.
+Si un día no estudias, lo pendiente se reparte solo entre los días restantes. Y si vas
+adelantado, el reparto no te frena: la sesión trae **entre 2 y 8 temas nuevos** mientras
+queden temas por conocer, aunque el calendario pediría menos.
 
 ### El área en riesgo
 

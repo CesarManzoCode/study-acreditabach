@@ -589,5 +589,45 @@ console.log("\n18) Los reactivos generados no se adelantan a la nota");
   check(sinTema.length === 0, `y todos apuntan a un tema que existe (${sinTema.join(", ")})`);
 }
 
+/* ------------------------------------------------------------------
+   19) Ir adelantado no frena el plan
+
+   El reparto por calendario divide los temas que faltan entre los días que
+   quedan. Adelantarse hace que esa división caiga por debajo de 1 y la sesión
+   se quedaba con un solo tema nuevo: justo cuando hay ritmo de sobra, el plan
+   se ponía a la mitad de velocidad. Mientras queden temas por conocer, la
+   sesión trae al menos dos.
+   ------------------------------------------------------------------ */
+console.log("\n19) Ir adelantado no frena el plan");
+{
+  const todos = E.getAllTopics().map((t) => t.id);
+
+  const temasNuevosCon = (porConocer) => {
+    E.resetProgress();
+    todos.slice(0, todos.length - porConocer).forEach((id) => E.introduceTopic(id));
+    return E.computeTodayPlan().newTopics.length;
+  };
+
+  /* Muy adelantado: quedan 3 temas y más de 3 días, así que el calendario
+     pediría 1. */
+  const conTres = temasNuevosCon(3);
+  const conDos = temasNuevosCon(2);
+  check(conTres === 2, `con 3 temas por conocer la sesión trae 2 (trajo ${conTres})`);
+  check(conDos === 2, `con 2 por conocer trae los 2 (trajo ${conDos})`);
+
+  /* El piso nunca inventa temas: si solo queda uno, la sesión trae uno. */
+  const conUno = temasNuevosCon(1);
+  const conCero = temasNuevosCon(0);
+  check(conUno === 1, `con 1 por conocer trae 1 (trajo ${conUno})`);
+  check(conCero === 0, `con el temario conocido no trae ninguno (trajo ${conCero})`);
+
+  /* Y el tope sigue puesto: un atraso grande no convierte el día en maratón. */
+  const atrasado = temasNuevosCon(todos.length);
+  check(atrasado <= 8, `arrancando de cero no pasa de 8 temas nuevos (trajo ${atrasado})`);
+  check(atrasado >= 2, `y desde luego no baja del piso (trajo ${atrasado})`);
+
+  E.resetProgress();
+}
+
 console.log(fallos === 0 ? "\nTODO OK" : `\nFALLAS: ${fallos}`);
 process.exit(fallos === 0 ? 0 : 1);
