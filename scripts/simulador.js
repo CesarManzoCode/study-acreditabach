@@ -1,7 +1,8 @@
 // Simulador de un sustentante: sigue el plan del día con el motor real, sobre un
 // reloj falso, y responde con una memoria que se olvida como la de una persona.
 // Sirve para las pruebas de ausencia, atraso masivo y drenaje del backlog.
-import { E } from "./harness.js";
+import { E, fijarDia, diaSiguiente } from "./harness.js";
+export { fijarDia, diaSiguiente };
 
 /** PRNG determinista, para que una simulación se repita igual. */
 export function rngSim(seed) {
@@ -13,15 +14,6 @@ export function rngSim(seed) {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-}
-
-export function fijarDia(iso) {
-  const [y, m, d] = iso.split("-").map(Number);
-  E.setClock(() => new Date(y, m - 1, d, 10, 0, 0));
-}
-
-export function diaSiguiente(iso, n = 1) {
-  return E.toISO(E.addDays(E.fromISO(iso), n));
 }
 
 /** Probabilidad de acordarse de una tarjeta: cae con el retraso respecto a su intervalo. */
@@ -67,5 +59,5 @@ export function estudiarHoy(rng, { extra = false, abandonarEn = Infinity, precis
 
 export function vencidasHoy() {
   const hoy = E.toISO(E.todayDate());
-  return Object.keys(E.STATE.cards).filter((id) => E.STATE.cards[id].due <= hoy && E.flashcardOf(id) && E.isIntroduced(id.split("::")[0])).length;
+  return Object.keys(E.STATE.cards).filter((id) => E.STATE.cards[id].due <= hoy && E.flashcardOf(id) && E.isLearned(id) && E.isIntroduced(id.split("::")[0])).length;
 }

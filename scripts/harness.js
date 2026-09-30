@@ -57,3 +57,16 @@ export function pruebas() {
     }
   };
 }
+
+/* ---------------- Reloj falso ---------------- */
+
+/** Fija "hoy" en una fecha ISO (a media mañana, lejos de cualquier cambio de día). */
+export function fijarDia(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  E.setClock(() => new Date(y, m - 1, d, 10, 0, 0));
+}
+
+/** La fecha ISO `n` días después de otra. */
+export function diaSiguiente(iso, n = 1) {
+  return E.toISO(E.addDays(E.fromISO(iso), n));
+}

@@ -7,9 +7,12 @@
 // y no se vuelven propiedades de window— copiándolos a globalThis.
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { E, ROOT, pruebas } from "./harness.js";
+import { E, ROOT, pruebas, fijarDia } from "./harness.js";
 
 const { check, terminar } = pruebas();
+
+// Un día fijo para que nada dependa de cuándo se corra la prueba.
+fijarDia("2026-09-30");
 
 /* Las pruebas de bloques recorren también los de ampliación, así que corren en
    MODO COMPLETO. El modo esencial —el de fábrica— tiene su propio grupo al
@@ -274,6 +277,8 @@ console.log("\n13) El modo esencial estudia solo lo que la guía evalúa");
    ------------------------------------------------------------------ */
 console.log("\n14) El plan prioriza el área que va por debajo de la línea");
 {
+  /* El progreso se arma "ayer": lo que se hace hoy se descuenta del plan de hoy. */
+  fijarDia("2026-09-29");
   const areas = E.areaNumbers();
   areas.forEach((n) => E.topicsOfArea(n).forEach((t) => E.introduceTopic(t.id)));
 
@@ -284,6 +289,7 @@ console.log("\n14) El plan prioriza el área que va por debajo de la línea");
     for (let i = 0; i < 10; i++) E.recordQuizAnswer(t.id, i < aciertos);
   });
 
+  fijarDia("2026-09-30");
   const r = E.areaReadiness();
   check(r[0].area === FLOJA, `el área más floja encabeza el riesgo (encabezó ${r[0].nombre})`);
   check(r[0].nivel === "alto", `y queda marcada como riesgo alto (quedó "${r[0].nivel}")`);
@@ -563,8 +569,10 @@ console.log("\n19) Ir adelantado no frena el plan");
   const todos = E.getAllTopics().map((t) => t.id);
 
   const temasNuevosCon = (porConocer) => {
+    fijarDia("2026-09-29");
     E.resetProgress();
     todos.slice(0, todos.length - porConocer).forEach((id) => E.introduceTopic(id));
+    fijarDia("2026-09-30");
     return E.computeTodayPlan().newTopics.length;
   };
 
