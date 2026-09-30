@@ -18,7 +18,10 @@
        que cambia"). Sin eso, la sesión pinta pasos en blanco.
      · Las llaves nuevas (contentRevision, contentUpdate, lastQuiz, y la `h`
        de cada tarjeta) son aditivas; una versión vieja del sitio las
-       ignoraría sin romperse.
+       ignoraría sin romperse. Lo mismo vale para las de este motor: `lapses`
+       en la tarjeta; `w`, `c`, `d` y `r` en `quizStats` (aciertos recientes y
+       últimas preguntas); `checks` y `mock` en la bitácora del día. Un progreso
+       que no las trae se lee igual y las va creando al usarse.
      · Con cuentas creadas, cada una guarda en `acreditabach_v1__<cuenta>`
        y la llave histórica se queda intacta como respaldo.
    ============================================================ */
