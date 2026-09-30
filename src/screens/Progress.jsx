@@ -362,6 +362,7 @@ function Forecast({ data }) {
       <p className="faint" style={{ marginTop: 12 }}>
         {totalUpcoming} tarjetas repartidas en los próximos 14 días. El algoritmo separa cada vez más los repasos
         de lo que ya dominas.
+        {data.pendiente > 0 && ` Otras ${data.pendiente} atrasadas quedan más allá de esta ventana.`}
       </p>
     </>
   );

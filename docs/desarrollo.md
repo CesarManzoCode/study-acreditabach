@@ -7,7 +7,7 @@
 | Carpeta / archivo | Qué es |
 | --- | --- |
 | `src/` | Código de la app (React 19 + JSX). Es lo único que se edita a mano. |
-| `src/lib/engine.js` | Motor: repetición espaciada (SM-2), plan diario, dominio, mezcla de progresos. |
+| `src/lib/engine.js` | Motor: repetición espaciada (SM-2), plan diario con presupuesto de tiempo, dominio, mezcla de progresos. |
 | `src/lib/generators/` | Generadores de problemas de matemáticas y ciencias. |
 | `src/lib/calc.js` · `src/ui/Calculator.jsx` | Calculadora científica integrada (motor de evaluación + panel). |
 | `src/lib/calcNeed.js` | Decide en qué reactivos aparece la calculadora. |
@@ -18,7 +18,7 @@
 | `data/` | El temario base (177 temas) y el contenido de la guía oficial. |
 | `data/extra/` · `data/extra2/` | Paquetes de tarjetas y reactivos adicionales. Cada uno forma un **bloque** dentro del tema, con su `leccion` cuando agrega conceptos que la nota no explica. |
 | `data/formato/` | Reactivos de relación de elementos y de ordenamiento, para los temas donde la guía marca esos formatos. |
-| `scripts/` | El validador del temario y las pruebas de los generadores y del motor. |
+| `scripts/` | El validador del temario y las pruebas de los generadores y del motor. `harness.js` carga el motor en Node con un reloj falso y `simulador.js` simula a un sustentante que olvida. |
 | `server/cloudflare-worker.js` | El servidor de cuentas, listo para pegar en Cloudflare Workers. |
 | `fonts/` | Inter (interfaz y cifras) y Literata (titulares y material de estudio), subconjunto latino, servidas desde el repo. |
 | `assets/` · `index.html` | **Generados por el build.** No se editan a mano. |
@@ -33,7 +33,7 @@ npm run dev               # servidor local con recarga en http://localhost:5173
 npm run build             # compila a assets/ y regenera index.html
 npm run validate          # forma de data/*.js y sus paquetes, y que no haya tarjetas repetidas dentro de un tema
 npm run test:generadores  # genera miles de reactivos y verifica que todos sean válidos
-npm run test:motor        # comprueba que nada se pregunte antes de haberse enseñado
+npm run test:motor        # nada se pregunta antes de enseñarse, y el plan a lo largo de los días: ausencias, atraso, abandono, consistencia plan/sesión
 npm run check             # validate + generadores + motor + build
 ```
 

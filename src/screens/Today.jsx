@@ -29,19 +29,17 @@ import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
-export default function Today({ plan, stats, onStart }) {
+export default function Today({ plan, stats, onStart, onMore }) {
   const hoy = plan.today;
   const showWelcome = !STATE.dismissedWelcome && stats.introducedCount === 0;
 
   const nextDue = useMemo(() => upcomingLoad(8).slice(1).find((d) => d.count > 0), [stats, plan]);
   const weak = useMemo(() => weakestTopics(4).filter((w) => w.mastery < 85), [stats]);
 
-  /* Los cinco tipos de trabajo del motor se agrupan en las tres cosas que de
-     verdad se hacen en una sesión. El detalle de cada grupo sigue siendo el
-     dato real del plan, sin sumar ni inventar nada. */
-  const repasar = plan.reviewCards.length;
-  const aprender = plan.blockLessons.length + plan.learnCards.length + plan.newTopics.length;
-  const practicar = plan.quizQuestions.length;
+  /* Los pasos del plan se agrupan en las tres cosas que de verdad se hacen en
+     una sesión. Cada paso cae en exactamente un grupo, así que las tres cifras
+     suman los «N pasos» de arriba. */
+  const { repasar, aprender, practicar } = plan.resumen;
 
   const grupos = [
     {
@@ -50,7 +48,9 @@ export default function Today({ plan, stats, onStart }) {
       icon: "refresh",
       total: repasar,
       unidad: repasar === 1 ? "tarjeta" : "tarjetas",
-      resumen: "Tarjetas de días anteriores que hoy están por olvidarse.",
+      resumen: plan.atrasadas > 0
+        ? `Las más urgentes primero. Otras ${plan.atrasadas} atrasadas se irán poniendo al día en los próximos días.`
+        : "Tarjetas de días anteriores que hoy están por olvidarse.",
       vacio: "Ninguna tarjeta vence hoy.",
       detalle: []
     },
@@ -59,8 +59,8 @@ export default function Today({ plan, stats, onStart }) {
       titulo: "Aprender",
       icon: "cap",
       total: aprender,
-      unidad: aprender === 1 ? "cosa nueva" : "cosas nuevas",
-      resumen: "Material nuevo, siempre explicado antes de preguntarte.",
+      unidad: aprender === 1 ? "paso" : "pasos",
+      resumen: "Material nuevo, siempre explicado antes de preguntarte y comprobado poco después.",
       vacio: "Hoy no entra material nuevo.",
       detalle: [
         plan.newTopics.length && {
@@ -72,7 +72,7 @@ export default function Today({ plan, stats, onStart }) {
           temas: plan.blockLessons.map((b) => ({ id: b.topicId + b.bloque, nombre: b.topic.tema, area: b.topic.area }))
         },
         plan.learnCards.length && {
-          etiqueta: `${plan.learnCards.length} ${plan.learnCards.length === 1 ? "tarjeta se te enseña" : "tarjetas se te enseñan"}`,
+          etiqueta: `${plan.learnCards.length} ${plan.learnCards.length === 1 ? "tarjeta más se te enseña" : "tarjetas más se te enseñan"}`,
           nota: plan.learnPending > plan.learnCards.length
             ? `quedan ${plan.learnPending - plan.learnCards.length} para los próximos días`
             : null
@@ -169,12 +169,17 @@ export default function Today({ plan, stats, onStart }) {
           ) : (
             <div className="hoja-libre">
               <p>
-                {nextDue
-                  ? <>Tu próximo repaso llega el <strong>{fmtDateShort(nextDue.date)}</strong>. Mientras tanto puedes adelantar temas o hacer un simulacro.</>
-                  : "No hay nada programado. Puedes adelantar temas del temario o medirte con un simulacro."}
+                {plan.atrasadas > 0
+                  ? <>Por hoy ya cumpliste. Quedan <strong>{plan.atrasadas}</strong> {plan.atrasadas === 1 ? "tarjeta atrasada" : "tarjetas atrasadas"} que se irán poniendo al día en los próximos días, las más urgentes primero.</>
+                  : nextDue
+                    ? <>Tu próximo repaso llega el <strong>{fmtDateShort(nextDue.date)}</strong>. Mientras tanto puedes adelantar temas o hacer un simulacro.</>
+                    : "No hay nada programado. Puedes adelantar temas del temario o medirte con un simulacro."}
               </p>
               <div className="row-gap">
-                <Button variant="primary" size="lg" icon="repasar" onClick={() => navigate("repasar")}>Abrir el temario</Button>
+                {plan.atrasadas > 0 && (
+                  <Button variant="primary" size="lg" icon="refresh" onClick={onMore}>Seguir con el atrasado</Button>
+                )}
+                <Button variant={plan.atrasadas > 0 ? "solid" : "primary"} size="lg" icon="repasar" onClick={() => navigate("repasar")}>Abrir el temario</Button>
                 <Button variant="solid" size="lg" icon="simulacro" onClick={() => navigate("simulacro")}>Hacer un simulacro</Button>
               </div>
             </div>
@@ -436,7 +441,7 @@ function leerRitmo(plan, stats, esperado) {
     return {
       tono: "atras", icon: "alert",
       titulo: "Vas algo atrasado",
-      detalle: `Quedan temas por ver y la fase de aprendizaje ya se acabó: las sesiones vienen más cargadas para recuperar el ritmo.`
+      detalle: `Quedan ${plan.notIntroducedCount} temas por ver y el calendario ya no da margen: las sesiones traen más temas nuevos para recuperar el ritmo, sin dejar de repasar lo que ya sabes.`
     };
   }
   if (plan.phase === "review") {
@@ -675,7 +680,7 @@ function Welcome() {
         ))}
       </ol>
       <p className="bloque-nota">
-        El calendario se ajusta solo: si un día no estudias, lo pendiente se reparte entre los días que quedan.
+        El calendario se ajusta solo: si un día no estudias, los temas por ver se reparten entre los días que quedan y las tarjetas atrasadas vuelven poco a poco, las más urgentes primero.
       </p>
       <Button variant="solid" block icon="check" onClick={() => { STATE.dismissedWelcome = true; saveState(); }}>
         Entendido, empecemos

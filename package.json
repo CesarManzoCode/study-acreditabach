@@ -9,7 +9,7 @@
     "dev": "node build.mjs --watch --serve",
     "validate": "node scripts/validate-data.js",
     "test:generadores": "node scripts/test-generators.js",
-    "test:motor": "node scripts/test-engine.js",
+    "test:motor": "node scripts/test-engine.js && node scripts/test-sesion.js",
     "check": "npm run validate && npm run test:generadores && npm run test:motor && npm run build"
   },
   "dependencies": {

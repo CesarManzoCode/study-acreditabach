@@ -8,8 +8,8 @@ import { needsCalculator } from "../lib/calcNeed.js";
 import { useKeys, useScrollLock, navigate } from "../lib/hooks.js";
 import { areaStyle, areaVisual } from "../lib/areas.js";
 import {
-  topicsById, gradeCard, learnCard, nextIntervalPreview, introduceTopic, recordQuizAnswer,
-  logSessionProgress, computeTodayPlan, areaNumbers, markLessonSeen, pasoConContenido
+  topicsById, gradeCard, learnCard, recallCheck, nextIntervalPreview, introduceTopic, recordQuizAnswer,
+  computeTodayPlan, areaNumbers, markLessonSeen, pasoConContenido, reinsertarRepaso
 } from "../lib/engine.js";
 
 /* El examen real presenta tres opciones: A, B y C (guía del sustentante, p. 25). */
@@ -98,10 +98,14 @@ function RunnerShell({ title, step, total, onExit, children, footer, exitConfirm
    Sesión guiada (repaso + temas nuevos + práctica)
    ============================================================ */
 
-export function SessionRunner({ session, onExit, onAgain }) {
+/* Todo lo que se hace aquí se guarda AL INSTANTE en el motor (la tarjeta, la
+   bitácora del día, la racha). El resumen del final solo muestra cifras: cerrar
+   la sesión a la mitad no pierde nada de lo que ya se hizo. */
+export function SessionRunner({ session, onExit, onAgain, onMore }) {
   const [idx, setIdx] = useState(0);
+  const [steps, setSteps] = useState(session.steps);
   const [stats, setStats] = useState({ cardsReviewed: 0, cardsLearned: 0, lessons: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
-  const steps = session.steps;
+  const fallos = useRef({});
   const step = steps[Math.min(idx, steps.length - 1)];
 
   const advance = () => setIdx((i) => Math.min(i + 1, steps.length - 1));
@@ -120,6 +124,20 @@ export function SessionRunner({ session, onExit, onAgain }) {
     return next;
   });
 
+  /* «Otra vez» no manda la tarjeta a mañana y se olvida: se vuelve a preguntar
+     unos pasos después, para comprobar que ya se recuerda antes de cerrar la
+     sesión. La fecha del próximo repaso ya quedó fijada al calificar; esto solo
+     asegura que la tarjeta no se vaya de la sesión sin haberse recordado. */
+  const onGraded = (q) => {
+    if (!step.check) bump({ cardsReviewed: 1 });
+    if (q === 0) {
+      const n = fallos.current[step.cardId] || 0;
+      fallos.current[step.cardId] = n + 1;
+      setSteps((lista) => reinsertarRepaso(lista, idx, step, n));
+    }
+    advance();
+  };
+
   const isSummary = step.type === "summary";
   const vacio = !pasoConContenido(step);
 
@@ -135,10 +153,7 @@ export function SessionRunner({ session, onExit, onAgain }) {
       <div className="step-anim" key={idx}>
         {vacio && <SkippedStep onNext={advance} />}
         {!vacio && step.type === "review" && (
-          <ReviewStep
-            step={step}
-            onGraded={() => { bump({ cardsReviewed: 1 }); advance(); }}
-          />
+          <ReviewStep step={step} onGraded={onGraded} />
         )}
         {!vacio && step.type === "learn" && (
           <LearnStep
@@ -157,13 +172,15 @@ export function SessionRunner({ session, onExit, onAgain }) {
             topic={step.topic}
             question={step.question}
             onAnswered={(correct) => {
-              recordQuizAnswer(step.topic.id, correct);
+              recordQuizAnswer(step.topic.id, correct, step.question);
               bump({ quizAnswered: 1, quizCorrect: correct ? 1 : 0 });
             }}
             onNext={advance}
           />
         )}
-        {!vacio && isSummary && <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} />}
+        {!vacio && isSummary && (
+          <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} onMore={onMore} />
+        )}
       </div>
     </RunnerShell>
   );
@@ -270,7 +287,7 @@ function LearnStep({ step, onLearned }) {
         <div className="flash-back"><Inline>{fc.back}</Inline></div>
 
         <p className="flash-hint">
-          Solo léela. Mañana te toca recordarla
+          Solo léela. En un rato te la pregunto, y mañana otra vez
           <span className="kbd-only"> · <span className="kbd">espacio</span></span>
         </p>
       </div>
@@ -289,10 +306,17 @@ function ReviewStep({ step, onGraded }) {
   const topic = topicsById()[step.topicId];
   const fcIndex = Number(step.cardId.split("::fc")[1]);
   const fc = topic?.flashcards?.[fcIndex];
+  /* Una comprobación es una tarjeta que ya se enseñó hoy o que se falló hace
+     unos pasos: se pregunta de nuevo, pero su fecha ya está fijada. */
+  const comprobacion = !!step.check;
 
   useEffect(() => { setRevealed(false); }, [step.cardId]);
 
-  const grade = (q) => { gradeCard(step.cardId, q); onGraded(); };
+  const grade = (q) => {
+    if (comprobacion) recallCheck(step.cardId, q === 0 ? 0 : q === 1 ? 1 : 2);
+    else gradeCard(step.cardId, q);
+    onGraded(q);
+  };
 
   useKeys(
     revealed
@@ -310,6 +334,7 @@ function ReviewStep({ step, onGraded }) {
         <div className="flash-tag">
           <Badge tone="area"><Mark />{v.short}</Badge>
           {step.isNew && <Badge tone="success">nuevo</Badge>}
+          {comprobacion && <Badge tone="accent">{step.retry ? "una vez más" : "de hace un momento"}</Badge>}
         </div>
 
         <div className="flash-front"><Inline>{fc.front}</Inline></div>
@@ -323,7 +348,9 @@ function ReviewStep({ step, onGraded }) {
 
         {!revealed && (
           <p className="flash-hint">
-            Intenta responder de memoria antes de ver la respuesta
+            {comprobacion
+              ? "¿Te acuerdas? Responde de memoria antes de ver la respuesta"
+              : "Intenta responder de memoria antes de ver la respuesta"}
             <span className="kbd-only"> · <span className="kbd">espacio</span></span>
           </p>
         )}
@@ -338,15 +365,15 @@ function ReviewStep({ step, onGraded }) {
           <div className="grade-row">
             <button className="grade grade-0" onClick={() => grade(0)}>
               Otra vez
-              <small>{nextIntervalPreview(step.cardId, 0)}</small>
+              <small>{comprobacion ? "te la vuelvo a preguntar" : nextIntervalPreview(step.cardId, 0)}</small>
             </button>
             <button className="grade grade-1" onClick={() => grade(1)}>
               Costó
-              <small>{nextIntervalPreview(step.cardId, 1)}</small>
+              {!comprobacion && <small>{nextIntervalPreview(step.cardId, 1)}</small>}
             </button>
             <button className="grade grade-2" onClick={() => grade(2)}>
               Bien
-              <small>{nextIntervalPreview(step.cardId, 2)}</small>
+              {!comprobacion && <small>{nextIntervalPreview(step.cardId, 2)}</small>}
             </button>
           </div>
           <p className="faint kbd-only" style={{ textAlign: "center", margin: 0 }}>
@@ -362,8 +389,10 @@ function ReviewStep({ step, onGraded }) {
 
 function IntroStep({ topic, onNext }) {
   const v = areaVisual(topic.area);
-  useEffect(() => { introduceTopic(topic.id); }, [topic.id]);
-  useKeys({ Enter: onNext, " ": onNext }, [topic.id]);
+  /* El tema se da por conocido cuando se lee su nota, no cuando aparece en
+     pantalla: quien cierra sin leerla no lo pierde de vista. */
+  const listo = () => { introduceTopic(topic.id); onNext(); };
+  useKeys({ Enter: listo, " ": listo }, [topic.id]);
 
   return (
     <Stack>
@@ -382,7 +411,7 @@ function IntroStep({ topic, onNext }) {
           {topic.figura && <Figura spec={topic.figura} />}
         </div>
       </div>
-      <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={onNext}>
+      <Button variant="primary" size="lg" block iconRight="arrowRight" onClick={listo}>
         Ya entendí, a practicar
       </Button>
     </Stack>
@@ -490,14 +519,7 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
 
 /* --- Paso: resumen --- */
 
-function SummaryStep({ stats, kind, onExit, onAgain }) {
-  const loggedRef = useRef(false);
-  useEffect(() => {
-    if (loggedRef.current) return;
-    loggedRef.current = true;
-    if (stats.cardsReviewed || stats.cardsLearned || stats.lessons || stats.newTopics || stats.quizAnswered) logSessionProgress(stats);
-  }, [stats]);
-
+function SummaryStep({ stats, kind, onExit, onAgain, onMore }) {
   const plan = useMemo(() => computeTodayPlan(), []);
   const accuracy = stats.quizAnswered ? Math.round((stats.quizCorrect / stats.quizAnswered) * 100) : null;
   useKeys({ Enter: onExit }, []);
@@ -514,6 +536,12 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
             ? "Cada intento refuerza el recuerdo, aunque falles."
             : `Faltan ${Math.max(0, plan.daysToExam)} días para el examen. Nos vemos mañana.`}
         </p>
+        {kind !== "practice" && plan.atrasadas > 0 && (
+          <p className="faint">
+            Quedan {plan.atrasadas} {plan.atrasadas === 1 ? "tarjeta atrasada" : "tarjetas atrasadas"}: se irán
+            poniendo al día en los próximos días, las más urgentes primero.
+          </p>
+        )}
       </div>
 
       <Figures>
@@ -531,6 +559,11 @@ function SummaryStep({ stats, kind, onExit, onAgain }) {
         <div className="row-gap">
           <Button variant="primary" size="lg" icon="infinity" onClick={onAgain}>Otra ronda</Button>
           <Button variant="solid" size="lg" onClick={onExit}>Listo</Button>
+        </div>
+      ) : onMore && plan.atrasadas > 0 ? (
+        <div className="row-gap">
+          <Button variant="solid" size="lg" icon="refresh" onClick={onMore}>Seguir con el atrasado</Button>
+          <Button variant="primary" size="lg" onClick={onExit}>Listo</Button>
         </div>
       ) : (
         <Button variant="primary" size="lg" block onClick={onExit}>Listo</Button>
@@ -603,7 +636,7 @@ export function MockRunner({ mock, onExit }) {
   const answer = (i) => {
     const item = questions[idx];
     const isCorrect = i === item.question.correct;
-    recordQuizAnswer(item.topic.id, isCorrect);
+    recordQuizAnswer(item.topic.id, isCorrect, item.question, { simulacro: true });
     setAnswers((a) => [...a, { ...item, chosen: i, correct: isCorrect }]);
     setIdx((n) => n + 1);
   };

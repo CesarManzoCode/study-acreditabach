@@ -4,7 +4,7 @@ import { ToastProvider } from "./ui/kit.jsx";
 import { useEngine, useRoute, navigate, useAccounts, useCloud } from "./lib/hooks.js";
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
 import {
-  computeTodayPlan, overallStats, cardsForTopic, cardsOfBlock, buildDrill,
+  computeTodayPlan, overallStats, cardsForTopic, buildDrill,
   shuffleOptions, subscribe, isLearned, availableQuiz, blockOfCard, isLessonSeen,
   pasoConContenido, pendingLessons, quizOfBlock
 } from "./lib/engine.js";
@@ -47,8 +47,12 @@ function Shell() {
   const [runner, setRunner] = useState(null);
   const [theme, setTheme] = useState(getStoredTheme);
 
-  const plan = useMemo(() => computeTodayPlan(), [rev]);
-  const stats = useMemo(() => overallStats(), [rev]);
+  /* Con una sesión abierta cada respuesta guarda progreso y avisa al motor;
+     recalcular el plan (y las estadísticas) con cada una es trabajo que nadie
+     ve, porque la sesión ya tiene sus pasos. Se recalcula al abrirla y al salir. */
+  const enSesion = !!runner;
+  const plan = useMemo(() => computeTodayPlan(), [enSesion ? "sesion" : rev]);
+  const stats = useMemo(() => overallStats(), [enSesion ? "sesion" : rev]);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
 
@@ -71,57 +75,18 @@ function Shell() {
     setRunner({ ...info, seq: ++sesionSeq, steps: steps.concat({ type: "summary" }) });
   }, []);
 
-  /* Orden de la sesión: primero se repasa lo ya sabido, luego se ENSEÑA el
-     material nuevo (frente y reverso a la vista, sin calificar), después los
-     temas nuevos y al final la práctica. La regla que sostiene todo esto es que
-     nada se pregunta antes de haberse explicado.
+  /* La sesión del día es la lista de pasos que armó el motor: la misma que
+     contó la pantalla de Hoy, así que el «N pasos» que se prometió es el que se
+     recorre. El motor decide el orden —repaso por tandas entrelazado con lo
+     nuevo, comprobación de lo recién enseñado y práctica al final— y cuida la
+     regla de que nada se pregunta antes de haberse enseñado.
 
-     Cuando una tarjeta pertenece a un bloque de ampliación cuya lección todavía
-     no se ha leído, la lección se inserta JUSTO ANTES de esa tarjeta. Así el
-     material nuevo llega explicado y no como una pregunta suelta. */
-  const startStudy = useCallback(() => {
-    const steps = [];
-    const leccionDe = {};
-    plan.blockLessons.forEach((bl) => { leccionDe[bl.topicId + "::" + bl.bloque] = bl; });
-    const dadas = new Set();
-
-    const conLeccion = (cardId, empuja) => {
-      const bc = blockOfCard(cardId);
-      const key = bc ? bc.topic.id + "::" + bc.block.nombre : null;
-      const bl = key && !dadas.has(key) ? leccionDe[key] : null;
-      if (bl) {
-        dadas.add(key);
-        steps.push({ type: "lesson", topic: bl.topic, bloque: bl.bloque, leccion: bl.leccion });
-      }
-      empuja();
-    };
-
-    plan.reviewCards.forEach((rc) => conLeccion(rc.cardId, () =>
-      steps.push({ type: "review", cardId: rc.cardId, topicId: rc.topicId })));
-    plan.learnCards.forEach((lc) => conLeccion(lc.cardId, () =>
-      steps.push({ type: "learn", cardId: lc.cardId, topicId: lc.topicId })));
-    plan.newTopics.forEach((t) => {
-      steps.push({ type: "intro", topic: t });
-      // Solo el bloque base: es lo que acaba de explicar la nota. Las
-      // ampliaciones del tema llegan escalonadas en los días siguientes.
-      const base = t.blocks && t.blocks.length ? cardsOfBlock(t.id, t.blocks[0]) : cardsForTopic(t.id);
-      base.forEach((cid) => steps.push({ type: "learn", cardId: cid, topicId: t.id, isNew: true }));
-    });
-
-    /* Lecciones de bloques que no tienen tarjetas donde engancharse —los de
-       `formato` y `refuerzo` solo traen reactivos—. Van antes de la práctica
-       porque es justo su banco el que abren: si no se emitieran aquí, el plan
-       las contaría, la sesión no las mostraría y su lección jamás se marcaría
-       como leída. */
-    plan.blockLessons.forEach((bl) => {
-      const key = bl.topicId + "::" + bl.bloque;
-      if (dadas.has(key)) return;
-      dadas.add(key);
-      steps.push({ type: "lesson", topic: bl.topic, bloque: bl.bloque, leccion: bl.leccion });
-    });
-
-    plan.quizQuestions.forEach((qq) => steps.push({ type: "quiz", topic: qq.topic, question: qq.question }));
-    abrirSesion({ kind: "study", title: "Sesión de hoy", steps });
+     `extra` abre la ronda opcional de repaso atrasado que se ofrece cuando el
+     día ya se cumplió y todavía quedan tarjetas vencidas. */
+  const startStudy = useCallback((extra) => {
+    const esExtra = extra === true;
+    const p = esExtra ? computeTodayPlan({ extra: true }) : plan;
+    abrirSesion({ kind: "study", title: esExtra ? "Repaso atrasado" : "Sesión de hoy", steps: p.steps, extra: esExtra });
   }, [plan, abrirSesion]);
 
   /* Practicar un tema a mano. Los bloques que solo esperan su lección —los que
@@ -178,7 +143,7 @@ function Shell() {
       case "progreso": return <Progress plan={plan} stats={stats} />;
       case "info": return <Info />;
       case "cuenta": return <Account />;
-      default: return <Today plan={plan} stats={stats} onStart={startStudy} />;
+      default: return <Today plan={plan} stats={stats} onStart={() => startStudy(false)} onMore={() => startStudy(true)} />;
     }
   })();
 
@@ -206,6 +171,7 @@ function Shell() {
           session={runner}
           onExit={closeRunner}
           onAgain={runner.drillTopicId ? () => startTopicDrill({ id: runner.drillTopicId, tema: runner.title }) : null}
+          onMore={runner.kind === "study" ? () => startStudy(true) : null}
         />
       )}
     </div>
