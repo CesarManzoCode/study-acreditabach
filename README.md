@@ -96,9 +96,10 @@ preguntan de lo que ya estudiaste.
 1. **Repaso espaciado.** Cada tarjeta lleva su propio intervalo (SM-2, el algoritmo de
    Anki, adaptado a tres botones y corregido para el retraso, el adelanto y el examen).
    Lo que se falla se vuelve a preguntar en la misma sesión.
-2. **Un día cabe en un día.** El plan tiene un presupuesto de tiempo: los repasos
-   vencidos entran por orden de urgencia y lo que no cabe espera su turno. Tras una
-   semana sin estudiar el atraso se pone al día en unos días, no en una sola sesión de
+2. **Sesiones cortas, con más práctica que repaso.** El plan tiene un presupuesto de
+   30 minutos: unos 12 reactivos, pocas tarjetas de repaso y uno o dos temas nuevos. Los
+   repasos vencidos entran por orden de urgencia y lo que no cabe espera su turno. Tras
+   una semana sin estudiar el atraso se va poniendo al día, no en una sola sesión de
    tres horas. Lo que haces se guarda al instante: cerrar a la mitad no pierde nada.
 3. **Temas nuevos, entrelazados.** El plan reparte los 177 temas entre los días que
    quedan hasta el examen y mezcla áreas distintas en la misma sesión, en vez de bloques

@@ -728,7 +728,7 @@ export function learnCard(cardId) {
 function topeDeIntervalo(hoy) {
   const resto = daysBetween(hoy, LAST_STUDY_DAY);
   if (resto <= 1) return 1;
-  return Math.min(resto, Math.max(2, Math.floor(resto / 2)));
+  return Math.min(resto, Math.max(2, Math.floor(resto * 0.65)));
 }
 
 /** Variación determinista (±10 %) de los intervalos de 4 días o más. */
@@ -743,6 +743,12 @@ function conVariacion(interval, cardId, repeticiones) {
  * `gradeCard` (que guarda el resultado) y `nextIntervalPreview` (que solo lo
  * muestra en los botones), así que lo que dice el botón es lo que ocurre.
  */
+/* La práctica con reactivos también es recuperación, y la app pide mucha más
+   que repaso: las tarjetas pueden espaciarse más que en SM-2 puro. Medio
+   intervalo más desde la tercera repetición y cinco días (no tres) en la
+   segunda. */
+const EXPANSION = 1.5;
+
 export function programarRepaso(card, quality, hoy, cardId) {
   const reps0 = card.repetitions || 0;
   const iv0 = Math.max(1, card.interval || 1);
@@ -768,8 +774,8 @@ export function programarRepaso(card, quality, hoy, cardId) {
   } else {
     ef = ef0 + 0.1;
     if (repetitions === 1) interval = 1;
-    else if (repetitions === 2) interval = 3;
-    else interval = Math.round((iv0 + retraso / 2) * ef0);
+    else if (repetitions === 2) interval = 5;
+    else interval = Math.round((iv0 + retraso / 2) * ef0 * EXPANSION);
   }
   interval = Math.max(1, Math.min(conVariacion(interval, cardId, repetitions), topeDeIntervalo(hoy)));
   return { repetitions, interval, ef, lapses: lapses0, due: toISO(addDays(hoy, interval)), adelantado: false };
@@ -1355,12 +1361,12 @@ function saltDelDia(topicId) {
 
 /* Tope de tarjetas nuevas que se enseñan en un mismo día. Sin tope, un paquete
    de contenido recién agregado convertiría la sesión en una lectura larguísima. */
-const MAX_APRENDER_POR_DIA = 12;
+const MAX_APRENDER_POR_DIA = 6;
 
 /* Tope de lecciones de ampliación por día. Un progreso que viene de antes de
    que existieran tiene todas pendientes de golpe; sin tope, la primera sesión
    se convertiría en una lectura interminable. */
-const MAX_LECCIONES_POR_DIA = 4;
+const MAX_LECCIONES_POR_DIA = 2;
 
 /* Piso de temas nuevos por sesión. El reparto por calendario divide lo que
    falta entre los días que quedan, así que ir adelantado lo hace bajar hasta
@@ -1378,21 +1384,21 @@ export const COSTO = { repaso: 0.5, aprender: 0.8, comprobar: 0.35, leccion: 2, 
 
 /* Duración objetivo de un día y el máximo al que puede estirarse si el
    calendario lo pide. */
-export const MINUTOS_SESION = 45;
-export const MINUTOS_TOPE = 65;
+export const MINUTOS_SESION = 30;
+export const MINUTOS_TOPE = 45;
 
 /* Menos minutos que estos y el día se da por cumplido: no vale la pena abrir
    una sesión de tres tarjetas. */
 const MINUTOS_MINIMOS = 6;
 
-const MIN_REPASOS = 20;       // aunque haya mucho material nuevo, el recuerdo no se descuida
-const MAX_REPASOS = 90;       // ni un día bueno pasa de aquí
-const REPASOS_EXTRA = 40;     // una ronda opcional para seguir con el atraso
-const UMBRAL_ATRASO = 60;     // más vencidas que esto: modo recuperación
-const EXTRA_POR_ATRASO = 10;  // minutos extra que pide un atraso muy profundo
-const REACTIVOS_POR_DIA = 10; // práctica diaria con reactivos
-const REACTIVOS_FASE_FINAL = 20; // en el repaso final, la práctica con el formato del examen pesa el doble
-const REACTIVOS_MIN = 4;      // piso cuando el repaso se come el día
+export const MIN_REPASOS = 8;  // aunque haya mucho material nuevo, el recuerdo no se descuida
+export const MAX_REPASOS = 30;  // ni un día de recuperación pasa de aquí
+export const REPASOS_EXTRA = 20; // una ronda opcional para seguir con el atraso
+export const UMBRAL_ATRASO = 40; // más vencidas que esto: modo recuperación
+const EXTRA_POR_ATRASO = 5;   // minutos extra que pide un atraso muy profundo
+export const REACTIVOS_POR_DIA = 12; // práctica diaria con reactivos
+export const REACTIVOS_FASE_FINAL = 24; // en el repaso final, la práctica con el formato del examen pesa el doble
+const REACTIVOS_MIN = 6;      // piso cuando el repaso se come el día
 const CHECK_MAX_INTENTOS = 2; // cuántas veces se le vuelve a preguntar en la sesión una tarjeta fallada
 
 export function planPhase(today) {
@@ -1663,9 +1669,11 @@ export function computeTodayPlan(opts) {
      de ella manda el riesgo, para no desarmar el reparto ni dejar un área sin
      avanzar durante semanas. */
   let cupo = extra || diaCumplido ? 0 : Math.max(0, Math.min(cupoDelDia - nuevosHoy, notIntroduced.length));
-  /* En recuperación se avanza con un tema por día, salvo que el calendario
-     apriete: primero se pone al día lo que ya se sabía y se está olvidando. */
-  if (enRecuperacion && presion === 0) cupo = Math.min(cupo, 1);
+  /* En recuperación se quita el piso de temas nuevos y se avanza con un tema
+     menos de lo que pide el calendario (al menos uno): primero se pone al día lo
+     que ya se sabía y se está olvidando. Lo que así se retrasa el calendario lo
+     recupera solo, porque el cupo diario se recalcula con lo que falta. */
+  if (enRecuperacion) cupo = Math.min(cupo, Math.max(0, Math.max(1, porCalendario - 1) - nuevosHoy));
   const ventana = notIntroduced.slice(0, Math.max(cupo, cupo * 4));
   const priorizados = ventana
     .map((id, pos) => ({ id, pos, riesgo: riesgoPorArea[(topicsById()[id] || {}).area] || 0 }))
@@ -1688,7 +1696,7 @@ export function computeTodayPlan(opts) {
      temas ya conocidos, después de las lecciones que sí tienen tarjetas
      atrasadas. */
   const nuevosIds = new Set(priorizados.slice(0, cupo).map((t) => t.id));
-  const topesLecciones = extra || diaCumplido ? 0 : Math.max(0, (enRecuperacion ? 2 : MAX_LECCIONES_POR_DIA) - (hecho.lessons || 0));
+  const topesLecciones = extra || diaCumplido ? 0 : Math.max(0, (enRecuperacion ? 1 : MAX_LECCIONES_POR_DIA) - (hecho.lessons || 0));
   const leccionesPendientes = [];
   const vistaHoy = new Set();
   const apuntarLeccion = (topicId, topic, block, index) => {
@@ -1775,11 +1783,17 @@ export function computeTodayPlan(opts) {
      El día se reparte por partes, no por orden de llegada: si el repaso se
      llevara todo lo que tiene vencido, la práctica con reactivos —que es lo
      que el examen pide— y lo nuevo se quedarían sin tiempo justo cuando más
-     falta hacen. Normal: casi la mitad al repaso, un tercio a lo nuevo y el
-     resto a practicar. En recuperación el repaso pasa a ser lo principal.
+     falta hacen. Normal: mucha más práctica que repaso —unos 12 reactivos contra
+     10 o 12 tarjetas—, un tercio a lo nuevo y el repaso con lo que sobre. En
+     recuperación el repaso crece, sin desaparecer la práctica.
      Lo que una parte no usa lo aprovecha la siguiente. */
-  const parte = enRecuperacion ? { nuevo: 0.13, practica: 0.12 }
-    : phase === "review" ? { nuevo: 0.2, practica: 0.4 } : { nuevo: 0.33, practica: 0.22 };
+  /* El atraso pesa de forma gradual, no de golpe: con 20 vencidas apenas se
+     nota y con 80 el repaso ya es lo principal. Un umbral duro hacía que el
+     día alternara entre «casi solo práctica» y «casi solo repaso». */
+  const carga = extra ? 0 : Math.min(1, Math.max(0, (vencidasAprendidas - 20) / 60));
+  const mezcla = (a, b) => a + (b - a) * carga;
+  const parte = phase === "review" ? { nuevo: 0.15, practica: 0.55 }
+    : { nuevo: mezcla(0.3, 0.12), practica: mezcla(0.48, 0.3) };
   const hayPractica = reactivosRestantes > 0 && quizTopics.length > 0;
   const maxReactivos = Math.min(reactivosRestantes, quizTopics.length);
   const pisoPractica = hayPractica ? Math.min(REACTIVOS_MIN, maxReactivos) * COSTO.reactivo : 0;
@@ -1888,7 +1902,16 @@ export function computeTodayPlan(opts) {
     .sort((a, b) => b.prioridad - a.prioridad || (a.due < b.due ? -1 : a.due > b.due ? 1 : a.cardId < b.cardId ? -1 : 1));
 
   const presupuestoRepasos = extra ? Infinity : diaCumplido ? 0 : disponible - gastoNuevo - metaPractica;
-  const topeRepasos = extra ? REPASOS_EXTRA : diaCumplido ? 0 : MAX_REPASOS;
+  /* Fuera de recuperación el repaso nunca pesa más que la práctica: como
+     mucho tantas tarjetas como reactivos (y no menos de un piso pequeño). En
+     un atraso, en cambio, sí hace crecer el repaso, porque no se pone al día con práctica. */
+  /* Fuera de recuperación el repaso no pesa más que la práctica: si se reparten
+     los minutos que quedan entre r tarjetas y r reactivos, r = restante / 1.7
+     (0.5 + 1.2 min). Un atraso real sí puede pasar de ahí. */
+  const tarjetasEquilibradas = Math.max(MIN_REPASOS, Math.floor(Math.max(0, disponible - gastoNuevo) / (COSTO.repaso + COSTO.reactivo)));
+  const topeRepasos = extra ? REPASOS_EXTRA : diaCumplido ? 0
+    : Math.min(MAX_REPASOS, Math.round(mezcla(Math.max(MIN_REPASOS, maxReactivos), MAX_REPASOS)),
+        enRecuperacion ? MAX_REPASOS : tarjetasEquilibradas);
   const pisoCartas = extra || diaCumplido ? 0 : MIN_REPASOS;
   const seleccion = [];
   let gastoRepasos = 0;
@@ -2056,7 +2079,7 @@ export function activityCalendar(days = 84) {
 
 /* Repasos que caben en un día normal: lo que queda de la sesión tras lo nuevo y
    la práctica. Es solo para proyectar la carga; el plan real decide cada día. */
-const REPASOS_TIPICOS = 60;
+const REPASOS_TIPICOS = 25;
 
 /**
  * Cuántas tarjetas tocará repasar cada uno de los próximos `days` días.

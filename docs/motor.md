@@ -74,15 +74,20 @@ promete es el que se hace, y `estMinutes` es la suma de lo que cuestan esos mism
 
 **Un presupuesto de tiempo.** Cada paso cuesta minutos (`COSTO`: 0.5 un repaso, 0.8
 enseñar una tarjeta, 0.35 comprobarla, 2 una lección, 3 leer la nota de un tema, 1.2 un
-reactivo) y un día normal dura 45 minutos. Sube hasta 65 cuando el calendario aprieta
-(hay que meter más temas nuevos por día) y hasta 10 minutos más cuando el atraso es muy
+reactivo) y un día normal dura **30 minutos**. Sube hasta 45 cuando el calendario aprieta
+(hay que meter más temas nuevos por día) y hasta 5 minutos más cuando el atraso es muy
 profundo. Ya no entran todas las tarjetas por estar vencidas: tras una semana sin
 estudiar había 260 «para hoy» y tres horas de sesión.
 
-**El reparto no es por orden de llegada.** Normal: casi la mitad del tiempo al repaso, un
-tercio a lo nuevo y el resto a practicar; lo que una parte no usa lo aprovecha la
-siguiente. Hay pisos para que ninguna parte desaparezca (al menos 20 repasos y 4
-reactivos) y en el repaso final la práctica pasa a 20 reactivos diarios.
+**Más práctica que repaso.** El examen es de reactivos, así que la práctica es lo que
+más tiempo lleva: un día normal son unos 12 reactivos contra 10 tarjetas o menos, y
+fuera de recuperación nunca hay más tarjetas que reactivos. Lo nuevo se lleva casi un
+tercio del día (sin pasar de 2 lecciones de ampliación y 6 tarjetas sueltas), y el
+repaso, lo que sobra. Para que ese repaso corto alcance, las tarjetas se espacian más
+(ver [Repetición espaciada](#repetición-espaciada)): la práctica también es recuperación.
+El atraso pesa de forma gradual: con 20 tarjetas vencidas apenas se nota y con 80 el
+repaso ya es lo principal. Pisos: al menos 8 repasos y 6 reactivos; en el repaso final la
+práctica pasa a 24 reactivos diarios.
 
 **Qué se repasa primero cuando no cabe todo.** Cada tarjeta vencida tiene una prioridad
 que combina lo olvidable que está (la probabilidad de recordarla cae con el tiempo desde
@@ -98,12 +103,13 @@ importan:
   tema si hay alternativa, y se alternan las áreas.
 
 **Lo que no cabe no se pierde.** Sigue vencido, con su fecha, y entra en los días
-siguientes por orden de prioridad. Con más de 60 tarjetas vencidas el plan pasa a
+siguientes por orden de prioridad. Con más de 40 tarjetas vencidas el plan pasa a
 **modo recuperación**: entra a lo más un tema nuevo (salvo que el calendario apriete), casi
 todo el tiempo va a repasar y solo se conservan la práctica mínima y las tarjetas base de
-los temas ya leídos. En la simulación con una semana de ausencia, el atraso baja a cero en
-tres días. Si se quiere avanzar más, al terminar el día aparece **Seguir con el atrasado**:
-una ronda opcional de hasta 40 repasos, sin nada nuevo ni práctica.
+los temas ya leídos. En la simulación con una semana de ausencia, el atraso baja a la mitad en
+unos cinco días y se queda en un colchón acotado (unas decenas de tarjetas ligeramente
+atrasadas), en vez de crecer. Si se quiere avanzar más, al terminar el día aparece **Seguir con el atrasado**:
+una ronda opcional de hasta 20 repasos, sin nada nuevo ni práctica.
 
 **El día tiene cuenta.** Todo lo que haces se guarda al instante —la tarjeta, la
 bitácora, la racha—, no al llegar al resumen, y se descuenta del plan: terminar la sesión
@@ -133,6 +139,8 @@ SM-2 puro supone que cada repaso ocurre justo el día programado y que las tarje
 sueltas. Aquí se corrigen tres supuestos sin tocar lo que ya hay guardado (intervalo,
 repeticiones, facilidad):
 
+- **Menos repaso.** Desde la tercera repetición el intervalo crece un 50 % más que en
+  SM-2 puro y la segunda repetición es a cinco días, no a tres.
 - **Retraso.** Recordar una tarjeta con diez días de atraso demuestra más que hacerlo a
   tiempo: el retraso cuenta a medias en el nuevo intervalo. Repasar **antes** de la fecha
   no demuestra nada: ni sube repeticiones ni alarga el intervalo (antes, repetir tarjetas
