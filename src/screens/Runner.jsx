@@ -313,7 +313,7 @@ function ReviewStep({ step, onGraded }) {
   useEffect(() => { setRevealed(false); }, [step.cardId]);
 
   const grade = (q) => {
-    if (comprobacion) recallCheck(step.cardId);
+    if (comprobacion) recallCheck(step.cardId, q === 0 ? 0 : q === 1 ? 1 : 2);
     else gradeCard(step.cardId, q);
     onGraded(q);
   };

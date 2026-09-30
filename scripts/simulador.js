@@ -44,7 +44,7 @@ export function estudiarHoy(rng, { extra = false, abandonarEn = Infinity, precis
       const c = E.STATE.cards[p.cardId];
       const pr = pRecuerdo(c, hoy);
       const q = rng() < pr ? (rng() < 0.8 ? 2 : 1) : 0;
-      if (p.check) E.recallCheck(p.cardId, q); else { E.gradeCard(p.cardId, q); hecho.repasos++; }
+      if (p.check) E.recallCheck(p.cardId, q === 0 ? 0 : q); else { E.gradeCard(p.cardId, q); hecho.repasos++; }
       if (q === 0 && (reencolados[p.cardId] || 0) < 2) {
         reencolados[p.cardId] = (reencolados[p.cardId] || 0) + 1;
         cola.splice(Math.min(cola.length, i + 5), 0, { type: "review", cardId: p.cardId, topicId: p.topicId, check: true });

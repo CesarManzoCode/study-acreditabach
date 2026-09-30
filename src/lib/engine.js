@@ -791,12 +791,22 @@ export function gradeCard(cardId, quality) {
 /**
  * Comprobación dentro de la sesión: la tarjeta que acaba de enseñarse, o la que
  * se falló hace unos pasos, vuelve a preguntarse. No reprograma nada —la fecha
- * de la tarjeta ya quedó fijada— pero deja constancia del trabajo hecho.
+ * de la tarjeta ya quedó fijada— pero deja constancia del trabajo hecho y, si
+ * la tarjeta todavía no tenía ninguna repetición y esta vez se recordó, cuenta
+ * como su primera: recordar algo unos minutos después de haberlo visto (o
+ * fallado) es exactamente lo que hace el primer paso de la escalera, así que
+ * mañana no hace falta repetirlo otro día más antes de alargar el intervalo.
+ * `quality`: 0 no se recordó, 1 costó, 2 bien.
  */
-export function recallCheck(cardId) {
+export function recallCheck(cardId, quality) {
+  const card = peekCard(cardId);
+  if (card && quality > 0 && (card.repetitions || 0) === 0) {
+    card.repetitions = 1;
+    card.lastReview = toISO(todayDate());
+  }
   registrar({ checks: 1 });
   saveState();
-  return peekCard(cardId);
+  return card;
 }
 
 /** Texto humano del próximo repaso según la calificación, para mostrar en los botones. */
@@ -1376,7 +1386,9 @@ const MIN_REPASOS = 20;       // aunque haya mucho material nuevo, el recuerdo n
 const MAX_REPASOS = 90;       // ni un día bueno pasa de aquí
 const REPASOS_EXTRA = 40;     // una ronda opcional para seguir con el atraso
 const UMBRAL_ATRASO = 60;     // más vencidas que esto: modo recuperación
+const EXTRA_POR_ATRASO = 10;  // minutos extra que pide un atraso muy profundo
 const REACTIVOS_POR_DIA = 10; // práctica diaria con reactivos
+const REACTIVOS_FASE_FINAL = 20; // en el repaso final, la práctica con el formato del examen pesa el doble
 const REACTIVOS_MIN = 4;      // piso cuando el repaso se come el día
 const CHECK_MAX_INTENTOS = 2; // cuántas veces se le vuelve a preguntar en la sesión una tarjeta fallada
 
@@ -1393,11 +1405,11 @@ function hechoHoy() {
 }
 
 /** Minutos de estudio ya gastados hoy. La práctica de más y los simulacros no le quitan tiempo al repaso. */
-export function minutosHechosHoy() {
+export function minutosHechosHoy(reactivosTope = REACTIVOS_POR_DIA) {
   const h = hechoHoy();
   return (h.cardsReviewed || 0) * COSTO.repaso + (h.cardsLearned || 0) * COSTO.aprender +
     (h.checks || 0) * COSTO.comprobar + (h.lessons || 0) * COSTO.leccion + (h.newTopics || 0) * COSTO.nota +
-    Math.min(h.quizAnswered || 0, REACTIVOS_POR_DIA) * COSTO.reactivo;
+    Math.min(h.quizAnswered || 0, reactivosTope) * COSTO.reactivo;
 }
 
 /** Cuánto vale un paso, en minutos. */
@@ -1435,10 +1447,23 @@ function retencionAlRepasar(card, hoy) {
 }
 
 function prioridadDeRepaso(card, hoy, ctx) {
-  const urgencia = 1 - retencionAlRepasar(card, hoy);
+  const R = retencionAlRepasar(card, hoy);
+  /* Lo más urgente NO es lo más olvidado. Una tarjeta con la probabilidad de
+     recuerdo por los suelos ya casi hay que volver a aprenderla, y si con poco
+     tiempo se atiende siempre primero lo más perdido, se gasta el día en
+     fallar tarjetas que mañana vuelven a fallar mientras las recién falladas
+     —que sí se recuerdan y solo necesitan un repaso más— se pudren esperando.
+     El valor de repasar sube al caer la probabilidad, llega a su máximo hacia el
+     30 % y baja desde ahí. */
+  const urgencia = (1 - R) * Math.min(1, 0.15 + 3 * R);
+  /* Terminar lo empezado: una tarjeta que se aprendió o se falló hace pocos
+     días y aún no sale del primer escalón es la forma más barata de convertir
+     tiempo en recuerdo. */
+  const reciente = card.lastReview ? daysBetween(fromISO(card.lastReview), hoy) <= 4 : false;
+  const empezada = (card.repetitions || 0) <= 1 && (card.interval || 1) <= 1 && reciente ? 4 : 1;
   const ef = card.ef || 2.5;
   const fragilidad = 1 + 0.4 * Math.max(0, Math.min(1, (2.5 - ef) / 1.2)) + 0.12 * Math.min(3, card.lapses || 0);
-  return urgencia * fragilidad * (1 + 0.5 * (1 - ctx.aciertoTema)) * (1 + 0.6 * ctx.riesgoArea);
+  return urgencia * empezada * fragilidad * (1 + 0.5 * (1 - ctx.aciertoTema)) * (1 + 0.6 * ctx.riesgoArea);
 }
 
 /** Acierto reciente de un tema, suavizado con una respuesta imaginaria del 60 % para no fiarse de dos intentos. */
@@ -1450,7 +1475,11 @@ function aciertoSuavizado(topicId, previo) {
 /* Reordena una lista respetando el orden de prioridad lo más posible, pero sin
    dejar juntos dos elementos con la misma clave. Es el entrelazado
    (interleaving) dentro de la sesión: tarjetas del mismo tema se llaman entre
-   sí, y ver cuatro de la misma materia seguidas es estudiar en bloque. */
+   sí, y ver cuatro de la misma materia seguidas es estudiar en bloque.
+
+   `claves` va de la más importante a la menos: primero se busca el siguiente
+   elemento que difiera del anterior en TODAS; si no hay, en las primeras, y así
+   hasta la primera. Si ni eso, se sigue el orden de prioridad. */
 function entrelazar(items, claves) {
   const resto = items.slice();
   const out = [];
@@ -1458,9 +1487,9 @@ function entrelazar(items, claves) {
     const prev = out[out.length - 1];
     let i = -1;
     if (prev) {
-      for (const clave of claves) {
-        i = resto.findIndex((x) => clave(x) !== clave(prev));
-        if (i >= 0) break;
+      for (let k = claves.length; k >= 1 && i < 0; k--) {
+        const cs = claves.slice(0, k);
+        i = resto.findIndex((x) => cs.every((clave) => clave(x) !== clave(prev)));
       }
     }
     out.push(resto.splice(i < 0 ? 0 : i, 1)[0]);
@@ -1547,6 +1576,30 @@ export function computeTodayPlan(opts) {
   const nuevosHoy = hecho.newTopics || 0;
   const notIntroduced = order.filter((id) => !isIntroduced(id));
 
+  /* ---- Tarjetas vencidas ---- */
+  const todayISO = toISO(rawToday);
+  const vencidas = [];
+  Object.keys(STATE.cards).forEach((cardId) => {
+    const topicId = cardId.split("::")[0];
+    if (!isIntroduced(topicId)) return;
+    /* Una tarjeta cuyo contenido ya no existe no se puede enseñar ni repasar:
+       si entrara al plan, la sesión tendría un paso en blanco. La
+       reconciliación del arranque las quita, esto es la red por si acaso. */
+    if (!flashcardOf(cardId)) return;
+    /* Y una tarjeta de un bloque que hoy no está en el plan tampoco sale. El
+       modo esencial promete que las tarjetas de ampliación ya programadas
+       "dejan de proponerse mientras el modo esté activo" —guardadas, con su
+       intervalo intacto, pero fuera de la sesión—. */
+    const bloque = blockOfCard(cardId);
+    if (bloque && !bloqueEnPlan(bloque.block)) return;
+    const card = STATE.cards[cardId];
+    if (card.due > todayISO) return;
+    vencidas.push({ cardId, topicId, due: card.due });
+  });
+  vencidas.sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.cardId < b.cardId ? -1 : 1));
+
+  const vencidasAprendidas = vencidas.filter((e) => isLearned(e.cardId)).length;
+
   /* ---- Cuántos temas nuevos toca el día (por calendario) ----
      Se calcula con los temas que había por conocer al AMANECER: los que ya se
      conocieron hoy cuentan, si no el cupo del día se recalcularía a la baja
@@ -1570,8 +1623,16 @@ export function computeTodayPlan(opts) {
   /* Cuánto aprieta el calendario: con más de tres temas al día ya se pide más
      tiempo, hasta el tope cuando hay que meter ocho. */
   const presion = cupoDelDia > 3 ? Math.min(1, (cupoDelDia - 3) / (MAX_TEMAS_NUEVOS_POR_DIA - 3)) : 0;
-  const minutosDelDia = MINUTOS_SESION + presion * (MINUTOS_TOPE - MINUTOS_SESION);
-  const disponible = extra ? Infinity : minutosDelDia - minutosHechosHoy();
+  /* Un atraso profundo pide un poco más de tiempo: con 200 tarjetas de sobra,
+     45 minutos al día tardarían semanas en ponerlas al día. Se suma hasta un
+     cuarto de hora, y solo mientras el atraso siga siendo profundo. */
+  const atrasoProfundo = extra ? 0 : Math.min(1, Math.max(0, (vencidasAprendidas - UMBRAL_ATRASO) / (3 * UMBRAL_ATRASO)));
+  const minutosDelDia = Math.min(MINUTOS_TOPE, MINUTOS_SESION + presion * (MINUTOS_TOPE - MINUTOS_SESION) + atrasoProfundo * EXTRA_POR_ATRASO);
+  /* A medida que se acerca el examen el peso pasa de aprender a practicar: en
+     el repaso final ya no queda temario que ver (o casi) y lo que más se parece
+     al examen es contestar reactivos. */
+  const reactivosDia = phase === "review" ? REACTIVOS_FASE_FINAL : REACTIVOS_POR_DIA;
+  const disponible = extra ? Infinity : minutosDelDia - minutosHechosHoy(reactivosDia);
   const diaCumplido = !extra && disponible < MINUTOS_MINIMOS;
 
   /* ---- Contexto de riesgo: una sola vez ---- */
@@ -1586,29 +1647,7 @@ export function computeTodayPlan(opts) {
     return aciertoDe[topicId];
   };
 
-  /* ---- Tarjetas vencidas ---- */
-  const todayISO = toISO(rawToday);
-  const vencidas = [];
-  Object.keys(STATE.cards).forEach((cardId) => {
-    const topicId = cardId.split("::")[0];
-    if (!isIntroduced(topicId)) return;
-    /* Una tarjeta cuyo contenido ya no existe no se puede enseñar ni repasar:
-       si entrara al plan, la sesión tendría un paso en blanco. La
-       reconciliación del arranque las quita, esto es la red por si acaso. */
-    if (!flashcardOf(cardId)) return;
-    /* Y una tarjeta de un bloque que hoy no está en el plan tampoco sale. El
-       modo esencial promete que las tarjetas de ampliación ya programadas
-       "dejan de proponerse mientras el modo esté activo" —guardadas, con su
-       intervalo intacto, pero fuera de la sesión—. */
-    const bloque = blockOfCard(cardId);
-    if (bloque && !bloqueEnPlan(bloque.block)) return;
-    const card = STATE.cards[cardId];
-    if (card.due > todayISO) return;
-    vencidas.push({ cardId, topicId, due: card.due });
-  });
-  vencidas.sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.cardId < b.cardId ? -1 : 1));
-
-  const enRecuperacion = !extra && vencidas.filter((e) => isLearned(e.cardId)).length > UMBRAL_ATRASO;
+  const enRecuperacion = !extra && vencidasAprendidas > UMBRAL_ATRASO;
 
   /* ---- Temas nuevos que entran hoy ----
      El orden base entrelaza las siete áreas de forma pareja, pero el examen se
@@ -1628,7 +1667,7 @@ export function computeTodayPlan(opts) {
     .filter(Boolean);
 
   /* ---- Práctica: cuántas preguntas quedan por hacer hoy ---- */
-  let reactivosRestantes = extra || diaCumplido ? 0 : Math.max(0, REACTIVOS_POR_DIA - (hecho.quizAnswered || 0));
+  let reactivosRestantes = extra || diaCumplido ? 0 : Math.max(0, reactivosDia - (hecho.quizAnswered || 0));
   if (reactivosRestantes < 3) reactivosRestantes = 0;
 
   /* ---- Lecciones ----
@@ -1710,7 +1749,7 @@ export function computeTodayPlan(opts) {
     quizTopics.push(t);
   });
   conUrgencia.forEach((t) => {
-    if (quizTopics.length < REACTIVOS_POR_DIA && !quizTopics.includes(t)) quizTopics.push(t);
+    if (quizTopics.length < reactivosDia && !quizTopics.includes(t)) quizTopics.push(t);
   });
 
   /* ---- Reparto del tiempo ----
@@ -1720,7 +1759,8 @@ export function computeTodayPlan(opts) {
      falta hacen. Normal: casi la mitad al repaso, un tercio a lo nuevo y el
      resto a practicar. En recuperación el repaso pasa a ser lo principal.
      Lo que una parte no usa lo aprovecha la siguiente. */
-  const parte = enRecuperacion ? { nuevo: 0.13, practica: 0.12 } : { nuevo: 0.33, practica: 0.22 };
+  const parte = enRecuperacion ? { nuevo: 0.13, practica: 0.12 }
+    : phase === "review" ? { nuevo: 0.2, practica: 0.4 } : { nuevo: 0.33, practica: 0.22 };
   const hayPractica = reactivosRestantes > 0 && quizTopics.length > 0;
   const maxReactivos = Math.min(reactivosRestantes, quizTopics.length);
   const pisoPractica = hayPractica ? Math.min(REACTIVOS_MIN, maxReactivos) * COSTO.reactivo : 0;
@@ -1786,11 +1826,24 @@ export function computeTodayPlan(opts) {
     (t.blocks && t.blocks.length ? cardsOfBlock(id, t.blocks[0]) : cardsForTopic(id)).forEach((cid) => { if (isLearned(cid)) baseDeHoy++; });
   });
   const topeGoteo = extra || diaCumplido ? 0 : Math.max(0, topeAprender - Math.max(0, (hecho.cardsLearned || 0) - baseDeHoy));
-  for (const e of sinVer) {
-    if (learnCards.length >= topeGoteo) break;
+  /* Las tarjetas base de un tema cuya nota ya se leyó van primero y no se
+     regatean, ni siquiera en recuperación: el tema ya se dio por conocido y
+     dejarlas sin enseñar es dejarlo a medias. */
+  const esBase = (e) => { const bc = blockOfCard(e.cardId); return !!bc && bc.index === 0; };
+  const conBase = sinVer.filter(esBase).concat(sinVer.filter((e) => !esBase(e)));
+  const topeBase = extra || diaCumplido ? 0 : 8;
+  let basesPlaneadas = 0;
+  for (const e of conBase) {
+    const base = esBase(e);
+    if (base) {
+      if (basesPlaneadas >= topeBase) continue;
+      basesPlaneadas++;
+    } else if (learnCards.length - basesPlaneadas >= topeGoteo) {
+      break;
+    }
     const llave = llaveDeBloque(e.cardId);
     const costo = COSTO.aprender + COSTO.comprobar + (llave && !usadas.has(llave) ? COSTO.leccion : 0);
-    if (gastoGoteo + costo > parteGoteo) break;
+    if (!base && gastoGoteo + costo > parteGoteo) break;
     if (llave) gastoGoteo += usarLeccion(llave);
     gastoGoteo += COSTO.aprender + COSTO.comprobar;
     learnCards.push(e);
@@ -1891,12 +1944,20 @@ export function computeTodayPlan(opts) {
   };
 }
 
-/** Una tarjeta fallada vuelve a preguntarse unos pasos después. Devuelve la nueva lista de pasos. */
+/**
+ * Una tarjeta fallada vuelve a preguntarse unos pasos después, dentro de la
+ * misma sesión. Devuelve la nueva lista de pasos (no toca la original).
+ * `intentos` es cuántas veces se ha reencolado ya esa tarjeta: tras dos, se
+ * deja en paz —quien la falla tres veces seguidas necesita mañana, no otra
+ * vuelta—. El resumen, si lo hay, sigue siendo el último paso.
+ */
 export function reinsertarRepaso(steps, idx, step, intentos) {
-  if ((intentos || 0) >= CHECK_MAX_INTENTOS) return steps;
-  const pos = Math.min(steps.length - 1, idx + 1 + 4 + Math.min(2, intentos || 0)); // antes del resumen, que es el último
+  const n = intentos || 0;
+  if (n >= CHECK_MAX_INTENTOS) return steps;
+  const tope = steps.length - (steps.length && steps[steps.length - 1].type === "summary" ? 1 : 0);
+  const pos = Math.max(idx + 1, Math.min(tope, idx + 1 + 4 + n));
   const next = steps.slice();
-  next.splice(Math.max(idx + 1, pos), 0, { type: "review", cardId: step.cardId, topicId: step.topicId, check: true, retry: true });
+  next.splice(pos, 0, { type: "review", cardId: step.cardId, topicId: step.topicId, check: true, retry: true });
   return next;
 }
 
