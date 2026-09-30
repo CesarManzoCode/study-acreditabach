@@ -26,8 +26,8 @@ propiedad que el motor sostiene y que las pruebas verifican en cada push.
 Cada tema se divide en **bloques** (la nota base, los paquetes de ampliación, los
 reactivos de formato). Un bloque cerrado no aporta nada: ni tarjetas ni reactivos entran
 a la sesión del día, ni a la práctica por tema, ni al simulacro. La primera vez que una
-tarjeta aparece se muestra **con la respuesta a la vista** y un solo botón; recién al día
-siguiente se te pide recordarla.
+tarjeta aparece se muestra **con la respuesta a la vista** y un solo botón; unos pasos
+después se te pide recordarla y, al día siguiente, entra al repaso espaciado.
 
 **Paso 16 de 32 — primero se explica.** El tema nuevo llega con su nota y un solo botón.
 
@@ -94,16 +94,21 @@ preguntan de lo que ya estudiaste.
 ## Cómo decide qué estudiar
 
 1. **Repaso espaciado.** Cada tarjeta lleva su propio intervalo (SM-2, el algoritmo de
-   Anki, adaptado a tres botones) y sale a repaso justo cuando estás por olvidarla.
-2. **Temas nuevos, entrelazados.** El plan reparte los 177 temas entre los días que
+   Anki, adaptado a tres botones y corregido para el retraso, el adelanto y el examen).
+   Lo que se falla se vuelve a preguntar en la misma sesión.
+2. **Un día cabe en un día.** El plan tiene un presupuesto de tiempo: los repasos
+   vencidos entran por orden de urgencia y lo que no cabe espera su turno. Tras una
+   semana sin estudiar el atraso se pone al día en unos días, no en una sola sesión de
+   tres horas. Lo que haces se guarda al instante: cerrar a la mitad no pierde nada.
+3. **Temas nuevos, entrelazados.** El plan reparte los 177 temas entre los días que
    quedan hasta el examen y mezcla áreas distintas en la misma sesión, en vez de bloques
    largos de una sola materia.
-3. **El área en riesgo manda.** El examen se acredita área por área, así que la práctica
-   del día se pondera por área: la que va peor recibe más turnos.
+4. **El área en riesgo manda.** El examen se acredita área por área, así que la práctica
+   del día se pondera por área y por cómo vas *últimamente*: la que va peor recibe más
+   turnos.
 
-Si un día no estudias, lo pendiente se reparte solo entre los días que quedan. Si vas
-adelantado, el reparto no te frena: la sesión trae entre 2 y 8 temas nuevos mientras
-queden temas por conocer.
+Si vas adelantado, el reparto no te frena: la sesión trae entre 2 y 8 temas nuevos
+mientras queden temas por conocer.
 
 ![Vista del calendario y las siete áreas: aviso de que vas por detrás del calendario, regleta de agosto a noviembre y una tarjeta por área con los temas vistos](docs/media/areas-y-calendario.png)
 

@@ -473,7 +473,10 @@ console.log("\n17) Ninguna lección queda inalcanzable");
   });
   check(!!objetivo, "el temario tiene bloques que solo traen reactivos y una lección propia");
 
+  /* Los temas se conocen "ayer": sus lecciones de ampliación llegan al día siguiente. */
+  fijarDia("2026-09-29");
   E.introduceTopic(objetivo.topic.id);
+  fijarDia("2026-09-30");
   const cerrado = E.availableQuiz(objetivo.topic).length;
   check(
     !E.blockUnlocked(objetivo.topic, objetivo.block, objetivo.index),

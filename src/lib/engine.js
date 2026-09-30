@@ -1598,7 +1598,11 @@ export function computeTodayPlan(opts) {
   });
   vencidas.sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.cardId < b.cardId ? -1 : 1));
 
-  const vencidasAprendidas = vencidas.filter((e) => isLearned(e.cardId)).length;
+  /* El atraso se mide AL AMANECER: lo que ya se repasó hoy ya no está vencido,
+     y si el modo del día dependiera de lo que queda, terminar los repasos de una
+     sesión de recuperación la convertiría, a media mañana, en un día normal con
+     temas nuevos que la sesión nunca prometió. */
+  const vencidasAprendidas = vencidas.filter((e) => isLearned(e.cardId)).length + (hecho.cardsReviewed || 0);
 
   /* ---- Cuántos temas nuevos toca el día (por calendario) ----
      Se calcula con los temas que había por conocer al AMANECER: los que ya se
@@ -1667,8 +1671,6 @@ export function computeTodayPlan(opts) {
     .filter(Boolean);
 
   /* ---- Práctica: cuántas preguntas quedan por hacer hoy ---- */
-  let reactivosRestantes = extra || diaCumplido ? 0 : Math.max(0, reactivosDia - (hecho.quizAnswered || 0));
-  if (reactivosRestantes < 3) reactivosRestantes = 0;
 
   /* ---- Lecciones ----
      Las tarjetas de un bloque cuya lección todavía no se ha leído no pueden
@@ -1696,15 +1698,18 @@ export function computeTodayPlan(opts) {
       leccionesPendientes.push({ topicId, topic, bloque: block.nombre, leccion: block.leccion, conTarjetas: block.fcTo > block.fcFrom });
     }
   };
+  /* Un tema que se conoció hoy ya tuvo su nota; sus lecciones de ampliación
+     esperan a mañana (si no, cada tema nuevo abriría más lecciones ese mismo día). */
+  const deHoy = (id) => nuevosIds.has(id) || STATE.topicsIntroduced[id] === todayISO;
   vencidas.forEach((e) => {
-    if (nuevosIds.has(e.topicId)) return;
+    if (deHoy(e.topicId)) return;
     const bc = blockOfCard(e.cardId);
     if (!bc) return;
     apuntarLeccion(e.topicId, bc.topic, bc.block, bc.index);
   });
   if (!extra) {
     getAllTopics().forEach((t) => {
-      if (!isIntroduced(t.id) || nuevosIds.has(t.id)) return; // hoy ya trae bastante con su nota
+      if (!isIntroduced(t.id) || deHoy(t.id)) return; // hoy ya trae bastante con su nota
       (t.blocks || []).forEach((b, i) => {
         if (b.fcTo > b.fcFrom) return;   // los de tarjetas ya pasaron por el recorrido de arriba
         apuntarLeccion(t.id, t, b, i);
@@ -1724,7 +1729,18 @@ export function computeTodayPlan(opts) {
   const sinVer = candidatas.filter((e) => !isLearned(e.cardId));
 
   /* ---- Práctica: qué temas ---- */
-  const eligibleForQuiz = getAllTopics().filter((t) => isIntroduced(t.id) && !nuevosIds.has(t.id));
+  /* Los temas que se conocieron hoy no entran a la práctica de hoy: ya tienen su
+     nota y su comprobación, y el tamaño del día se fija con los temas de ayer
+     hacia atrás (si no, cada tema nuevo abriría más práctica y el día nunca
+     terminaría). */
+  const eligibleForQuiz = getAllTopics().filter((t) => isIntroduced(t.id) && !nuevosIds.has(t.id) && STATE.topicsIntroduced[t.id] !== todayISO);
+  /* Cuántos reactivos toca hoy: los que pide la fase, sin pasar de los temas
+     que hay para preguntar (un reactivo por tema y día). Se descuentan los que
+     ya se contestaron; si quedan menos de tres, no vale la pena otra tanda. */
+  const objetivoPractica = Math.min(reactivosDia, eligibleForQuiz.length);
+  let reactivosRestantes = extra || diaCumplido ? 0 : Math.max(0, objetivoPractica - (hecho.quizAnswered || 0));
+  if (reactivosRestantes < 3 && objetivoPractica >= 3) reactivosRestantes = 0;
+
   /* La práctica se reparte por riesgo de área (subir de 85 % a 90 % donde ya
      se pasa no acerca a aprobar; de 55 % a 65 % donde no se pasa, sí), por el
      acierto RECIENTE del tema y por cuánto hace que no se practica: un tema
@@ -1788,9 +1804,14 @@ export function computeTodayPlan(opts) {
      temas. Una lección que hace falta para mostrar una tarjeta siempre entra:
      sin ella la tarjeta no podría salir. */
   const leccionesSinTarjeta = leccionesPendientes.filter((l) => !l.conTarjetas);
+  /* La parte de lo nuevo se mide sobre el día completo, restando lo nuevo que ya
+     se hizo hoy; medirla sobre lo que queda haría que, al terminar la sesión,
+     siempre sobrara un poco «de lo nuevo» y el día nunca acabara. */
+  const nuevoHecho = (hecho.newTopics || 0) * COSTO.nota +
+    (hecho.cardsLearned || 0) * (COSTO.aprender + COSTO.comprobar) + (hecho.lessons || 0) * COSTO.leccion;
   const parteGoteo = extra || diaCumplido
     ? 0
-    : Math.max(disponible * parte.nuevo - gastoTemas, leccionesSinTarjeta.length ? COSTO.leccion : 0);
+    : Math.max(minutosDelDia * parte.nuevo - nuevoHecho - gastoTemas, leccionesSinTarjeta.length && !(hecho.lessons > 0) ? COSTO.leccion : 0);
   const leccionesUsadas = [];
   const usadas = new Set();
   let gastoGoteo = 0;
@@ -1848,7 +1869,7 @@ export function computeTodayPlan(opts) {
     gastoGoteo += COSTO.aprender + COSTO.comprobar;
     learnCards.push(e);
   }
-  let gastoNuevo = gastoTemas + gastoGoteo;
+  const gastoNuevo = gastoTemas + gastoGoteo;
 
   /* Repasos: los más urgentes que caben, con un piso para que el recuerdo no
      se descuide aunque haya mucho material nuevo. */
@@ -1877,7 +1898,6 @@ export function computeTodayPlan(opts) {
     gastoRepasos += COSTO.repaso;
     seleccion.push(e);
   }
-  gastoNuevo += 0;
   const reviewCards = entrelazar(seleccion, [(e) => e.topicId, (e) => e.area]);
   const atrasadas = priorizadas.length - reviewCards.length;
 

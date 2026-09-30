@@ -24,15 +24,20 @@ function empezar(iso, modoEsencial = true) {
   fijarDia(iso);
 }
 
-/** Estudia `n` días seguidos con el simulador; devuelve el último día estudiado. */
+/* Días en los que, tras terminar toda la sesión, el plan volvió a traer trabajo. */
+const reabiertos = [];
+
+/** Estudia `n` días seguidos con el simulador; devuelve el primer día SIN estudiar. */
 function estudiarDias(desde, n, rng, opts) {
   let dia = desde;
   for (let i = 0; i < n; i++) {
     fijarDia(dia);
     estudiarHoy(rng, opts);
+    const resto = E.computeTodayPlan().totalSteps;
+    if (resto !== 0) reabiertos.push(`${dia} (${resto})`);
     dia = diaSiguiente(dia);
   }
-  return dia; // el primer día SIN estudiar
+  return dia;
 }
 
 /** Cuántos minutos le pediría el plan al sustentante. */
@@ -133,11 +138,13 @@ console.log("\n21) El backlog se drena en los días siguientes");
   dia = diaSiguiente(dia, 8);
 
   const serie = [];
+  const enCurso = [];
   let maxMin = 0;
   let maxRepasos = 0;
   for (let i = 0; i < 10; i++) {
     fijarDia(dia);
     const h = estudiarHoy(rng);
+    if (E.computeTodayPlan().totalSteps !== 0) enCurso.push(dia);
     serie.push(h.plan.atrasadas);
     maxMin = Math.max(maxMin, minutos(h.plan));
     maxRepasos = Math.max(maxRepasos, h.plan.reviewCards.length);
@@ -145,6 +152,7 @@ console.log("\n21) El backlog se drena en los días siguientes");
   }
   console.log("   atrasadas al empezar cada día: " + serie.join(", "));
   check(serie[0] > 0, "el primer día de vuelta hay atraso que no cabe");
+  check(enCurso.length === 0, `terminar la sesión de un día de recuperación no reabre trabajo ese mismo día (${enCurso.join(", ") || "ninguno"})`);
   const dren = serie.findIndex((n) => n === 0);
   check(dren > 0 && dren <= 6, `el atraso llega a cero en ${dren} días (como máximo 6)`);
   check(serie.slice(0, dren + 1).every((n, i, a) => i === 0 || n < a[i - 1]), "y baja todos los días hasta llegar a cero");
@@ -651,6 +659,7 @@ console.log("\n30) Los temas que faltan se reparten hasta el último día de est
   const rng = rngSim(30);
   estudiarDias("2026-08-01", 100, rng);
   check(Object.keys(E.STATE.topicsIntroduced).length === TEMAS.length, "estudiando todos los días, los 177 temas se ven antes de que acabe la fase de aprendizaje");
+  check(reabiertos.length === 0, `en ningún día de toda la simulación terminar la sesión dejó trabajo pendiente (${reabiertos.slice(0, 3).join(", ") || "ninguno"})`);
 }
 
 /* ------------------------------------------------------------------
