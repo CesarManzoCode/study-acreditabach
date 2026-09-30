@@ -46,7 +46,11 @@ export function toISO(d) {
 export function fromISO(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
 export function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 export function daysBetween(a, b) { return Math.round((dateOnly(b) - dateOnly(a)) / 86400000); }
-export function todayDate() { return dateOnly(new Date()); }
+/* El reloj se puede sustituir: las pruebas simulan semanas de estudio (y de
+   ausencia) sin esperar a que pasen. En la app nunca se toca. */
+let RELOJ = null;
+export function setClock(fn) { RELOJ = typeof fn === "function" ? fn : null; }
+export function todayDate() { return dateOnly(RELOJ ? RELOJ() : new Date()); }
 function clampDate(d, lo, hi) { return d < lo ? lo : (d > hi ? hi : d); }
 
 export const LEARNING_END = addDays(LAST_STUDY_DAY, -REVIEW_PHASE_DAYS);
@@ -79,7 +83,7 @@ function defaultState() {
     streak: 0,
     lastStudyDate: null,
     dismissedWelcome: false,
-    createdAt: toISO(new Date()),
+    createdAt: toISO(todayDate()),
     contentRevision: 0,     // revisión del temario ya incorporada a este progreso
     contentUpdate: null,    // {at, newCards} del último crecimiento del temario
     podaAplicada: false,    // ¿ya se migró el progreso tras podar el temario?
@@ -1666,7 +1670,7 @@ export function mergeStates(a, b) {
   out.contentUpdate = a.contentUpdate || b.contentUpdate || null;
   const ca = a.createdAt || "";
   const cb = b.createdAt || "";
-  out.createdAt = ca && cb ? (ca < cb ? ca : cb) : (ca || cb || toISO(new Date()));
+  out.createdAt = ca && cb ? (ca < cb ? ca : cb) : (ca || cb || toISO(todayDate()));
   return out;
 }
 
