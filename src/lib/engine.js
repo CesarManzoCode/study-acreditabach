@@ -1576,7 +1576,9 @@ function armarPasos({ repasos, unidades, lecciones, preguntas }) {
  * cumplió y todavía quedan tarjetas vencidas. No trae nada nuevo ni práctica.
  */
 export function computeTodayPlan(opts) {
-  const extra = !!(opts && opts.extra);
+  /* `adelantar` es una ronda extra que toma tarjetas que todavía no vencen. */
+  const adelantar = !!(opts && opts.adelantar);
+  const extra = adelantar || !!(opts && opts.extra);
   const rawToday = todayDate();
   const today = clampDate(rawToday, STUDY_START, LAST_STUDY_DAY);
   const phase = planPhase(rawToday);
@@ -1588,6 +1590,7 @@ export function computeTodayPlan(opts) {
   /* ---- Tarjetas vencidas ---- */
   const todayISO = toISO(rawToday);
   const vencidas = [];
+  let adelantables = 0;
   Object.keys(STATE.cards).forEach((cardId) => {
     const topicId = cardId.split("::")[0];
     if (!isIntroduced(topicId)) return;
@@ -1602,7 +1605,14 @@ export function computeTodayPlan(opts) {
     const bloque = blockOfCard(cardId);
     if (bloque && !bloqueEnPlan(bloque.block)) return;
     const card = STATE.cards[cardId];
-    if (card.due > todayISO) return;
+    if (card.due > todayISO) {
+      /* Aún no vence: solo se ofrece adelantarla si ya se aprendió y no se
+         repasó hoy (una adelantada no cambia su fecha, así que sin este corte
+         la misma tarjeta volvería a salir en cada ronda). */
+      if (!isLearned(cardId) || card.lastReview === todayISO) return;
+      adelantables++;
+      if (!adelantar) return;
+    }
     vencidas.push({ cardId, topicId, due: card.due });
   });
   vencidas.sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.cardId < b.cardId ? -1 : 1));
@@ -1977,6 +1987,8 @@ export function computeTodayPlan(opts) {
     estMinutes: Math.round(minutosDeSesion(steps)),
     /* Cuántas tarjetas ya vencidas no caben hoy y esperan su turno. */
     atrasadas,
+    /* Tarjetas aprendidas que aún no vencen y se pueden repasar por adelantado. */
+    adelantables,
     enRecuperacion,
     diaCumplido,
     /* Lo que se ve en pantalla: cada paso cae en exactamente un grupo. */

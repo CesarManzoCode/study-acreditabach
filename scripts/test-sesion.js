@@ -613,6 +613,30 @@ console.log("\n29b) La ronda opcional de repaso atrasado");
   check(luego.atrasadas < cumplido.atrasadas, "pero sí reduce el atraso");
 }
 
+console.log("\n29c) Adelantar repasos cuando no queda nada vencido");
+{
+  empezar("2026-08-01", false);
+  const rng = rngSim(292);
+  let dia = estudiarDias("2026-08-01", 12, rng);
+  fijarDia(dia);
+  estudiarHoy(rng);
+  /* Se ponen al día todas las vencidas para simular "ya no hay nada pendiente". */
+  for (let k = 0; k < 10 && vencidasHoy() > 0; k++) estudiarHoy(rng, { extra: true });
+  const base = E.computeTodayPlan();
+  check(base.totalSteps === 0 && base.atrasadas === 0, "sin atraso y con el día cumplido");
+  check(base.adelantables > 0, `el plan avisa de las tarjetas adelantables (${base.adelantables})`);
+  const ad = E.computeTodayPlan({ adelantar: true });
+  check(ad.reviewCards.length > 0 && ad.reviewCards.length <= 20, `la ronda trae hasta 20 repasos (${ad.reviewCards.length})`);
+  check(ad.steps.every((p) => p.type === "review" && !p.check), "solo repasos: nada nuevo ni práctica");
+  const hoyISO = E.toISO(E.todayDate());
+  check(ad.reviewCards.every((e) => e.due > hoyISO), "y son tarjetas que aún no vencen");
+  const ids = new Set(ad.reviewCards.map((e) => e.cardId));
+  estudiarHoy(rng, { adelantar: true });
+  const otra = E.computeTodayPlan({ adelantar: true });
+  check(otra.reviewCards.every((e) => !ids.has(e.cardId)), "la siguiente ronda no repite las ya adelantadas hoy");
+  check(E.computeTodayPlan().totalSteps === 0, "y adelantar no reabre el plan obligatorio");
+}
+
 /* ------------------------------------------------------------------
    30) Planificación hasta el examen
    ------------------------------------------------------------------ */

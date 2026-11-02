@@ -111,6 +111,13 @@ unos cinco días y se queda en un colchón acotado (unas decenas de tarjetas lig
 atrasadas), en vez de crecer. Si se quiere avanzar más, al terminar el día aparece **Seguir con el atrasado**:
 una ronda opcional de hasta 20 repasos, sin nada nuevo ni práctica.
 
+**Adelantar repasos.** Cuando el día está cumplido y ya no queda nada vencido (por ejemplo,
+al terminar el temario), Hoy ofrece **Adelantar repasos**: rondas de hasta 20 tarjetas ya
+aprendidas que todavía no vencen, las más próximas a olvidarse primero, sin nada nuevo ni
+práctica. Una tarjeta repasada antes de su fecha conserva su fecha (recordarla antes no
+demuestra que resista más), y no vuelve a salir en otra ronda el mismo día. En el motor es
+`computeTodayPlan({ adelantar: true })` y `plan.adelantables`.
+
 **El día tiene cuenta.** Todo lo que haces se guarda al instante —la tarjeta, la
 bitácora, la racha—, no al llegar al resumen, y se descuenta del plan: terminar la sesión
 deja «nada pendiente hoy» y abandonarla a la mitad deja exactamente lo que falta. Un

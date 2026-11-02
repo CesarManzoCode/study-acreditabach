@@ -29,7 +29,7 @@ import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
-export default function Today({ plan, stats, onStart, onMore }) {
+export default function Today({ plan, stats, onStart, onMore, onAdelantar }) {
   const hoy = plan.today;
   const showWelcome = !STATE.dismissedWelcome && stats.introducedCount === 0;
 
@@ -172,14 +172,17 @@ export default function Today({ plan, stats, onStart, onMore }) {
                 {plan.atrasadas > 0
                   ? <>Por hoy ya cumpliste. Quedan <strong>{plan.atrasadas}</strong> {plan.atrasadas === 1 ? "tarjeta atrasada" : "tarjetas atrasadas"} que se irán poniendo al día en los próximos días, las más urgentes primero.</>
                   : nextDue
-                    ? <>Tu próximo repaso llega el <strong>{fmtDateShort(nextDue.date)}</strong>. Mientras tanto puedes adelantar temas o hacer un simulacro.</>
+                    ? <>Tu próximo repaso llega el <strong>{fmtDateShort(nextDue.date)}</strong>. Mientras tanto puedes adelantar repasos, repasar temas o hacer un simulacro.</>
                     : "No hay nada programado. Puedes adelantar temas del temario o medirte con un simulacro."}
               </p>
               <div className="row-gap">
                 {plan.atrasadas > 0 && (
                   <Button variant="primary" size="lg" icon="refresh" onClick={onMore}>Seguir con el atrasado</Button>
                 )}
-                <Button variant={plan.atrasadas > 0 ? "solid" : "primary"} size="lg" icon="repasar" onClick={() => navigate("repasar")}>Abrir el temario</Button>
+                {plan.atrasadas === 0 && plan.adelantables > 0 && (
+                  <Button variant="primary" size="lg" icon="refresh" onClick={onAdelantar}>Adelantar repasos</Button>
+                )}
+                <Button variant={plan.atrasadas > 0 || plan.adelantables > 0 ? "solid" : "primary"} size="lg" icon="repasar" onClick={() => navigate("repasar")}>Abrir el temario</Button>
                 <Button variant="solid" size="lg" icon="simulacro" onClick={() => navigate("simulacro")}>Hacer un simulacro</Button>
               </div>
             </div>

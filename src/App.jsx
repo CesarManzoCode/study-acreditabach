@@ -84,9 +84,16 @@ function Shell() {
      `extra` abre la ronda opcional de repaso atrasado que se ofrece cuando el
      día ya se cumplió y todavía quedan tarjetas vencidas. */
   const startStudy = useCallback((extra) => {
-    const esExtra = extra === true;
-    const p = esExtra ? computeTodayPlan({ extra: true }) : plan;
-    abrirSesion({ kind: "study", title: esExtra ? "Repaso atrasado" : "Sesión de hoy", steps: p.steps, extra: esExtra });
+    const adelantar = extra === "adelantar";
+    const esExtra = extra === true || adelantar;
+    const p = adelantar ? computeTodayPlan({ adelantar: true }) : esExtra ? computeTodayPlan({ extra: true }) : plan;
+    abrirSesion({
+      kind: "study",
+      title: adelantar ? "Repasos adelantados" : esExtra ? "Repaso atrasado" : "Sesión de hoy",
+      steps: p.steps,
+      extra: esExtra,
+      adelantar
+    });
   }, [plan, abrirSesion]);
 
   /* Practicar un tema a mano. Los bloques que solo esperan su lección —los que
@@ -143,7 +150,7 @@ function Shell() {
       case "progreso": return <Progress plan={plan} stats={stats} />;
       case "info": return <Info />;
       case "cuenta": return <Account />;
-      default: return <Today plan={plan} stats={stats} onStart={() => startStudy(false)} onMore={() => startStudy(true)} />;
+      default: return <Today plan={plan} stats={stats} onStart={() => startStudy(false)} onMore={() => startStudy(true)} onAdelantar={() => startStudy("adelantar")} />;
     }
   })();
 
@@ -172,6 +179,7 @@ function Shell() {
           onExit={closeRunner}
           onAgain={runner.drillTopicId ? () => startTopicDrill({ id: runner.drillTopicId, tema: runner.title }) : null}
           onMore={runner.kind === "study" ? () => startStudy(true) : null}
+          onAdelantar={runner.kind === "study" ? () => startStudy("adelantar") : null}
         />
       )}
     </div>

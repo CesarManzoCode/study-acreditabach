@@ -28,8 +28,8 @@ function pRecuerdo(card, hoy) {
  * Hace la sesión de hoy completa con el ejecutor del motor (o el paso a paso
  * clásico si el plan aún no trae `steps`). Devuelve un resumen de lo hecho.
  */
-export function estudiarHoy(rng, { extra = false, abandonarEn = Infinity, precision = 0.72 } = {}) {
-  const plan = E.computeTodayPlan(extra ? { extra: true } : undefined);
+export function estudiarHoy(rng, { extra = false, adelantar = false, abandonarEn = Infinity, precision = 0.72 } = {}) {
+  const plan = E.computeTodayPlan(adelantar ? { adelantar: true } : extra ? { extra: true } : undefined);
   const hoy = E.todayDate();
   const pasos = plan.steps;
   const hecho = { pasos: 0, repasos: 0, aprendidas: 0, temas: 0, lecciones: 0, quiz: 0, plan };

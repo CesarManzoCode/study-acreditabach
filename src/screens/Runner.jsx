@@ -101,7 +101,7 @@ function RunnerShell({ title, step, total, onExit, children, footer, exitConfirm
 /* Todo lo que se hace aquí se guarda AL INSTANTE en el motor (la tarjeta, la
    bitácora del día, la racha). El resumen del final solo muestra cifras: cerrar
    la sesión a la mitad no pierde nada de lo que ya se hizo. */
-export function SessionRunner({ session, onExit, onAgain, onMore }) {
+export function SessionRunner({ session, onExit, onAgain, onMore, onAdelantar }) {
   const [idx, setIdx] = useState(0);
   const [steps, setSteps] = useState(session.steps);
   const [stats, setStats] = useState({ cardsReviewed: 0, cardsLearned: 0, lessons: 0, newTopics: 0, quizAnswered: 0, quizCorrect: 0 });
@@ -179,7 +179,7 @@ export function SessionRunner({ session, onExit, onAgain, onMore }) {
           />
         )}
         {!vacio && isSummary && (
-          <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} onMore={onMore} />
+          <SummaryStep stats={stats} kind={session.kind} onExit={onExit} onAgain={onAgain} onMore={onMore} onAdelantar={onAdelantar} />
         )}
       </div>
     </RunnerShell>
@@ -519,7 +519,7 @@ function QuizStep({ topic, question, onAnswered, onNext }) {
 
 /* --- Paso: resumen --- */
 
-function SummaryStep({ stats, kind, onExit, onAgain, onMore }) {
+function SummaryStep({ stats, kind, onExit, onAgain, onMore, onAdelantar }) {
   const plan = useMemo(() => computeTodayPlan(), []);
   const accuracy = stats.quizAnswered ? Math.round((stats.quizCorrect / stats.quizAnswered) * 100) : null;
   useKeys({ Enter: onExit }, []);
@@ -563,6 +563,11 @@ function SummaryStep({ stats, kind, onExit, onAgain, onMore }) {
       ) : onMore && plan.atrasadas > 0 ? (
         <div className="row-gap">
           <Button variant="solid" size="lg" icon="refresh" onClick={onMore}>Seguir con el atrasado</Button>
+          <Button variant="primary" size="lg" onClick={onExit}>Listo</Button>
+        </div>
+      ) : onAdelantar && plan.adelantables > 0 ? (
+        <div className="row-gap">
+          <Button variant="solid" size="lg" icon="refresh" onClick={onAdelantar}>Adelantar más repasos</Button>
           <Button variant="primary" size="lg" onClick={onExit}>Listo</Button>
         </div>
       ) : (
