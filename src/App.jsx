@@ -4,7 +4,7 @@ import { ToastProvider } from "./ui/kit.jsx";
 import { useEngine, useRoute, navigate, useAccounts, useCloud } from "./lib/hooks.js";
 import { getStoredTheme, applyTheme } from "./lib/prefs.js";
 import {
-  computeTodayPlan, overallStats, cardsForTopic, buildDrill,
+  computeTodayPlan, overallStats, buildOldestReview, cardsForTopic, buildDrill,
   shuffleOptions, subscribe, isLearned, availableQuiz, blockOfCard, isLessonSeen,
   pasoConContenido, pendingLessons, quizOfBlock
 } from "./lib/engine.js";
@@ -140,6 +140,13 @@ function Shell() {
     abrirSesion({ kind: "practice", title: topic.tema, steps });
   }, [abrirSesion]);
 
+  /* Repaso de lo más antiguo: los temas que llevan más tiempo sin mostrarte
+     tarjeta, primero. Sirve para rectificar lo que se enfrió. */
+  const startOldest = useCallback(() => {
+    const { steps } = buildOldestReview(30);
+    abrirSesion({ kind: "practice", title: "Lo más antiguo primero", steps });
+  }, [abrirSesion]);
+
   const startMock = useCallback((mock) => setRunner({ seq: ++sesionSeq, kind: "mock", ...mock }), []);
   const closeRunner = useCallback(() => setRunner(null), []);
 
@@ -150,7 +157,7 @@ function Shell() {
       case "progreso": return <Progress plan={plan} stats={stats} />;
       case "info": return <Info />;
       case "cuenta": return <Account />;
-      default: return <Today plan={plan} stats={stats} onStart={() => startStudy(false)} onMore={() => startStudy(true)} onAdelantar={() => startStudy("adelantar")} />;
+      default: return <Today plan={plan} stats={stats} onStart={() => startStudy(false)} onMore={() => startStudy(true)} onAdelantar={() => startStudy("adelantar")} onOldest={startOldest} />;
     }
   })();
 

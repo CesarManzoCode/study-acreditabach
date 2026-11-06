@@ -217,3 +217,15 @@ para recuperar el porcentaje anterior. Nada del avance previo se borra; solo cam
 vara de medir. Las tarjetas nuevas no llegan todas de golpe: se reparten entre los
 siguientes 21 días, cada una se enseña antes de entrar al repaso, y la pantalla de inicio
 avisa cuántas se agregaron.
+
+
+---
+
+## Repaso de lo más antiguo
+
+Modo manual (botón en Hoy). `buildOldestReview(n)` ordena los temas por el último
+día en que se mostró alguna de sus tarjetas (la más reciente del tema; sin
+`lastReview` se estima con `due − interval`) y arma una tanda de pasos `review`
+con los temas más viejos primero y, dentro de cada tema, sus tarjetas más
+antiguas primero. No cambia el plan diario: repasar una tarjeta que aún no
+vence no la reprograma, y una vencida se califica con normalidad.

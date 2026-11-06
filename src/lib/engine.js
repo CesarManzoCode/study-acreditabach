@@ -2249,6 +2249,56 @@ export function buildDrill(topicId, n = 10) {
     .map((question) => ({ topic: t, question: shuffleOptions(question, randomSeed()) }));
 }
 
+/* ---------------- Repaso de lo más antiguo ----------------
+   Modo manual para rectificar temas viejos: ordena los temas por el último día
+   en que se te mostró alguna de sus tarjetas (el más lejano primero) y arma una
+   tanda con sus tarjetas ya aprendidas, las más antiguas de cada tema primero.
+   No toca el plan diario: repasar una tarjeta que aún no vence no la reprograma
+   (ver `programarRepaso`), y una vencida se califica con normalidad. */
+
+/** Último día en que se vio la tarjeta (ISO). Sin `lastReview`, se estima con su fecha y su intervalo. */
+function ultimaVistaDe(card) {
+  if (card.lastReview) return card.lastReview;
+  if (card.due) return toISO(addDays(fromISO(card.due), -Math.max(1, card.interval || 1)));
+  return "";
+}
+
+/**
+ * Tanda de repaso de lo más antiguo a lo más nuevo.
+ * Devuelve `{ steps, temas, desde }`: pasos de repaso, cuántos temas toca y el
+ * día de la tarjeta más antigua (ISO o "" si no hay nada).
+ */
+export function buildOldestReview(n = 30) {
+  const porTema = [];
+  getAllTopics().forEach((t) => {
+    const items = [];
+    cardsForTopic(t.id).forEach((cid) => {
+      const c = STATE.cards[cid];
+      if (c && isLearned(cid)) items.push({ cid, visto: ultimaVistaDe(c) });
+    });
+    if (!items.length) return;
+    items.sort((a, b) => (a.visto < b.visto ? -1 : a.visto > b.visto ? 1 : 0));
+    // El tema "se ve" con su tarjeta más reciente: lleva tiempo sin repasarse entero.
+    const reciente = items.reduce((m, it) => (it.visto > m ? it.visto : m), "");
+    porTema.push({ t, items, reciente });
+  });
+  porTema.sort((a, b) => (a.reciente < b.reciente ? -1 : a.reciente > b.reciente ? 1 : 0));
+
+  const steps = [];
+  let temas = 0;
+  let desde = "";
+  for (const g of porTema) {
+    if (steps.length >= n) break;
+    temas++;
+    g.items.forEach((it) => {
+      if (steps.length >= n * 1.5) return;
+      if (!desde || it.visto < desde) desde = it.visto;
+      steps.push({ type: "review", cardId: it.cid, topicId: g.t.id });
+    });
+  }
+  return { steps, temas, desde };
+}
+
 /** Cuántas preguntas distintas puede ofrecer un tema (∞ si tiene generador). */
 export function drillSize(topicId) {
   const t = topicsById()[topicId];

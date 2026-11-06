@@ -5,7 +5,7 @@ import { navigate } from "../lib/hooks.js";
 import {
   STATE, saveState, fmtDateLong, fmtDateShort, daysBetween,
   STUDY_START, EXAM_DATE, LEARNING_END, LAST_STUDY_DAY,
-  weakestTopics, upcomingLoad, areaStats, dismissContentUpdate, dismissPoda
+  weakestTopics, buildOldestReview, upcomingLoad, areaStats, dismissContentUpdate, dismissPoda
 } from "../lib/engine.js";
 import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 
@@ -29,11 +29,12 @@ import { areaStyle, areaVisual, masteryLabel } from "../lib/areas.js";
 const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
-export default function Today({ plan, stats, onStart, onMore, onAdelantar }) {
+export default function Today({ plan, stats, onStart, onMore, onAdelantar, onOldest }) {
   const hoy = plan.today;
   const showWelcome = !STATE.dismissedWelcome && stats.introducedCount === 0;
 
   const nextDue = useMemo(() => upcomingLoad(8).slice(1).find((d) => d.count > 0), [stats, plan]);
+  const antiguo = useMemo(() => buildOldestReview(30), [stats, plan]);
   const weak = useMemo(() => weakestTopics(4).filter((w) => w.mastery < 85), [stats]);
 
   /* Los pasos del plan se agrupan en las tres cosas que de verdad se hacen en
@@ -132,6 +133,12 @@ export default function Today({ plan, stats, onStart, onMore, onAdelantar }) {
                 </Button>
                 <p className="hoja-pista">Puedes parar cuando quieras: lo que respondas queda guardado.</p>
               </div>
+              {antiguo.steps.length > 0 && (
+                <p className="hoja-pista">
+                  ¿Quieres rectificar temas viejos?{" "}
+                  <button className="link-btn" onClick={onOldest}>Repasar lo más antiguo primero</button>
+                </p>
+              )}
 
               <ol className="trabajo">
                 {grupos.map((g) => (
@@ -183,6 +190,9 @@ export default function Today({ plan, stats, onStart, onMore, onAdelantar }) {
                   <Button variant="primary" size="lg" icon="refresh" onClick={onAdelantar}>Adelantar repasos</Button>
                 )}
                 <Button variant={plan.atrasadas > 0 || plan.adelantables > 0 ? "solid" : "primary"} size="lg" icon="repasar" onClick={() => navigate("repasar")}>Abrir el temario</Button>
+                {antiguo.steps.length > 0 && (
+                  <Button variant="solid" size="lg" icon="refresh" onClick={onOldest}>Repasar lo más antiguo</Button>
+                )}
                 <Button variant="solid" size="lg" icon="simulacro" onClick={() => navigate("simulacro")}>Hacer un simulacro</Button>
               </div>
             </div>
